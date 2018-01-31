@@ -17,6 +17,7 @@ We ask, how likely is it that the adult would say:
 * Maybe you'll get one at the first try. (_maybe_)
 * You could get one at the first try. (_could_)
 * It's possible that you get one at the first try. (_possible_)
+* It seems like you'll get one at the first try. (_seems like_)
 
 
 Across trials, we vary the distributions of yellow and red gumballs. Ideally, there will be variability for some of the distributions where one group of participants predominantly uses one modal whereas the other group uses a different modal.
