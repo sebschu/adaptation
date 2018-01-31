@@ -1,13 +1,13 @@
 # Experimental design
 
 The goal of this experiment is to evaluate how much variability there is in the use of modals given different probability distributions for a given event.
-That is we want to estimate the distributions `P(modal | theta)`, where theta is the probability of an event happening.
+That is we want to estimate the distributions `P(modal | theta)`, where `theta` is the probability of an event happening.
 
 
 ## Cover story
 
 An adult and a child walk up to a gumball machine. The container with the gumballs is high up and the contents can only be seen from the top, so the child cannot see what is in the container.
-There is a varying distribution of yellow and red gumballs, which is clearly visible to the adult but not the child. The child says ``I want a blue gumball.''.
+There is a varying distribution of yellow and red gumballs, which is clearly visible to the adult but not the child. The child says "I want a blue gumball."
 
 We ask, how likely is it that the adult would say:
 
