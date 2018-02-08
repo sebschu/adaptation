@@ -1,6 +1,5 @@
 
 
-var CONDITION = 0;
 
 var REPETITIONS = 3;
 
@@ -60,7 +59,7 @@ function make_slides(f) {
 				$("#instructions-part1").show();
 				this.step = 1;
 			} else {
-				if ($("input[name=checkquestion]:checked").val() !== "yes") {
+				if ($("input[name=checkquestion]:checked").val() !== "no") {
 					$("#instructions-part2").hide(); 
 					$("#instructions-part3").show();
 					this.step = 3;
@@ -106,7 +105,7 @@ function make_slides(f) {
 					$(this).slider("option", "value", 1 - other_total);
 				}
 				
-				var perc = Math.floor($(this).slider("option", "value") * 100);
+				var perc = Math.round($(this).slider("option", "value") * 100);
 				$("#" + $(this).attr("id") + "_val").val(perc);
 				
 			}
@@ -151,9 +150,11 @@ function make_slides(f) {
         "sentence2": sent2[1],
         "modal1" : sent1[0],
         "modal2" : sent2[0],
-				"rating1" : $("#slider_1").slider("option", "value"),
-				"rating2" : $("#slider_2").slider("option", "value"),
-				"rating_other" : $("#slider_3").slider("option", "value")
+				"rating1" : this.stim.reverse_sent_order == 1 ? $("#slider_2").slider("option", "value") : $("#slider_1").slider("option", "value"),
+				"rating2" : this.stim.reverse_sent_order == 1 ? $("#slider_1").slider("option", "value") : $("#slider_2").slider("option", "value"),
+				"rating_other" : $("#slider_3").slider("option", "value"),
+				"percentage_blue": this.stim.percentage_blue,
+				"color": this.stim.color
       });
     }
   });
@@ -232,15 +233,17 @@ function init() {
     }
   });
 
-  $(".response-buttons, .test-response-buttons").click(function() {
-    _s.button($(this).val());
-  });
-
-  $("#audio-player").bind("ended", function() {
-    $("#prompt").show();
-    //$(".response-buttons").attr("disabled", null);
-  });
+ 
 
 
   exp.go(); //show first slide
+	
+	imgs = [];
+	
+	for (var i = 0; i < exp.trials.length; i++) {
+		imgs.push(exp.trials[i].image);
+	}
+	
+	preload(imgs);
+	
 }

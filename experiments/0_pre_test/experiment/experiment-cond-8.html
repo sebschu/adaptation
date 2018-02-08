@@ -3,6 +3,10 @@
 <head>
     <title>Language Learning Experiment</title>
 
+		<script type="text/javascript">
+			var CONDITION = 8;
+		</script>
+
     <!--JS-->
 
     <!-- external general utilities -->
@@ -25,7 +29,7 @@
 
     <!-- experiment specific helper functions -->
     <!-- <script src="js/local-utils.js"></script> -->
-
+    <script src="../_shared/preload.js"></script>
     <!--CSS-->
     <link href="../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
     <link href="../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
@@ -34,6 +38,18 @@
     <!-- experiment file -->
     <script src="js/stims.js"></script>
     <script src="js/template.js"></script>
+		
+		<script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		(function(){
+		    var ut_id = "3106ca1d300363c2bcf482a261a2a4b2";
+		    if (UTWorkerLimitReached(ut_id)) {
+		        document.getElementById('mturk_form').style.display = 'none';
+		        document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
+		    }
+		})();
+		</script>
+	
 
 </head>
 
@@ -44,7 +60,7 @@
   <img src="../_shared/images/alpslogo.png" alt="InterActive Language Processing Lab at Stanford">
     <p id="cocolab">InterActive Language Processing Lab at Stanford</p>
     <p id="instruct-text">
-      In this experiment, you will see a series of visual scenes and will be asked to answer some questions about them. The HIT should take ~XX minutes. Please pay attention, thanks!</p>
+      In this experiment, you will see a series of visual scenes and will be asked to answer some questions about them. The HIT should take ~10 minutes. Please pay attention, thanks!</p>
     <input id="start_button" type="button" class="button" value="Start Experiment">
     <p id="legal">
       <strong>LEGAL INFORMATION:</strong><br>
@@ -114,16 +130,28 @@ If you agree to participate, please proceed to the study tasks.</p>
 				
 				<p class="err"> Please make sure that the three ratings sum to 100!</p>
 				
-				<p style="margin:5px 0 0;"><strong><span class="display_condition" id="sent_1">You'll get a green one</span></strong></p>
-					<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_1" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_1_val" value="0" disabled="disabled"></div>
+				<table>
+					<tr>
+						<td><strong><span class="display_condition" id="sent_1">{}</span></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_1" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_1_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><span class="display_condition" id="sent_2">{}</span></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_2" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_2_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><em><span class="sent_other">something else</span></em></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_3" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_3_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+				</table>
 				
-				<p style="margin:5px 0 0;"><strong><span class="display_condition" id="sent_2">You might get a blue one</span></strong></p>
-					<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_2" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_2_val" value="0" disabled="disabled"></div>
-				
-								<p style="margin:5px 0 0;"><strong><em><span class="sent_other">something else</span></em></strong></p>
-					<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_3" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_3_val" value="0" disabled="disabled"></div>
-				
-      </div>
+		      </div>
 	    <input type="button" onclick="_s.button()" class="button" value="Next">
 			
   </div>
