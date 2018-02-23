@@ -1,7 +1,7 @@
 
 var percentages = [0, 10, 25, 40, 50, 60, 75, 90, 100];
 
-var colors = [_.sample(["blue", "orange"])];
+var colors = ["blue", "orange"];
 var modals = ["bare", "might", "probably", "could", "looks_like", "think"];
 
 var sentences = {

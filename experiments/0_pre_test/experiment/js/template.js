@@ -1,7 +1,7 @@
 
 
 
-var REPETITIONS = 3;
+var REPETITIONS = 2;
 
 var reverse_sent_order = _.sample([true, false]);
 

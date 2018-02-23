@@ -20,7 +20,11 @@ source("helpers.R")
 
 ```{r data}
 
-d = read.csv("../data/cond0-trials.csv")
+plot_condition = function(condition) {
+
+  fname = paste("../data/0_pre_test-cond", condition, "-trials.csv", sep="")
+  
+d = read.csv(fname)
 
 drops <- c("modal1","rating1")
 d2 = d[ , !(names(d) %in% drops)]
@@ -39,26 +43,53 @@ d = rbind(d2, d3, d4)
 
 d$modal = factor(d$modal)
 
-```
+d$percentage_blue_f = factor(d$percentage_blue)
 
-
-```{r}
 
 d_blue = d %>% filter(., grepl("blue", sentence2))
 d_orange = d %>% filter(., grepl("orange", sentence2))
 
-ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
- geom_smooth(aes(col=modal))
+#ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+# geom_smooth(aes(col=modal))
 
-ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
+#ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
 
 d_orange_reverse = d_orange
 d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
 
 d_comparison = rbind(d_blue, d_orange_reverse)
 d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
 
-ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal,linetype=blue))
 
+
+p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal,linetype=blue)) + ggtitle(d$pair[1]) + xlab("percentage")
+
+p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage")
+
+
+return(list("p1" = p1, "p2" = p2))
+
+}
+
+```
+
+
+```{r}
+
+#for (i in 0:14) {
+
+#  ps = plot_condition(i)
+#  plot(ps$p1)
+#  plot(ps$p2)
+
+
+#}
+
+ps = plot_condition("5_2")
+  plot(ps$p1)
+  plot(ps$p2)
 
 ```
