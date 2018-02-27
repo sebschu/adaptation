@@ -3,11 +3,13 @@ var percentages = [0, 10, 25, 40, 50, 60, 75, 90, 100];
 
 var attention_check_positions = [
 	{"top": "220px", "left": "310px"},
-	{"top": "220px", "left": "60px"},
+	{"top": "100px", "left": "60px"},
 	{"top": "160px", "left": "200px"},
-	{"top": "300px", "left": "275px"},
-	{"top": "375px", "left": "100px"},
+	{"top": "150px", "left": "275px"},
+	{"top": "355px", "left": "100px"},
+	{"top": "270px", "left": "40px"},
 	{"top": "325px", "left": "275px"},
+	{"top": "325px", "left": "225px"},
 	{"top": "400px", "left": "275px"}
 ];
 
