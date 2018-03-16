@@ -1,0 +1,452 @@
+---
+title: "Theta posteriors"
+author: "Sebastian Schuster"
+date: "2/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rwebppl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(gridExtra)
+
+
+```
+
+
+```{r load_data} 
+
+load_data_for_plotting = function(fname) {
+
+
+d = read.csv(fname)
+
+d$modal1 = gsub('"', '', d$modal1)
+d$modal2 = gsub('"', '', d$modal2)
+d$pair = gsub('"', '', d$pair)
+d$color = gsub('"', '', d$color)
+
+
+drops <- c("modal1","rating1")
+d2 = d[ , !(names(d) %in% drops)]
+setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+drops <- c("modal2","rating2")
+d3 = d[ , !(names(d) %in% drops)]
+setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+drops <- c("modal2", "rating2", "modal1", "rating1")
+d4 = d[ , !(names(d) %in% drops)]
+d4$rating = d4$rating_other
+d4$modal = "other"
+
+d = rbind(d2, d3, d4)
+
+d$modal = factor(d$modal)
+
+d$percentage_blue_f = factor(d$percentage_blue)
+
+
+d_blue = d %>% filter(., grepl("blue", sentence2))
+d_orange = d %>% filter(., grepl("orange", sentence2))
+
+#ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+# geom_smooth(aes(col=modal))
+
+#ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
+
+d_orange_reverse = d_orange
+d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+d_comparison = rbind(d_blue, d_orange_reverse)
+d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+return(d_comparison)
+
+}
+  
+load_data = function(fname) {
+    d = read.csv(fname)
+  
+  d$modal1 = gsub('"', '', d$modal1)
+  d$modal2 = gsub('"', '', d$modal2)
+  d$pair = gsub('"', '', d$pair)
+  d$color = gsub('"', '', d$color)
+
+  
+  d_blue = d %>% filter(., grepl("blue", sentence2))
+  d_orange = d %>% filter(., grepl("orange", sentence2))
+  
+  #ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+  # geom_smooth(aes(col=modal))
+  
+  #ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +    geom_smooth(aes(col=modal))
+  
+  d_orange_reverse = d_orange
+  d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+  
+  d_comparison = rbind(d_blue, d_orange_reverse)
+  d_comparison$blue= grepl("blue", d_comparison$sentence2)
+  
+  return(d_comparison)
+}
+
+make_plots = function(d) {
+  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage")
+
+p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage")
+
+
+return(list("p1" = p1, "p2" = p2))
+}
+
+
+```
+
+
+```{r fig1, fig.width=10}
+
+d = load_data("../../experiments/0_pre_test/data/0_pre_test-cond5_2-trials.csv")
+
+d2 = load_data_for_plotting("../../experiments/0_pre_test/data/0_pre_test-cond5_2-trials.csv")
+
+
+
+ps = make_plots(d2)
+
+grid.arrange(ps$p1, ps$p2, ncol=2)
+
+
+```
+
+
+
+```{r model}
+
+webppl_model = '
+
+var modal1 = data.modal1[0];
+var modal2 = data.modal2[0];
+
+
+
+var limitedDiscreteUniform = cache(function(a,b) {
+return Infer({method: "enumerate"}, function(){
+  var bins = _.range(a, b + 1 , 5);
+  //var actualBins =  _.range(a, b + 1 , 5);
+  //var actualBinCounts = actualBins.length;
+  //var fakeBinCounts = bins.length - actualBinCounts;
+  //var remainingProb = a > 0 ? 0.02 * fakeBinCounts : 0;
+  var probs = map(function(x){
+  //  if (x < a) {
+  //    return remainingProb / fakeBinCounts;
+  //  } else {
+  //    return (1-remainingProb) / actualBinCounts;
+    return 1 / bins.length;
+  //  }
+} , bins);
+  return bins[discrete(probs)];
+});
+});
+
+var discreteUniform = limitedDiscreteUniform(0,100);
+
+var discreteBeta = cache(function(params) {
+  return Infer({method: "enumerate"}, function(){
+    var bins = _.range(0, 1.01, .05);
+    var probs = map(function(b){ Math.exp(Beta(params).score(b)) } , bins);
+    var ret = bins[discrete(probs)];
+    return ret;
+  }
+)});
+
+var thetaParamDist = Infer({method: "enumerate"}, function(){
+  var bins = _.range(0.1, 30.1 , 0.5);
+  var probs = map(function(x){
+      return 1 / bins.length;
+    } , bins);
+    var ret = bins[discrete(probs)];
+  return ret;
+});
+
+
+var thetaParamPrior = function() {
+return sample(Uniform({a:0, b:30}));  
+//return sample(thetaParamDist);
+}
+
+var costPrior = function() {
+  return sample(Uniform({a:0, b:5})); 
+}
+
+var ratPrior = function() {
+    return sample(Uniform({a:0.1, b:3})); 
+}
+
+
+var thetaPrior = function() {
+    return sample(discreteUniform)
+}
+
+
+var probPrior = function() {
+    return sample(discreteUniform)
+}
+
+  var utterances = (function() {
+   if (modal1 == "bare" || modal2 == "bare") {
+       return ["bare not", modal1, modal2, "other"];
+    } else {
+     return ["bare not", modal1, modal2, "bare", "other"];
+   }
+})();
+
+
+
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+var literalListener = function(utterance, thetas) {
+  if (flip(0.05)) {
+    return discreteUniform; //to account for noise
+  } else if (utterance == "bare not") {
+    return limitedDiscreteUniform(0, 100-thetas["bare"]);
+  } else if (utterance == "other") {
+        return discreteUniform;
+  } else if (utterance == modal1) {
+    return limitedDiscreteUniform(thetas["modal1"], 100);
+  } else if (utterance == modal2) {
+    return limitedDiscreteUniform(thetas["modal2"], 100);
+  } else {
+    return limitedDiscreteUniform(thetas[utterance], 100);
+  }
+};
+
+
+var thetas_tmp = {might: 50, bare: 90};
+var pragmaticSpeaker =  cache(function(prob, alphas, betas, costs, rat_alpha) {
+  var theta_modal1_dist = discreteBeta({a: alphas["modal1"], b: betas["modal1"]});
+  var theta_modal2_dist = discreteBeta({a: alphas["modal2"], b: betas["modal2"]});
+  var theta_bare_dist = modal1 != "bare" && modal2 != "bare" ? discreteBeta({a: data.alpha_bare[0], b: data.beta_bare[0]}): null;
+  return Infer({model: function() {
+    var utt = utterancePrior();
+    var cost = costs[utt];
+      var theta_modal1 = (utt == modal1 || (utt == "bare not" && modal1 == "bare")) ? Math.round(sample(theta_modal1_dist) * 100) : 0;
+      var theta_modal2 = (utt == modal2 || (utt == "bare not" && modal2 == "bare")) ? Math.round(sample(theta_modal2_dist) * 100) : 0;
+      var theta_bare =  modal1 == "bare" ? theta_modal1 : (modal2 == "bare" ? theta_modal2 : ((utt == "bare" || utt == "bare not") ? Math.round(sample(theta_bare_dist) * 100) : 0 )); 
+      var thetas = {
+        modal1: theta_modal1,
+        modal2: theta_modal2,
+        bare: theta_bare
+      }
+    factor(rat_alpha * (literalListener(utt, thetas).score(prob) - cost) ); 
+    return (utt == modal1 || utt == modal2) ? utt : "other";
+  }, method:"enumerate"});
+});
+
+var model = function() {
+return thetaParamPosterior();
+}
+
+var thetaParamPosterior = function() {
+  var alphas = {
+    modal1: thetaParamPrior(),
+    modal2: thetaParamPrior()
+  };
+
+  
+  var betas = {
+    modal1: thetaParamPrior(),
+    modal2: thetaParamPrior()
+  };
+
+  var costs = {
+    "bare": modal1 != "bare" && modal2 != "bare" ? costPrior() : 0,
+    "might": modal1 != "might" && modal2 != "might" ? costPrior() : 0,
+    "probably": modal1 != "probably" && modal2 != "probably" ? costPrior() : 0,
+    "bare not": costPrior(),
+    "other": costPrior(),
+  };
+
+  var rat_alpha = ratPrior();
+
+  map(function(d) {
+    var p = d.percentage_blue;
+    var utt = d.modal;
+    observe( pragmaticSpeaker(p, alphas, betas, costs, rat_alpha), 
+      utt);  
+  }, data.obs);
+  return {alpha_modal1: alphas["modal1"], alpha_modal2: alphas["modal2"], 
+          beta_modal1: betas["modal1"], beta_modal2: betas["modal2"],
+          cost_bare: costs["bare"], cost_might: costs["might"],
+          cost_probably: costs["probably"], cost_bare_not: costs["bare not"],
+          cost_other: costs["other"], rat_alpha: rat_alpha};
+}
+
+'
+
+
+
+
+
+```
+
+
+```{r call}
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think", "probably not", "bare not")
+
+
+
+estimate_model = function(d) {
+  
+  drops <- c("sentence1", "sentence2")
+
+  d_obs = d[ , !(names(d) %in% drops)]
+
+  d_obs =  do.call("rbind", replicate(10, d_obs, simplify = FALSE))
+
+  print(nrow(d_obs))
+  
+  d_obs = d_obs %>%
+    rowwise() %>%
+    mutate(rating1 = max(0, rating1), rating2 = max(0, rating2), rating_other = max(0, rating_other))
+  d_obs = d_obs %>%
+    rowwise() %>%
+    mutate(modal = sample(c(modal1, modal2, "other" ), prob = c(rating1, rating2, rating_other), size=1) )  
+
+ # d_obs = d_obs %>% filter(., percentage_blue > 0)
+  
+  print(head(d_obs))
+  
+  data_from_R = list(obs = d_obs, modal1=d_obs$modal1[1], modal2=d_obs$modal2[1], alpha_bare=7.58, beta_bare=0.0329)
+    maxIter = 10000
+
+  post <- webppl(program_code = webppl_model, model_var = "model",
+    inference_opts = list(method = "MCMC", burn=500, samples=maxIter, verbose=TRUE),
+    data_var = "data", data = data_from_R)
+  
+  str(post)
+  
+  print(post)
+  print(post %>% filter(., Iteration == maxIter))
+  print(post %>% group_by (., Parameter) %>% summarise(., val = mean(value)))
+
+  #  print(max(post$prob))
+
+  #  print(sum(post$prob))
+  
+    
+ # theta_might_alpha_dist = post %>% 
+ #   group_by(., alpha_modal1) %>% 
+ #   summarise(., marginal = sum(prob))
+
+# #theta_might_beta_dist = post %>% 
+#   group_by(., beta_modal1) %>% 
+#   summarise(., marginal = sum(prob))
+
+# print("might alpha")
+# print(theta_might_alpha_dist)
+# 
+# print("might beta")
+# print(theta_might_beta_dist)
+# 
+# theta_bare_alpha_dist = post %>% 
+#   group_by(., alpha_modal2) %>% 
+#   summarise(., marginal = sum(prob))
+
+# 
+# theta_bare_beta_dist = post %>% 
+#   group_by(., beta_modal2) %>% 
+#   summarise(., marginal = sum(prob))
+# 
+# print("bare alpha")
+# print(theta_bare_alpha_dist)
+
+# print("bare beta")
+# print(theta_bare_beta_dist)
+
+ # colnames(df) <- seq(0,1, 0.001)
+ # df$modal = modals
+ # 
+ # d = df %>% gather(., prob, score,-modal)
+ # d[!(d$modal %in% current_modals),]$modal = "other"
+ # 
+ # lvls = current_modals
+ # lvls[3] = "other"
+ # 
+ # d$modal = factor(d$modal, levels = lvls, ordered = TRUE)
+ # 
+ # d$prob = as.double(d$prob)
+ # 
+ # d = d %>% group_by(., prob, modal) %>% summarise(., score=sum(score))
+ # 
+ # p = ggplot(d, aes(x=prob, y=score, color=modal)) + geom_smooth(method="loess")
+ # 
+ # return(p)
+}
+
+
+
+
+
+```
+
+
+```{r}
+
+  estimate_model(d)
+
+
+
+```
+
+
+
+## Modeling assumptions
+
+* the model:
+
+$L(\phi | utt, \theta) \propto 1[\phi > \theta_utt]$ (with special cases for "bare not" and "other")
+
+$S(utt | \phi) = \integral_0^1 P(\theta) exp(\alpha * (log L(\phi | utt, \theta) - C(utt))$$
+
+
+
+ * The threshold theta for each of the modals is sampled from a Beta distribution with two parameters, which are estimated from the data
+ * alpha = 2
+ * possible utterances: "bare not", modal1, modal2, "bare", other
+ * everything that is not modal1, modal2 is counted as "other" for inferring from the data
+ * "bare not" is the inverse of "bare", i.e., [[bare not p]] = 1 if P(p) < theta_bare
+ * "other" is uniformly distributed
+ * "other" utterances have a cost of 1
+ * The speaker marginalizes over the distributions of theta
+ * (Could also be the listener?)
+ * We assume uniform priors over probability of getting a blue one
+ * We introduce error by having the listener sample from a uniform distribution over certainties with probability 0.05 (TODO: perhaps tweak?)
+ * from each speaker "distribution"" from the data, we sample 10 points to estimate parameters
+ 
+ * for the versions without ratings for bare utterances, we specify alpha and beta for theta_bare
+ 
+ * Next steps:
+   * verify if this actually works for all modals
+   * tweak all parameters
+   * model adaptation as a change in the prior of thetas
+   * verify model predictions by computing R^2
+   * 
+
+ * What to do about Cleo's comment?
+ 
+ * figure out whether gender effect is significant ==> yes, for probably-biased condition; no for might-biased condition
+ 
+ * also run study 
+ 
+

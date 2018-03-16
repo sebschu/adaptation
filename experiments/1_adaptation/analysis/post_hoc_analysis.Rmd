@@ -1,0 +1,587 @@
+---
+title: "Post-hoc analyses of adaptation experiment"
+author: "Sebastian Schuster"
+date: "2/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(root.dir = "/Users/sebschu/Dropbox/Uni/RA/adaptation/adaptation/experiments/1_adaptation/analysis/")
+```
+
+```{r packages, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(data.table)
+library(gridExtra)
+library(DescTools)
+library(splines)
+source("helpers.R")
+```
+
+```{r data, echo=FALSE}
+# Load data
+
+# Might-biased condition
+trials.might = read.csv("../data/1_adaptation-might-trials.csv")
+exp_trials.might = read.csv("../data/1_adaptation-might-exp_trials.csv")
+
+
+# Probably-biased condition
+trials.probably = read.csv("../data/1_adaptation-probably-trials.csv")
+exp_trials.probably = read.csv("../data/1_adaptation-probably-exp_trials.csv")
+
+```
+
+## Analysis 1: No exclusions based on catch-trial performance
+
+### Catch trial performance
+
+```{r catch_trials, echo=FALSE}
+
+get_correct_catch_trial_counts = function (data) {
+  ret = data %>% 
+  filter(., catch_trial == 1) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_trial_answer_correct))
+  
+  return(ret)
+}
+
+EXCLUDE_BELOW = 0
+
+catch_trial_perf.trials.might = get_correct_catch_trial_counts(trials.might)
+catch_trial_perf.exp_trials.might = get_correct_catch_trial_counts(exp_trials.might)
+catch_trial_perf.all.might = rbind(catch_trial_perf.trials.might, catch_trial_perf.exp_trials.might) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_perf))
+
+
+
+
+catch_trial_perf.exp_trials.probably = get_correct_catch_trial_counts(exp_trials.probably)
+catch_trial_perf.trials.probably = get_correct_catch_trial_counts(trials.probably)
+catch_trial_perf.all.probably = rbind(catch_trial_perf.trials.probably, catch_trial_perf.exp_trials.probably) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_perf))
+
+
+exclude.might = catch_trial_perf.all.might %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+exclude.probably = catch_trial_perf.all.probably %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+print(paste("Excluded", length(exclude.might), "participants in might-biased condition."))
+print(paste("Excluded", length(exclude.probably), "participants in probably-biased condition."))
+
+
+#final data
+d.might = trials.might %>% filter(., !(workerid %in% exclude.might))
+d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))
+
+```
+
+```{r perf_plot_1, fig.height=2,fig.width=10, echo=FALSE}
+
+cutoff <- data.frame(yintercept=EXCLUDE_BELOW-0.5, cutoff=factor(EXCLUDE_BELOW-0.5))
+
+
+ggplot(catch_trial_perf.all.probably, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in probably-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+
+```
+
+
+```{r perf_plot_2, fig.height=2,fig.width=10, echo=FALSE}
+
+ggplot(catch_trial_perf.all.might, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in might-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+
+
+
+```
+
+
+### Aggregated results
+
+
+```{r aggregate_plots, echo=FALSE, fig.width=10, fig.height=8}
+
+plot_condition = function(d, plot_title) {
+  drops <- c("modal1","rating1")
+  d2 = d[ , !(names(d) %in% drops)]
+  setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+  drops <- c("modal2","rating2")
+  d3 = d[ , !(names(d) %in% drops)]
+  setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+  drops <- c("modal2", "rating2", "modal1", "rating1")
+  d4 = d[ , !(names(d) %in% drops)]
+  d4$rating = d4$rating_other
+  d4$modal = "other"
+
+  d = rbind(d2, d3, d4)
+
+  d$modal = factor(d$modal)
+  d$percentage_blue_f = factor(d$percentage_blue)
+  d_blue = d %>% filter(., grepl("blue", sentence2))
+  d_orange = d %>% filter(., grepl("orange", sentence2))
+
+  d_orange_reverse = d_orange
+  d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+  d_comparison = rbind(d_blue, d_orange_reverse)
+  d_comparison$blue= grepl("blue", d_comparison$sentence2)
+  d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+  p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +       geom_smooth(aes(col=modal,linetype=blue), method="loess") + ggtitle(plot_title) + xlab("percentage")
+
+  p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(plot_title) + xlab("percentage")
+  
+  return(list("p1" = p1, "p2" = p2))
+
+}
+
+
+
+  ps1 = plot_condition(d.might, "might-biased")
+
+  ps2 = plot_condition(d.probably, "probably-biased")
+
+  
+  grid.arrange(ps1$p1, ps1$p2, ps2$p1, ps2$p2, ncol=2, nrow=2)
+
+```
+
+### AUC computation
+
+#### Method 1
+
+Here, we fit a linear model with natural cubic splines with 4 degrees of freedom to the might curve and the probably curve. We then, use this model to predict ratings in the interval $x=[0,100]$ with step size 0.1. Using these points, we use the `AUC` function with the `trapezoid` method to compute the AUC. This is very similar to what is done in Yildirim et al. (2015) except that we are using 4 df instead of 2, as this seems to lead to a better model fit (and given that we have 9 observations/participant, this is still not going to overfit).
+
+```{r auc_method_1, echo=FALSE}
+
+auc_method1 = function(d) {
+      #estimate linear model
+    model = lm(formula = rating_m ~ ns(percentage_blue, df = 4), data = d)
+  
+    pred = data.frame(0:1000)
+    pred$percentage_blue = (0:1000)/10
+    pred$rating = predict(model, pred)
+
+    auc = AUC(x = pred$percentage_blue, y=pred$rating)
+    return(auc)
+}
+
+auc_method2 = function(d) {
+  auc = AUC(x=d$percentage_blue, y=d$rating_m, method="spline")
+  return(auc)
+}
+
+
+auc_for_participants = function(d, method) {
+  
+  d[d$color=='"orange"',]$percentage_blue = 100 - d[d$color=='"orange"',]$percentage_blue 
+  
+  aucs = data.frame(list("workerid" = unique(d$workerid)))
+  aucs$auc_might = 0
+  aucs$auc_probably = 0
+  
+  
+  i = 1
+  
+  for (wid in unique(d$workerid)) {
+    d.might_ratings = d %>% 
+      filter (., workerid == wid) %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating1))
+    
+    aucs$auc_might[i] = method(d.might_ratings)
+
+    d.probably_ratings = d %>% 
+      filter (., workerid == wid) %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating2))
+    
+    aucs$auc_probably[i] = method(d.probably_ratings)
+
+    i = i + 1
+  }
+  
+  aucs$auc_diff = aucs$auc_might - aucs$auc_probably
+  
+  return(aucs)
+}
+
+#AUCs for might-biased condition
+aucs.might = auc_for_participants(d.might, method=auc_method1)
+
+#AUCs for probably-biased condition
+aucs.probably = auc_for_participants(d.probably, method=auc_method1)
+
+
+
+```
+
+
+```{r auc_method1_plots, fig.width=4, fig.height=4, echo=FALSE}
+
+aucs.might$cond = "might-biased"
+
+aucs.probably$cond = "probably-biased"
+
+
+aucs.all = rbind(aucs.might, aucs.probably)
+aucs.all = aucs.all %>% 
+  group_by(., cond) %>% 
+  summarise(., auc_diff_m = mean(auc_diff), 
+               ci_high = ci.high(auc_diff), 
+               ci_low = ci.low(auc_diff))
+
+
+
+
+ggplot(aucs.all, aes(x=0, y=auc_diff_m, color=cond)) +
+    geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+    geom_point() +
+    xlab("") +
+    ylab("AUC difference (might ratings - probably ratings)") +
+    theme(axis.ticks=element_blank(), axis.text.x=element_blank(),
+          panel.grid.minor=element_blank(), 
+          plot.background=element_blank()) +
+    xlim(-.2, .2) 
+
+```
+
+t-test:
+
+```{r t_test_method1, echo=FALSE}
+
+print(t.test(aucs.might$auc_diff, aucs.probably$auc_diff, var.equal=TRUE))
+
+```
+
+
+#### Method 2
+
+Here we simply use the `AUC` function with the `splines` method to directly compute the AUC.
+
+```{r auc_method_2, echo=FALSE }
+
+#AUCs for might-biased condition
+aucs.might = auc_for_participants(d.might, method=auc_method2)
+
+#AUCs for probably-biased condition
+aucs.probably = auc_for_participants(d.probably, method=auc_method2)
+```
+
+```{r auc_method2_plots, fig.width=4, fig.height=4, echo=FALSE}
+
+aucs.might$cond = "might-biased"
+
+aucs.probably$cond = "probably-biased"
+
+
+aucs.all = rbind(aucs.might, aucs.probably)
+aucs.all = aucs.all %>% 
+  group_by(., cond) %>% 
+  summarise(., auc_diff_m = mean(auc_diff), 
+               ci_high = ci.high(auc_diff), 
+               ci_low = ci.low(auc_diff))
+
+
+
+
+ggplot(aucs.all, aes(x=0, y=auc_diff_m, color=cond)) +
+    geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+    geom_point() +
+    xlab("") +
+    ylab("AUC difference (might ratings - probably ratings)") +
+    theme(axis.ticks=element_blank(), axis.text.x=element_blank(),
+          panel.grid.minor=element_blank(), 
+          plot.background=element_blank()) +
+    xlim(-.2, .2) 
+
+
+```
+
+t-test:
+
+```{r t_test_method2, echo=FALSE}
+
+print(t.test(aucs.might$auc_diff, aucs.probably$auc_diff, var.equal=TRUE))
+
+```
+
+
+## Analysis 2: Speaker gender differences?
+
+### Catch trial performance
+
+```{r catch_trials_2, echo=FALSE}
+
+get_correct_catch_trial_counts = function (data) {
+  ret = data %>% 
+  filter(., catch_trial == 1) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_trial_answer_correct))
+  
+  return(ret)
+}
+
+EXCLUDE_BELOW = 12
+
+catch_trial_perf.trials.might = get_correct_catch_trial_counts(trials.might)
+catch_trial_perf.exp_trials.might = get_correct_catch_trial_counts(exp_trials.might)
+catch_trial_perf.all.might = rbind(catch_trial_perf.trials.might, catch_trial_perf.exp_trials.might) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_perf))
+
+
+
+
+catch_trial_perf.exp_trials.probably = get_correct_catch_trial_counts(exp_trials.probably)
+catch_trial_perf.trials.probably = get_correct_catch_trial_counts(trials.probably)
+catch_trial_perf.all.probably = rbind(catch_trial_perf.trials.probably, catch_trial_perf.exp_trials.probably) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_perf))
+
+
+exclude.might = catch_trial_perf.all.might %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+exclude.probably = catch_trial_perf.all.probably %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+print(paste("Excluded", length(exclude.might), "participants in might-biased condition."))
+print(paste("Excluded", length(exclude.probably), "participants in probably-biased condition."))
+
+
+#final data
+d.might = trials.might %>% filter(., !(workerid %in% exclude.might))
+d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))
+
+```
+
+```{r perf_plot_1_2, fig.height=2,fig.width=10, echo=FALSE}
+
+cutoff <- data.frame(yintercept=EXCLUDE_BELOW-0.5, cutoff=factor(EXCLUDE_BELOW-0.5))
+
+
+ggplot(catch_trial_perf.all.probably, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in probably-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+
+```
+
+
+```{r perf_plot_2_2, fig.height=2,fig.width=10, echo=FALSE}
+
+ggplot(catch_trial_perf.all.might, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in might-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+
+
+
+```
+
+
+### Aggregated results
+
+
+```{r aggregate_plots_2, echo=FALSE, fig.width=10, fig.height=8}
+
+plot_condition = function(d, plot_title) {
+  drops <- c("modal1","rating1")
+  d2 = d[ , !(names(d) %in% drops)]
+  setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+  drops <- c("modal2","rating2")
+  d3 = d[ , !(names(d) %in% drops)]
+  setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+  drops <- c("modal2", "rating2", "modal1", "rating1")
+  d4 = d[ , !(names(d) %in% drops)]
+  d4$rating = d4$rating_other
+  d4$modal = "other"
+
+  d = rbind(d2, d3, d4)
+
+  d$modal = factor(d$modal)
+  d$percentage_blue_f = factor(d$percentage_blue)
+  d_blue = d %>% filter(., grepl("blue", sentence2))
+  d_orange = d %>% filter(., grepl("orange", sentence2))
+
+  d_orange_reverse = d_orange
+  d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+  d_comparison = rbind(d_blue, d_orange_reverse)
+  d_comparison$blue= grepl("blue", d_comparison$sentence2)
+  d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+  p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +       geom_smooth(aes(col=modal,linetype=speaker_cond), method="loess") + ggtitle(plot_title) + xlab("percentage")
+
+  p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(plot_title) + xlab("percentage")
+  
+  return(list("p1" = p1, "p2" = p2))
+
+}
+
+
+
+  ps1 = plot_condition(d.might, "might-biased")
+
+  ps2 = plot_condition(d.probably, "probably-biased")
+
+  
+  grid.arrange(ps1$p1, ps1$p2, ps2$p1, ps2$p2, ncol=2, nrow=2)
+
+```
+
+### AUC computation
+
+
+```{r auc_method_1_2, echo=FALSE}
+
+auc_method1 = function(d) {
+      #estimate linear model
+    model = lm(formula = rating_m ~ ns(percentage_blue, df = 4), data = d)
+  
+    pred = data.frame(0:1000)
+    pred$percentage_blue = (0:1000)/10
+    pred$rating = predict(model, pred)
+
+    auc = AUC(x = pred$percentage_blue, y=pred$rating)
+    return(auc)
+}
+
+auc_method2 = function(d) {
+  auc = AUC(x=d$percentage_blue, y=d$rating_m, method="spline")
+  return(auc)
+}
+
+
+auc_for_participants = function(d, method) {
+  
+  d[d$color=='"orange"',]$percentage_blue = 100 - d[d$color=='"orange"',]$percentage_blue 
+  
+  aucs = data.frame(list("workerid" = unique(d$workerid)))
+  aucs$auc_might = 0
+  aucs$auc_probably = 0
+  
+  
+  i = 1
+  
+  for (wid in unique(d$workerid)) {
+    d.might_ratings = d %>% 
+      filter (., workerid == wid) %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating1))
+    
+    aucs$auc_might[i] = method(d.might_ratings)
+
+    d.probably_ratings = d %>% 
+      filter (., workerid == wid) %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating2))
+    
+    aucs$auc_probably[i] = method(d.probably_ratings)
+
+    i = i + 1
+  }
+  
+  aucs$auc_diff = aucs$auc_might - aucs$auc_probably
+  
+  return(aucs)
+}
+
+
+
+```
+
+
+#### Method 2
+
+Here we simply use the `AUC` function with the `splines` method to directly compute the AUC.
+
+```{r auc_method_2_2, echo=FALSE }
+
+#AUCs for might-biased condition
+aucs.might_f = auc_for_participants(d.might %>% filter(., speaker_cond == "f"), method=auc_method2)
+
+aucs.might_m = auc_for_participants(d.might %>% filter(., speaker_cond == "m"), method=auc_method2)
+
+
+#AUCs for probably-biased condition
+aucs.probably_f = auc_for_participants(d.probably %>% filter(., speaker_cond == "f"), method=auc_method2)
+
+aucs.probably_m = auc_for_participants(d.probably %>% filter(., speaker_cond == "m"), method=auc_method2)
+
+```
+
+```{r auc_method2_plots_2, fig.width=4, fig.height=4, echo=FALSE}
+
+aucs.might_f$cond = "might-biased"
+aucs.might_m$cond = "might-biased"
+
+aucs.probably_f$cond = "probably-biased"
+aucs.probably_m$cond = "probably-biased"
+
+aucs.might_f$speaker = "f"
+aucs.probably_f$speaker = "f"
+
+aucs.might_m$speaker = "m"
+aucs.probably_m$speaker = "m"
+
+
+aucs.all = rbind(aucs.might_f, aucs.probably_f, aucs.might_m, aucs.probably_m)
+aucs.all = aucs.all %>% 
+  group_by(., cond, speaker) %>% 
+  summarise(., auc_diff_m = mean(auc_diff), 
+               ci_high = ci.high(auc_diff), 
+               ci_low = ci.low(auc_diff))
+
+
+
+
+ggplot(aucs.all, aes(x=speaker, y=auc_diff_m, color=cond)) +
+    geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+    geom_point() +
+    xlab("") +
+    ylab("AUC difference (might ratings - probably ratings)") +
+    theme(
+          panel.grid.minor=element_blank(), 
+          plot.background=element_blank())
+
+```
+
+Linear model:
+
+Difference between male and female speaker? Interactions?
+
+```{r lm_gender_might, echo=FALSE} 
+
+aucs.all = rbind(aucs.might_f, aucs.probably_f, aucs.might_m, aucs.probably_m)
+
+summary(lm(auc_diff ~ speaker * cond, data=aucs.all))
+
+```
+
+Differences between male and female speaker in use of "other" for maximally certain?
+
+```{r lm_gender_other, echo=FALSE} 
+
+
+summary(lm(rating_other ~ speaker_cond, data=d.might %>% filter(., percentage_blue > 99)))
+
+summary(lm(rating_other ~ speaker_cond, data=d.probably %>% filter(., percentage_blue > 99)))
+
+
+```
+

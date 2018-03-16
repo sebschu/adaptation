@@ -1,0 +1,252 @@
+---
+title: "Epistemic modals à la Lassiter (?)"
+author: "Sebastian Schuster"
+date: "2/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rwebppl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(gridExtra)
+
+```
+
+
+```{r functs}
+
+load_data_for_plotting = function(condition) {
+
+  fname = paste("../../experiments/0_pre_test/data/0_pre_test-cond", condition, "-trials.csv", sep="")
+d = read.csv(fname)
+
+d$modal1 = gsub('"', '', d$modal1)
+d$modal2 = gsub('"', '', d$modal2)
+d$pair = gsub('"', '', d$pair)
+d$color = gsub('"', '', d$color)
+
+
+drops <- c("modal1","rating1")
+d2 = d[ , !(names(d) %in% drops)]
+setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+drops <- c("modal2","rating2")
+d3 = d[ , !(names(d) %in% drops)]
+setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+drops <- c("modal2", "rating2", "modal1", "rating1")
+d4 = d[ , !(names(d) %in% drops)]
+d4$rating = d4$rating_other
+d4$modal = "other"
+
+d = rbind(d2, d3, d4)
+
+d$modal = factor(d$modal)
+
+d$percentage_blue_f = factor(d$percentage_blue)
+
+
+d_blue = d %>% filter(., grepl("blue", sentence2))
+d_orange = d %>% filter(., grepl("orange", sentence2))
+
+#ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+# geom_smooth(aes(col=modal))
+
+#ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
+
+d_orange_reverse = d_orange
+d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+d_comparison = rbind(d_blue, d_orange_reverse)
+d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+return(d_comparison)
+
+}
+
+make_plots = function(d) {
+  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage")
+
+p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage")
+
+
+return(list("p1" = p1, "p2" = p2))
+
+}
+
+```
+
+
+```{r model}
+
+webppl_model = 'var probPrior = function() {
+  var priorDist = RandomInteger({n:1001})
+  //var priorDist = Beta({a:1, b: 1})
+  var x = sample(priorDist)
+  //return x;
+  
+  return x / 1000
+}
+
+var utterances = ["bare", "might", "probably", "could", "looks_like", "think", "probably not", "bare not"];
+
+var utterancePrior = function() {
+    return uniformDraw(utterances);
+}
+
+
+var THETAS = {
+  "bare": 0.90,
+  "probably": 0.55,
+  "looks_like": 0.8,
+  "could": 0.1,
+  "think": 0.85,
+  "might": 0.25,
+}
+
+
+
+var costs = {
+  "bare": data["costs"][0],
+  "might":data["costs"][1],
+  "probably":data["costs"][2],
+  "could": data["costs"][3],
+  "looks_like": data["costs"][4],
+  "think": data["costs"][5],
+  "bare not": data["costs"][6],
+  "probably not": data["costs"][7]
+}
+
+
+
+var interpretation = function(modal, prob) {
+  if (modal == "bare not") return prob <= 1 - THETAS["bare"];
+  if (modal == "probably not") return prob <= 1 - THETAS["probably"]
+  
+  return prob >= THETAS[modal];
+  
+}
+
+var literalListener = cache(function(utterance) {
+  return Infer({model: function() {
+    
+    var prob = Math.round(probPrior() * 1000) / 1000;
+   
+
+    
+    condition(interpretation(utterance, prob) == true)
+    return prob
+//  }, method: "MCMC", samples: 25000});
+      }});
+   });
+
+var alpha = 1;
+
+var speaker = cache(function(prob) {
+    return Infer({model: function() {
+      var utt = utterancePrior();
+    factor(alpha * (literalListener(utt).score(prob) - costs[utt]))
+    return utt
+ // }, method: "MCMC", samples: 10000});
+        }});
+
+    });
+
+
+
+
+
+var xs = _.range(0,1001)
+
+var xs_p = map(function(x) { return x / 1000 }, xs);
+
+var model = function(){ return {ys: map(function(u) {
+  var ys = map(function(x) { var res = speaker(x);
+  return Math.exp(res.score(u))
+    }, xs_p)
+    return ys;
+
+
+}, utterances), utts: utterances.join(",")};
+
+}
+
+'
+
+
+
+
+
+```
+
+
+```{r call}
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think", "probably not", "bare not")
+
+
+
+run_model = function(current_modals) {
+  
+  OTHER_COST = 20
+  
+  costs = as.double(!(modals %in% current_modals)) * OTHER_COST
+  
+  data_from_R = list(costs = costs)
+  
+  post <- webppl(program_code = webppl_model, model_var = "model",
+    inference_opts = list(method = "rejection", samples = 1),
+    data_var = "data", data = data_from_R)
+  
+  
+  df = data.frame(post$value[1])
+  
+  colnames(df) <- seq(0,1, 0.001)
+  df$modal = modals
+  
+  d = df %>% gather(., prob, score,-modal)
+  d[!(d$modal %in% current_modals),]$modal = "other"
+  
+  lvls = current_modals
+  lvls[3] = "other"
+  
+  d$modal = factor(d$modal, levels = lvls, ordered = TRUE)
+  
+  d$prob = as.double(d$prob)
+  
+  d = d %>% group_by(., prob, modal) %>% summarise(., score=sum(score))
+  
+  p = ggplot(d, aes(x=prob, y=score, color=modal)) + geom_smooth(method="loess")
+  
+  return(p)
+}
+
+
+
+
+
+```
+
+
+```{r plotcomps, fig.width=10}
+
+combinations = combn(modals[1:6], 2)
+
+for (i in seq(ncol(combinations))) {
+  p1 = run_model(combinations[, i])
+  p_data = load_data_for_plotting(i-1)
+  ps = make_plots(p_data)
+  grid.arrange(p1, ps$p1,  ncol=2)
+  
+  
+}
+
+
+```

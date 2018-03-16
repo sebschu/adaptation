@@ -1,0 +1,409 @@
+---
+title: "Epistemic modals à la Lassiter (?)"
+author: "Sebastian Schuster"
+date: "2/27/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rwebppl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(gridExtra)
+
+
+```
+
+
+```{r load_data} 
+
+load_data_for_plotting = function(fname) {
+
+
+d = read.csv(fname)
+
+d$modal1 = gsub('"', '', d$modal1)
+d$modal2 = gsub('"', '', d$modal2)
+d$pair = gsub('"', '', d$pair)
+d$color = gsub('"', '', d$color)
+
+
+drops <- c("modal1","rating1")
+d2 = d[ , !(names(d) %in% drops)]
+setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+drops <- c("modal2","rating2")
+d3 = d[ , !(names(d) %in% drops)]
+setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+drops <- c("modal2", "rating2", "modal1", "rating1")
+d4 = d[ , !(names(d) %in% drops)]
+d4$rating = d4$rating_other
+d4$modal = "other"
+
+d = rbind(d2, d3, d4)
+
+d$modal = factor(d$modal)
+
+d$percentage_blue_f = factor(d$percentage_blue)
+
+
+d_blue = d %>% filter(., grepl("blue", sentence2))
+d_orange = d %>% filter(., grepl("orange", sentence2))
+
+#ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+# geom_smooth(aes(col=modal))
+
+#ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
+
+d_orange_reverse = d_orange
+d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+d_comparison = rbind(d_blue, d_orange_reverse)
+d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+return(d_comparison)
+
+}
+  
+load_data = function(fname) {
+    d = read.csv(fname)
+  
+  d$modal1 = gsub('"', '', d$modal1)
+  d$modal2 = gsub('"', '', d$modal2)
+  d$pair = gsub('"', '', d$pair)
+  d$color = gsub('"', '', d$color)
+
+  
+  d_blue = d %>% filter(., grepl("blue", sentence2))
+  d_orange = d %>% filter(., grepl("orange", sentence2))
+  
+  #ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+  # geom_smooth(aes(col=modal))
+  
+  #ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +    geom_smooth(aes(col=modal))
+  
+  d_orange_reverse = d_orange
+  d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+  
+  d_comparison = rbind(d_blue, d_orange_reverse)
+  d_comparison$blue= grepl("blue", d_comparison$sentence2)
+  
+  return(d_comparison)
+}
+
+make_plots = function(d) {
+  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage")
+
+p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage")
+
+
+return(list("p1" = p1, "p2" = p2))
+}
+
+
+```
+
+
+```{r fig1, fig.width=10}
+
+d = load_data("../../experiments/0_pre_test/data/0_pre_test-cond0-trials.csv")
+
+d2 = load_data_for_plotting("../../experiments/0_pre_test/data/0_pre_test-cond0-trials.csv")
+
+
+
+ps = make_plots(d2)
+
+grid.arrange(ps$p1, ps$p2, ncol=2)
+
+
+```
+
+
+
+```{r model}
+
+webppl_model = '
+
+var probPrior = function() {
+  var priorDist = RandomInteger({
+      n: 21
+    })
+    //var priorDist = Beta({a:1, b: 1})
+  var x = sample(priorDist)
+    //return x;
+
+  return x / 20
+}
+
+var utterances = ["bare", "might", "probably", "could", "looks_like", "think", "probably not", "bare not"];
+
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+
+var thetaPrior = function(min_val) {
+
+  var mv = min_val === undefined ? 0 : min_val;
+
+  var xs = _.range(mv, 11);
+  var vs = map(function(x) {
+    return x / 10
+  }, xs);
+
+  var ps = map(function(x) {
+    return 1.0
+  }, xs);
+
+  var dist = Categorical({
+    vs: vs,
+    ps: ps
+  });
+
+  return sample(dist);
+}
+
+var costPrior = function() {
+  var xs = _.range(0, 101);
+  var vs = map(function(x) {
+    return x 
+  }, xs);
+  
+  var ps = map(function(x) {
+    return 1.0
+  }, xs);
+  
+  var dist = Categorical({
+    vs: vs,
+    ps: ps
+  });
+  return sample(dist);
+}
+
+
+
+
+
+
+var interpretation = function(modal, prob, thetas) {
+  if (modal == "bare not") return prob <= 1 - thetas["bare"];
+  if (modal == "probably not") return prob <= 1 - thetas["probably"]
+
+  return prob >= thetas[modal];
+
+}
+
+var literalListener = cache(function(utterance, thetas) {
+  return Infer({
+    model: function() {
+
+      var prob = Math.round(probPrior() * 1000) / 1000;
+
+
+
+      condition(interpretation(utterance, prob, thetas) == true)
+      return prob
+//          }, method: "rejection", samples: 10000});
+
+    }
+  });
+});
+
+var alpha = 1;
+
+var speaker = cache(function(prob, costs, thetas) {
+  return Infer({
+    model: function() {
+      var utt = utterancePrior();
+      factor(alpha * (literalListener(utt, thetas).score(prob) - costs[utt]))
+      return utt
+//         }, method: "MCMC", samples: 2000, burn: 1000});
+    }
+  });
+
+});
+
+
+
+
+
+var computeScore = function(d, thetas) {
+
+
+ var modals = d.pair.split("-")
+ var costs = {
+   "bare": modals.indexOf("bare") > -1 ? 0 : thetas.cost,
+   "might": modals.indexOf("might") > -1 ? 0 : thetas.cost,
+   "probably": modals.indexOf("probably") > -1 ? 0 : thetas.cost,
+   "could": modals.indexOf("could") > -1 ? 0 : thetas.cost,
+   "looks_like": modals.indexOf("looks_like") > -1 ? 0 : thetas.cost,
+   "think": modals.indexOf("think") > -1 ? 0 : thetas.cost,
+   "bare not": modals.indexOf("bare not") > -1 ? 0 : thetas.cost,
+   "probably not": modals.indexOf("probably not") > -1 ? 0 : thetas.cost
+ }
+
+var ps = map(function(x) { return x < 0 ?  0 : x}, [d.rating1, d.rating2, d.rating_other]);
+
+
+ var modal = sample(Categorical({
+   vs:[data.modal1, data.modal2, "other"], 
+   ps: ps}));
+ 
+ if (modal == "other") {
+   return sum(map( function(m) {  return modals.indexOf(m) > -1 ? 0 : speaker(d.percentage_blue/100, costs, thetas).score(m) }, utterances) );
+ } else {
+   return speaker(d.percentage_blue/100, costs, thetas).score(modal)
+ }
+}
+//}
+//}
+
+
+
+var model = function() {
+
+  var cost = costPrior();
+
+  var theta_bare = thetaPrior();
+  var theta_probably =  thetaPrior();
+  var could_prior = thetaPrior();
+  var thetas = {
+    "bare": theta_bare,
+    "probably": theta_probably,
+    "looks_like": thetaPrior(),
+    "could": could_prior < (1 - Math.min(theta_bare, theta_probably)) ? could_prior : (1 - Math.min(theta_bare, theta_probably)),
+    "think": thetaPrior(),
+    "might": thetaPrior(),
+    "cost": cost
+  }
+   
+
+  var scr = sum(map(function(d) {
+    return computeScore(d, thetas)
+  }, data.obs));
+  factor(scr);
+  console.log("#####polo######");
+
+  return thetas;
+};
+
+
+'
+
+
+
+
+
+```
+
+
+```{r call}
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think", "probably not", "bare not")
+
+
+
+estimate_model = function(d) {
+  
+  drops <- c("sentence1", "sentence2")
+
+  d_obs = d[ , !(names(d) %in% drops)]
+
+
+  data_from_R = list(obs = d_obs)
+  
+  post <- webppl(program_code = webppl_model, model_var = "model",
+    inference_opts = list(method = "rejection", samples=100000, verbose=TRUE),
+    data_var = "data", data = data_from_R)
+  
+  str(post)
+  
+  #res = post %>% spread(., Parameter, value)
+  
+  #print(res)
+  
+  
+  
+  
+ # colnames(df) <- seq(0,1, 0.001)
+ # df$modal = modals
+ # 
+ # d = df %>% gather(., prob, score,-modal)
+ # d[!(d$modal %in% current_modals),]$modal = "other"
+ # 
+ # lvls = current_modals
+ # lvls[3] = "other"
+ # 
+ # d$modal = factor(d$modal, levels = lvls, ordered = TRUE)
+ # 
+ # d$prob = as.double(d$prob)
+ # 
+ # d = d %>% group_by(., prob, modal) %>% summarise(., score=sum(score))
+ # 
+ # p = ggplot(d, aes(x=prob, y=score, color=modal)) + geom_smooth(method="loess")
+ # 
+ # return(p)
+}
+
+
+
+
+
+```
+
+
+```{r}
+
+
+
+
+#estimate_model(d)
+
+estimate_beta_priors = function(fname) {
+
+d.all = load_data(fname)
+
+m1 = sum(d.all$percentage_blue * d.all$rating1 / (100 * sum(d.all$rating1)) ) 
+m2 = sum(d.all$percentage_blue * d.all$rating2 / (100 * sum(d.all$rating2)) ) 
+
+v1 = sum((m1 - d.all$percentage_blue/100)^2 * d.all$rating1 / (sum(d.all$rating1)) ) 
+v2 = sum((m2 - d.all$percentage_blue/100)^2 * d.all$rating2 / (sum(d.all$rating2)) ) 
+
+
+x = seq(0,1,0.01)
+alpha1 = m1 * (m1 *(1-m1)/v1 -1) 
+alpha2 = m2 * (m2 *(1-m2)/v2 -1)
+
+beta1 = (1- m1) * (m1 *(1-m1)/v1 -1)
+beta2 = (1- m2) * (m2 *(1-m2)/v2 -1)
+
+y1 = dbeta(x, alpha1, beta1)
+y2 = dbeta(x, alpha2, beta2)
+
+plot(x,y1, type="l")
+points(x,y2, type="l")
+
+print(alpha1)
+print(beta1)
+print(alpha2)
+print(beta2)
+
+
+#for (i in 1:14) {
+#  d.tmp = load_data(paste("../../experiments/0_pre_test/data/0_pre_test-cond", i, "-trials.csv", sep =""))
+#  d.all = rbind(d.all, d.tmp)
+#}
+
+#estimate_model(d.all)
+}
+
+
+```

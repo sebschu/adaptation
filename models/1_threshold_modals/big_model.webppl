@@ -1,0 +1,214 @@
+var limitedDiscreteUniform = cache(function(a, b) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(a, b + 1, 5);
+    //var actualBins =  _.range(a, b + 1 , 5);
+    //var actualBinCounts = actualBins.length;
+    //var fakeBinCounts = bins.length - actualBinCounts;
+    //var remainingProb = a > 0 ? 0.02 * fakeBinCounts : 0;
+    var probs = map(function(x) {
+      //  if (x < a) {
+      //    return remainingProb / fakeBinCounts;
+      //  } else {
+      //    return (1-remainingProb) / actualBinCounts;
+      return 1 / bins.length;
+      //  }
+    }, bins);
+    return bins[discrete(probs)];
+  });
+});
+
+var discreteUniform = limitedDiscreteUniform(0, 100);
+
+var discreteBeta = cache(function(params) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(0, 1.01, .05);
+    var probs = map(function(b) {
+      Math.exp(Beta(params).score(b))
+    }, bins);
+    var ret = bins[discrete(probs)];
+    return ret;
+  })
+});
+
+var thetaParamDist = Infer({
+  method: "enumerate"
+}, function() {
+  var bins = _.range(0.1, 30.1, 0.5);
+  var probs = map(function(x) {
+    return 1 / bins.length;
+  }, bins);
+  var ret = bins[discrete(probs)];
+  return ret;
+});
+
+
+var thetaParamPrior = function() {
+  return sample(Uniform({
+    a: 0,
+    b: 30
+  }));
+  //return sample(thetaParamDist);
+}
+
+var costPrior = function() {
+  return sample(Uniform({
+    a: 0,
+    b: 5
+  }));
+}
+
+var ratPrior = function() {
+  return sample(Uniform({
+    a: 0.1,
+    b: 3
+  }));
+}
+
+
+var thetaPrior = function() {
+  return sample(discreteUniform)
+}
+
+
+var probPrior = function() {
+  return sample(discreteUniform)
+}
+
+var utterances = ["bare", "might", "looks_like", "probably", "think", "could", "bare not"]
+
+
+
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+var literalListener = function(utterance, theta) {
+  if (flip(0.05)) {
+    return discreteUniform; //to account for noise
+  } else if (utterance == "bare not") {
+    return limitedDiscreteUniform(0, theta);
+  } else {
+    return limitedDiscreteUniform(theta, 100);
+  }
+};
+
+
+var thetas_tmp = {
+  might: 50,
+  bare: 90
+};
+var pragmaticSpeaker = cache(function(prob, alphas, betas, costs, rat_alpha, modal1, modal2) {
+
+  var theta_dists = {
+    "bare": discreteBeta({
+      a: alphas["bare"],
+      b: betas["bare"]
+    }),
+    "might": discreteBeta({
+      a: alphas["might"],
+      b: betas["might"]
+    }),
+    "looks_like": discreteBeta({
+      a: alphas["looks_like"],
+      b: betas["looks_like"]
+    }),
+    "probably": discreteBeta({
+      a: alphas["probably"],
+      b: betas["probably"]
+    }),
+    "think": discreteBeta({
+      a: alphas["think"],
+      b: betas["think"]
+    }),
+    "could": discreteBeta({
+      a: alphas["could"],
+      b: betas["could"]
+    }),
+  }
+  return Infer({
+    model: function() {
+      var utt = utterancePrior();
+      var cost = (utt == modal1 || utt == modal2) ? 0 : costs[utt];
+      var theta = utt == "bare not" ? 100 - Math.round(sample(theta_dists["bare"]) * 100) : Math.round(sample(theta_dists[utt]) * 100);
+      factor(rat_alpha * (literalListener(utt, theta).score(prob) - cost));
+      return (utt == modal1 || utt == modal2) ? utt : "other";
+    },
+    method: "enumerate"
+  });
+});
+
+var model = function() {
+  return thetaParamPosterior();
+}
+
+var thetaParamPosterior = function() {
+  var alphas = {
+    "bare": thetaParamPrior(),
+    "might": thetaParamPrior(),
+    "looks_like": thetaParamPrior(),
+    "probably": thetaParamPrior(),
+    "think": thetaParamPrior(),
+    "could": thetaParamPrior()
+  };
+
+
+  var betas = {
+    "bare": thetaParamPrior(),
+    "might": thetaParamPrior(),
+    "looks_like": thetaParamPrior(),
+    "probably": thetaParamPrior(),
+    "think": thetaParamPrior(),
+    "could": thetaParamPrior()
+  };
+
+
+
+  var rat_alpha = ratPrior();
+
+  var costs = {
+    "bare": costPrior(),
+    "might": costPrior(),
+    "looks_like": costPrior(),
+    "probably": costPrior(),
+    "think": costPrior(),
+    "could": costPrior(),
+    "bare not": costPrior()
+  };
+
+  map(function(d) {
+
+    var p = d.percentage_blue;
+    var utt = d.modal;
+    observe(pragmaticSpeaker(p, alphas, betas, costs, rat_alpha, d.modal1, d.modal2),
+      utt);
+  }, data.obs);
+  return {
+    alpha_bare: alphas["bare"],
+    alpha_might: alphas["might"],
+    alpha_looks_like: alphas["looks_like"],
+    alpha_probably: alphas["probably"],
+    alpha_think: alphas["think"],
+    alpha_could: alphas["could"],
+    beta_bare: betas["bare"],
+    beta_might: betas["might"],
+    beta_looks_like: betas["looks_like"],
+    beta_probably: betas["probably"],
+    beta_think: betas["think"],
+    beta_could: betas["could"],
+    cost_bare: costs["bare"],
+    cost_might: costs["might"],
+    cost_looks_like: costs["looks_like"],
+    cost_probably: costs["probably"],
+    cost_think: costs["think"],
+    cost_could: costs["could"],
+    cost_bare_not: costs["bare not"],
+    rat_alpha: rat_alpha
+  };
+}
+
+
+Infer(JSON.parse('{"method":"MCMC","burn":500,"samples":2000,"verbose":true}'), model)
