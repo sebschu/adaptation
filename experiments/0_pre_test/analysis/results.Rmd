@@ -63,7 +63,10 @@ d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
 
 
 
-p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal,linetype=blue)) + ggtitle(d$pair[1]) + xlab("percentage")
+#p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  stat_smooth(aes(col=modal, fill=modal),  method = 'loess', geom="area", alpha=0.5) + ggtitle(d$pair[1]) + xlab("percentage") 
+
+p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) +  stat_smooth(aes(col=modal, fill=modal),  method = 'loess', geom="area", alpha=0.5) + ggtitle(d$pair[1]) + xlab("percentage") 
+
 
 p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
   geom_boxplot() +
@@ -79,14 +82,14 @@ return(list("p1" = p1, "p2" = p2))
 
 ```{r}
 
-#for (i in 0:14) {
+for (i in 0:14) {
 
-#  ps = plot_condition(i)
-#  plot(ps$p1)
-#  plot(ps$p2)
+  ps = plot_condition(i)
+  plot(ps$p1)
+  plot(ps$p2)
 
 
-#}
+}
 
 ps = plot_condition("5_2")
   plot(ps$p1)

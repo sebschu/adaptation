@@ -17,6 +17,11 @@ library(gridExtra)
 
 ```
 
+Left column: Experimental data.
+
+Middle column: Model predictions with parameters estimated from all conditions.
+
+Right column: Model predictions with parameters estimated from all conditions but the current one.
 
 ```{r load_data, echo=FALSE} 
 
@@ -101,11 +106,11 @@ load_data = function(fname) {
 }
 
 make_plots = function(d) {
-  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage")
+  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none")
 
 p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
   geom_boxplot() +
-  ggtitle(d$pair[1]) + xlab("percentage")
+  ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none")
 
 
 return(list("p1" = p1, "p2" = p2))
@@ -231,39 +236,39 @@ return run();
 }
 
 var run = function() {
-  
   var alphas = {
-    "bare": 10.1,
-    "might": 1.67,
-    "looks_like": 16.8,
-    "probably": 17.0,
-    "think": 14.8,
-    "could": 3.48
+    "bare": data.params[0]["alpha_bare"],
+    "might": data.params[0]["alpha_might"],
+    "looks_like": data.params[0]["alpha_looks_like"],
+    "probably": data.params[0]["alpha_probably"],
+    "think": data.params[0]["alpha_think"],
+    "could": data.params[0]["alpha_could"]
   };
 
   
   var betas = {
-    "bare": 2.67	,
-    "might": 24.2,
-    "looks_like": 9.40,
-    "probably": 13.2,
-    "think": 11.5,
-    "could": 17.4
+    "bare": data.params[0]["beta_bare"],
+    "might":  data.params[0]["beta_might"],
+    "looks_like": data.params[0]["beta_looks_like"],
+    "probably": data.params[0]["beta_probably"],
+    "think": data.params[0]["beta_think"],
+    "could": data.params[0]["beta_could"]
   };
 
  
 
-  var rat_alpha = 1.12	;
+  var rat_alpha = data.params[0]["rat_alpha"];
 
   var costs = {
-       "bare": 3.00,
-       "might": 1.12,
-       "looks_like": 4.65,
-       "probably": 3.97,
-       "think": 2.22,
-       "could": 2.20,
-       "bare not": 0.968
+       "bare":  data.params[0]["cost_bare"],
+       "might": data.params[0]["cost_might"],
+       "looks_like": data.params[0]["cost_looks_like"],
+       "probably": data.params[0]["cost_probably"],
+       "think": data.params[0]["cost_think"],
+       "could": data.params[0]["cost_could"],
+       "bare not": data.params[0]["cost_bare_not"]
     };  
+
 
   var d = {
    modal1: data.modal1[0],
@@ -298,10 +303,11 @@ var run = function() {
   modals = c("bare", "might", "probably", "could", "looks_like", "think")
 
 
+  model_params_all = read.csv(file = "./param-estimation-output/params_all.csv")
 
-  plot_posterior = function(modal1, modal2, exp_data) {
+  plot_posterior = function(modal1, modal2, exp_data, cond) {
 
-       data_from_R = list(modal1=modal1, modal2=modal2)
+       data_from_R = list(modal1=modal1, modal2=modal2, params=model_params_all[1,])
 
       post <- webppl(program_code = webppl_model, model_var = "model",
         inference_opts = list(method = "enumerate", verbose=TRUE), 
@@ -315,18 +321,47 @@ var run = function() {
       
       post$modal = factor(post$modal, levels = c(modal1, modal2, "other"), ordered = TRUE)
       
-      p = ggplot(post, aes(x=percentage_blue, y=rating_pred)) + geom_smooth(method="loess", aes(col=modal)) +
-          ggtitle(paste(modal1, modal2, sep="-")) + xlab("percentage")
+      p = ggplot(post, aes(x=percentage_blue, y=rating_pred)) + geom_line(aes(col=modal)) +
+          ggtitle(paste(modal1, modal2, sep="-")) + xlab("percentage") +  theme(legend.position="none")
+      
+      
+      
+      model_params_no_current_cond = read.csv(file = paste("./param-estimation-output/params_no_cond_",cond , ".csv", sep=""))
+      data_from_R = list(modal1=modal1, modal2=modal2, params=model_params_no_current_cond[1,])
+
+      post2 <- webppl(program_code = webppl_model, model_var = "model",
+        inference_opts = list(method = "enumerate", verbose=TRUE), 
+        data_var = "data", data = data_from_R)
+      
+      
+      post2 = post2[, !(names(post2) %in% c("prob"))]
+      colnames(post2) <- c("percentage_blue", modal1, modal2, "other")
+      
+      post2 = (post2 %>% gather("modal", "rating_pred", -percentage_blue))
+      
+      post2$modal = factor(post2$modal, levels = c(modal1, modal2, "other"), ordered = TRUE)
+      
+      p2 = ggplot(post2, aes(x=percentage_blue, y=rating_pred)) + geom_line(aes(col=modal)) +
+          ggtitle(paste(modal1, modal2, sep="-")) + xlab("percentage") +  theme(legend.position="none")
+     
+      
       
       exp_data = exp_data %>% 
         group_by(percentage_blue, modal) %>%
         summarise(rating_m = mean(rating))
       
       merged_data = merge(post, exp_data, by=c("percentage_blue", "modal"))
+      merged_data2 = merge(post2, exp_data, by=c("percentage_blue", "modal"))
+
       
       model = lm(rating_pred ~ rating_m, data=merged_data)
-      cat(paste("R^2:", summary(model)$r.squared))
-      return(p)
+      cat(paste("R^2:", summary(model)$r.squared), "\n")
+            model = lm(rating_pred ~ rating_m, data=merged_data)
+
+      model2 = lm(rating_pred ~ rating_m, data=merged_data2)
+      cat(paste("R^2:", summary(model2)$r.squared))
+
+      return(list(p1=p, p2=p2))
 
   }
 
@@ -349,22 +384,47 @@ for (cond in seq(0,14)) {
   pair = pairs[,cond+1]
   fname = paste("../../experiments/0_pre_test/data/0_pre_test-cond", cond,"-trials.csv", sep="")
   p_data = load_data_for_plotting(fname)
-  post_plot = plot_posterior(pair[1], pair[2], p_data)
+  post_plot = plot_posterior(pair[1], pair[2], p_data, cond)
   data_plots = make_plots(p_data)
   
-  grid.arrange(data_plots$p1, post_plot, ncol=2)
+  grid.arrange(data_plots$p1, post_plot$p1, post_plot$p2, ncol=3)
   
 }  
 
   fname = "../../experiments/0_pre_test/data/0_pre_test-cond5_2-trials.csv"
   p_data = load_data_for_plotting(fname)
-  post_plot = plot_posterior("might", "probably", p_data)
+  post_plot = plot_posterior("might", "probably", p_data, 5)
   data_plots = make_plots(p_data)
   
-  grid.arrange(data_plots$p1, post_plot, ncol=2)
+  grid.arrange(data_plots$p1, post_plot$p1, post_plot$p2, ncol=3)
 
 
 ```
 
+## Threshold distributions
+
+```{r fig2, fig.width=10, echo=FALSE}
+
+ps = list()
+
+for (modal in modals) {
+  alpha_param_name = paste("alpha", modal, sep="_")
+  beta_param_name = paste("beta", modal, sep="_")
+  
+  alpha_param = model_params_all[1,alpha_param_name]
+  beta_param = model_params_all[1,beta_param_name]
+  
+  x = seq(0,1,.001)
+  y = dbeta(x, alpha_param, beta_param)
+  
+  beta_density = data.frame(x = x, y = y)
+  
+  ps[[modal]] = ggplot(beta_density, aes(x=x, y=y)) + geom_line() + ggtitle(modal) + xlab("percentage")
+}
+
+grid.arrange(ps$bare, ps$might, ps$probably, ps$could, ps$think, ps$looks_like, ncol=3)
+
+
+```
 
 

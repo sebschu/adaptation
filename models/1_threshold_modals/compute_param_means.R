@@ -87,9 +87,9 @@ tidy_output <- function(output, chains = NULL, chain = NULL, inference_opts = NU
     return(tidy_probTable(output))
   } else if (is_sampleList(output)) {
     # Drop redundant score column, if it exists
-   # if ("score" %in% names(output)) { 
-  #    output <- output[, names(output) != 'score', drop = F]
-  #  } 
+    if ("score" %in% names(output)) { 
+      output <- output[, names(output) != 'score', drop = F]
+    } 
     return(tidy_sampleList(output, chains, chain, inference_opts))
   } else {
     return(output)
@@ -97,19 +97,25 @@ tidy_output <- function(output, chains = NULL, chain = NULL, inference_opts = NU
 }
 
 
-outputfile = "./output_run1.json"
+estimate_mode <- function(x) {
+  d <- density(x)
+  d$x[which.max(d$y)]
+}
+
+outputfile = "./all/output_run1.json"
 
 params = convertData(outputfile) %>% 
-  filter(Iteration == max(.$Iteration))
-
+ # filter(Iteration == max(.$Iteration))
+  filter(Iteration > 1500)
+  
 for (i in seq(2,100)) {
-  outputfile = paste("output_run", i, ".json", sep="")
-  params2 = convertData(outputfile) %>% 
-    filter(Iteration == max(.$Iteration))
+  outputfile = paste("./all/output_run", i, ".json", sep="")
+  params2 = convertData(outputfile)  %>% 
+    filter(Iteration > 1500)
   params = rbind(params, params2)
 }
 
-final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value))
+final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value), mode = estimate_mode(value))
 
 beta_params = params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
 final_beta_params =  final_params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
@@ -120,10 +126,51 @@ final_cost_params =  final_params %>% filter(., grepl("cost", Parameter))
 
 
 
-ggplot(beta_params, aes(x=value)) + geom_histogram(bins=15) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=med, color="red"), data=final_beta_params)
+#ggplot(beta_params, aes(x=value)) + geom_histogram(bins=15) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=mode, color="red"), data=final_beta_params)
+#
+#ggplot(cost_params, aes(x=value)) + geom_histogram(bins=10) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=mode, color="red"), data=final_cost_params)
+#
+#ggplot(params %>% filter(., grepl("rat_alpha", Parameter)) , aes(x=value)) + geom_histogram(bins=10) + geom_vline(aes(xintercept=mode, color="red"), data=final_params %>% filter(., grepl("rat_alpha", Parameter)))
 
-ggplot(cost_params, aes(x=value)) + geom_histogram(bins=10) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=med, color="red"), data=final_cost_params)
+final_params_med = final_params[,1:2] %>% spread(., key=Parameter, value = med, drop = TRUE)
 
-ggplot(params %>% filter(., grepl("rat_alpha", Parameter)) , aes(x=value)) + geom_histogram(bins=10) + geom_vline(aes(xintercept=med, color="red"), data=final_params %>% filter(., grepl("rat_alpha", Parameter)))
+write.csv(x = final_params_med, file = "params_all.csv")
+
+
+for (cond in seq(0, 14)) {
+  outputfile =  paste("./output_no_cond_", cond, "/output_run1.json", sep="")
+  
+  params = convertData(outputfile) %>% 
+    # filter(Iteration == max(.$Iteration))
+    filter(Iteration > 1500)
+  
+  for (i in seq(2,100)) {
+    outputfile = paste("./output_no_cond_", cond, "/output_run", i, ".json", sep="")
+    params2 = convertData(outputfile)  %>% 
+      filter(Iteration > 1500)
+    params = rbind(params, params2)
+  }
+  
+  final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value), mode = estimate_mode(value))
+  
+  beta_params = params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
+  final_beta_params =  final_params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
+  
+  
+  cost_params = params %>% filter(., grepl("cost", Parameter))
+  final_cost_params =  final_params %>% filter(., grepl("cost", Parameter))
+  
+  
+  
+  #ggplot(beta_params, aes(x=value)) + geom_histogram(bins=15) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=med, color="red"), data=final_beta_params)
+  #
+  #ggplot(cost_params, aes(x=value)) + geom_histogram(bins=10) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=med, color="red"), data=final_cost_params)
+  #
+  #ggplot(params %>% filter(., grepl("rat_alpha", Parameter)) , aes(x=value)) + geom_histogram(bins=10) + geom_vline(aes(xintercept=med, color="red"), data=final_params %>% filter(., grepl("rat_alpha", Parameter)))
+  
+  final_params_med = final_params[,1:2] %>% spread(., key=Parameter, value = med, drop = TRUE)
+  
+  write.csv(x = final_params_med, file = paste("params_no_cond_", cond, ".csv", sep=""))
+}
 
 
