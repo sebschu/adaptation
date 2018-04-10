@@ -102,20 +102,20 @@ estimate_mode <- function(x) {
   d$x[which.max(d$y)]
 }
 
-outputfile = "./all/output_run1.json"
+outputfile = "../param-estimation-output-20k/output_all_run1.json"
 
 params = convertData(outputfile) %>% 
  # filter(Iteration == max(.$Iteration))
-  filter(Iteration > 1500)
+  filter(Iteration > 7500)
   
-for (i in seq(2,100)) {
-  outputfile = paste("./all/output_run", i, ".json", sep="")
-  params2 = convertData(outputfile)  %>% 
-    filter(Iteration > 1500)
-  params = rbind(params, params2)
-}
+#for (i in seq(2,3)) {
+#  outputfile = paste("../param-estimation-output-20k/output_all_run", i, ".json", sep="")
+#  params2 = convertData(outputfile)  %>% 
+#    filter(Iteration > 7500)
+#  params = rbind(params, params2)
+#}
 
-final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value), mode = estimate_mode(value))
+final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value), mode = estimate_mode(value), low=quantile(value, 0.025), high=quantile(value, 0.975), var=var(value))
 
 beta_params = params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
 final_beta_params =  final_params %>% filter(., grepl("cost|rat", Parameter) == FALSE)
@@ -126,30 +126,30 @@ final_cost_params =  final_params %>% filter(., grepl("cost", Parameter))
 
 
 
-#ggplot(beta_params, aes(x=value)) + geom_histogram(bins=15) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=mode, color="red"), data=final_beta_params)
+#
+ggplot(beta_params, aes(x=value)) + geom_histogram(bins=40) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=med, color="red"), data=final_beta_params)
 #
 #ggplot(cost_params, aes(x=value)) + geom_histogram(bins=10) + facet_wrap(~Parameter) + geom_vline(aes(xintercept=mode, color="red"), data=final_cost_params)
-#
 #ggplot(params %>% filter(., grepl("rat_alpha", Parameter)) , aes(x=value)) + geom_histogram(bins=10) + geom_vline(aes(xintercept=mode, color="red"), data=final_params %>% filter(., grepl("rat_alpha", Parameter)))
 
 final_params_med = final_params[,1:2] %>% spread(., key=Parameter, value = med, drop = TRUE)
 
-write.csv(x = final_params_med, file = "params_all.csv")
+write.csv(x = final_params_med, file = "../param-estimation-output-20k/params_all.csv")
 
 
 for (cond in seq(0, 14)) {
-  outputfile =  paste("./output_no_cond_", cond, "/output_run1.json", sep="")
+  outputfile =  paste("../param-estimation-output-20k/output_no_cond_", cond, "_run1.json", sep="")
   
   params = convertData(outputfile) %>% 
     # filter(Iteration == max(.$Iteration))
-    filter(Iteration > 1500)
+    filter(Iteration > 7500)
   
-  for (i in seq(2,100)) {
-    outputfile = paste("./output_no_cond_", cond, "/output_run", i, ".json", sep="")
-    params2 = convertData(outputfile)  %>% 
-      filter(Iteration > 1500)
-    params = rbind(params, params2)
-  }
+  #for (i in seq(2,3)) {
+  #  outputfile = paste("../param-estimation-output-20k/output_no_cond_", cond, "_run", i, ".json", sep="")
+  #  params2 = convertData(outputfile)  %>% 
+  #    filter(Iteration > 7500)
+  #  params = rbind(params, params2)
+  #}
   
   final_params = params %>% group_by(Parameter) %>% summarise(med=median(value), mu = mean(value), mode = estimate_mode(value))
   
@@ -170,7 +170,7 @@ for (cond in seq(0, 14)) {
   
   final_params_med = final_params[,1:2] %>% spread(., key=Parameter, value = med, drop = TRUE)
   
-  write.csv(x = final_params_med, file = paste("params_no_cond_", cond, ".csv", sep=""))
+  write.csv(x = final_params_med, file = paste("../param-estimation-output-20k/params_no_cond_", cond, ".csv", sep=""))
 }
 
 

@@ -1,0 +1,131 @@
+var limitedDiscreteUniform = cache(function(a,b) {
+  return Infer({method: "enumerate"}, function(){
+    var bins = _.range(a, b + 1 , 5);
+    var probs = map(function(x){
+        return 1 / bins.length;
+      } , bins);
+    return bins[discrete(probs)];
+  });
+});
+
+var discreteUniform = limitedDiscreteUniform(0,100);
+
+var discreteBeta = cache(function(params) {
+  return Infer({method: "enumerate"}, function(){
+    var bins = _.range(0, 1.01, .05);
+    var probs = map(function(b){ Math.exp(Beta(params).score(b)) } , bins);
+    var ret = bins[discrete(probs)];
+    return ret;
+  }
+)});
+
+var thetaParamDist = Infer({method: "enumerate"}, function(){
+  var bins = _.range(0.1, 30.1 , 0.5);
+  var probs = map(function(x){
+      return 1 / bins.length;
+    } , bins);
+    var ret = bins[discrete(probs)];
+  return ret;
+});
+
+
+var thetaParamPrior = function() {
+  return sample(Uniform({a:0, b:30}));  
+}
+
+var costPrior = function() {
+  return sample(Uniform({a:0, b:5})); 
+}
+
+var ratPrior = function() {
+    return sample(Uniform({a:0.1, b:3})); 
+}
+
+
+var thetaPrior = function() {
+    return sample(discreteUniform)
+}
+
+
+var probPrior = function() {
+    return sample(discreteUniform)
+}
+
+  //var utterances = ["bare", "might", "looks_like", "probably", "think", "could", "bare not"]
+  var utterances = ["bare", "might", "probably", "bare not"]
+
+var theta_xs = _.range(0, 1.01, .05);
+
+var theta_dists = {
+  "bare": Categorical({vs:theta_xs, ps:data.theta_bare}),
+  "might": Categorical({vs:theta_xs, ps:data.theta_might}),
+  "looks_like": Categorical({vs:theta_xs, ps:data.theta_looks_like}),
+  "probably": Categorical({vs:theta_xs, ps:data.theta_probably}),
+  "think": Categorical({vs:theta_xs, ps:data.theta_think}),
+  "could": Categorical({vs:theta_xs, ps:data.theta_could})
+}
+
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+var literalListener = function(utterance, theta) {
+  if (flip(0.05)) {
+    return discreteUniform; //to account for noise
+  } else if (utterance == "bare not") {
+    return limitedDiscreteUniform(0, theta);
+  } else {
+    return limitedDiscreteUniform(theta, 100);
+  }
+};
+
+
+var pragmaticSpeaker =  cache(function(prob, costs, rat_alpha, modal1, modal2) {
+  
+
+  return Infer({model: function() {
+    var utt = utterancePrior();
+    var cost = (utt == modal1 || utt == modal2) ? 0 : costs[utt];
+    var theta = utt == "bare not" ? 100 - Math.round(sample(theta_dists["bare"]) * 100) : Math.round(sample(theta_dists[utt]) * 100);
+    factor(rat_alpha * (literalListener(utt, theta).score(prob) - cost) ); 
+    return (utt == modal1 || utt == modal2) ? utt : "other";
+  }, method:"enumerate"});
+});
+
+var model = function() {
+  return run();
+}
+
+var run = function() {
+
+   var rat_alpha = data.params[0]["rat_alpha"];
+
+  var costs = {
+       "bare":  data.params[0]["cost_bare"],
+       "might": data.params[0]["cost_might"],
+       "looks_like": data.params[0]["cost_looks_like"],
+       "probably": data.params[0]["cost_probably"],
+       "think": data.params[0]["cost_think"],
+       "could": data.params[0]["cost_could"],
+       "bare not": data.params[0]["cost_bare_not"]
+    };  
+
+
+  var d = {
+   modal1: data.modal1[0],
+   modal2: data.modal2[0]
+  }
+
+  var xs = _.range(0,101, 5);
+  var ys_modal1 = map(function(prob) { return Math.exp(pragmaticSpeaker(prob, costs, rat_alpha, d.modal1, d.modal2).score(d.modal1))  }, xs);
+  var ys_modal2 = map(function(prob) { return Math.exp(pragmaticSpeaker(prob, costs, rat_alpha, d.modal1, d.modal2).score(d.modal2))  }, xs);
+  var ys_other = map(function(prob) { return Math.exp(pragmaticSpeaker(prob, costs, rat_alpha, d.modal1, d.modal2).score("other"))  }, xs);
+
+  var res = map(function(idx) {
+    return {x: xs[idx], y_modal1: ys_modal1[idx], y_modal2: ys_modal2[idx], y_other: ys_other[idx]};
+  }, _.range(0, xs.length));
+
+
+ return res;
+
+}

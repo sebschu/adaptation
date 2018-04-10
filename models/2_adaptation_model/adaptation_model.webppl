@@ -1,0 +1,259 @@
+var exists = function(x){
+  return (x == 0) ? true : x ? true: false;
+}
+
+var normalize = function(x) {
+  var denom = sum(x)
+  return map(function(y) {y / denom}, x);
+};
+
+var DiscreteGaussian = cache(function(params) {
+  var mu = params.mu, sigma = params.sigma;
+  var lowerBound = exists(params.lower) ? params.lower : 1;
+  var upperBound = exists(params.upper) ? params.upper : 7;
+  var binWidth = exists(params.binWidth) ? params.binWidth : 1;
+  var bins = _.range(lowerBound, upperBound+1, binWidth);
+  // Categorical doesn't normalize for us, so we need to prenormalize
+  // and make sure all the bins have at least epsilon probability to enforce support
+  var discreteProbs = normalize(map(function(b){
+    return (Math.exp(Gaussian({mu:mu, sigma:sigma}).score(b))
+	    + Number.EPSILON);
+  }, bins));
+  return Categorical({ps: discreteProbs, vs: bins});
+});
+
+
+var limitedDiscreteUniform = cache(function(a, b) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(a, b + 1, 5);
+    var probs = map(function(x) {
+      return 1 / bins.length;
+    }, bins);
+    return bins[discrete(probs)];
+  });
+});
+
+var discreteUniform = limitedDiscreteUniform(0, 100);
+
+var discreteBeta = cache(function(params) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(0, 1.01, .05);
+    var probs = map(function(b) {
+      Math.exp(Beta(params).score(b))
+    }, bins);
+    var ret = bins[discrete(probs)];
+    return ret;
+  })
+});
+
+var thetaParamDist = Infer({
+  method: "enumerate"
+}, function() {
+  var bins = _.range(0.1, 30.1, 0.5);
+  var probs = map(function(x) {
+    return 1 / bins.length;
+  }, bins);
+  var ret = bins[discrete(probs)];
+  return ret;
+});
+
+
+var thetaParamPrior = function() {
+  return sample(Uniform({
+    a: 0,
+    b: 30
+  }));
+}
+
+var costPrior = function() {
+  return sample(Uniform({
+    a: 0,
+    b: 5
+  }));
+}
+
+var ratPrior = function() {
+  return sample(Uniform({
+    a: 0.1,
+    b: 3
+  }));
+}
+
+
+var thetaPrior = function() {
+  return sample(discreteUniform)
+}
+
+
+var probPrior = function() {
+  return sample(discreteUniform)
+}
+
+var utterances = ["bare", "might", "looks_like", "probably", "think", "could", "bare not"]
+
+
+
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+var literalListener = function(utterance, theta) {
+  if (flip(0.05)) {
+    return discreteUniform; //to account for noise
+  } else if (utterance == "bare not") {
+    return limitedDiscreteUniform(0, theta);
+  } else {
+    return limitedDiscreteUniform(theta, 100);
+  }
+};
+
+
+var pragmaticSpeaker = cache(function(prob, thetas, costs, rat_alpha, obs_utt) {
+
+
+  return Infer({
+    model: function() {
+      var utt = utterancePrior();
+      var cost = costs[utt];
+      var theta = utt == "bare not" ? 100 - Math.round(thetas["bare"] * 100) : Math.round(thetas[utt] * 100);
+      factor(rat_alpha * (literalListener(utt, theta).score(prob) - cost));
+      return utt;
+    },
+    method: "enumerate"
+  });
+});
+
+
+var alphas = {
+  "bare": data.params[0]["alpha_bare"],
+  "might": data.params[0]["alpha_might"],
+  "looks_like": data.params[0]["alpha_looks_like"],
+  "probably": data.params[0]["alpha_probably"],
+  "think": data.params[0]["alpha_think"],
+  "could": data.params[0]["alpha_could"]
+};
+
+
+var betas = {
+  "bare": data.params[0]["beta_bare"],
+  "might": data.params[0]["beta_might"],
+  "looks_like": data.params[0]["beta_looks_like"],
+  "probably": data.params[0]["beta_probably"],
+  "think": data.params[0]["beta_think"],
+  "could": data.params[0]["beta_could"]
+};
+
+
+
+var rat_alpha_dist = DiscreteGaussian({mu: data.params[0]["rat_alpha"], sigma:2, lower:0.1, upper:5, binWidth:0.2});
+
+
+
+var cost_mus = {
+  "bare": data.params[0]["cost_bare"],
+  "might": data.params[0]["cost_might"],
+  "looks_like": data.params[0]["cost_looks_like"],
+  "probably": data.params[0]["cost_probably"],
+  "think": data.params[0]["cost_think"],
+  "could": data.params[0]["cost_could"],
+  "bare not": data.params[0]["cost_bare_not"]
+};
+
+var theta_dists = {
+  "bare": discreteBeta({
+    a: alphas["bare"],
+    b: betas["bare"]
+  }),
+  "might": discreteBeta({
+    a: alphas["might"],
+    b: betas["might"]
+  }),
+  "looks_like": discreteBeta({
+    a: alphas["looks_like"],
+    b: betas["looks_like"]
+  }),
+  "probably": discreteBeta({
+    a: alphas["probably"],
+    b: betas["probably"]
+  }),
+  "think": discreteBeta({
+    a: alphas["think"],
+    b: betas["think"]
+  }),
+  "could": discreteBeta({
+    a: alphas["could"],
+    b: betas["could"]
+  })
+}
+
+var cost_dists = {
+  "bare": DiscreteGaussian({mu:cost_mus["bare"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "might": DiscreteGaussian({mu:cost_mus["might"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "looks_like": DiscreteGaussian({mu:cost_mus["looks_like"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "probably": DiscreteGaussian({mu:cost_mus["probably"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "think": DiscreteGaussian({mu:cost_mus["think"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "could": DiscreteGaussian({mu:cost_mus["could"], sigma:2.0, lower:0, upper:5, binWidth:0.2}),
+  "bare not": DiscreteGaussian({mu:cost_mus["bare not"], sigma:2.0, lower:0, upper:5, binWidth:0.2})
+}
+
+
+var model = function() {
+  return run();
+}
+
+var run = function() {
+
+
+  var thetas = {
+    "bare": sample(theta_dists["bare"]),
+    "might": sample(theta_dists["might"]),
+    "looks_like": sample(theta_dists["looks_like"]),
+    "probably": sample(theta_dists["probably"]),
+    "think": sample(theta_dists["think"]),
+    "could": sample(theta_dists["could"])
+  }
+  
+  var costs = {
+    "bare": Math.max(0,sample(cost_dists["bare"])),
+    "might": Math.max(0,sample(cost_dists["might"])),
+    "looks_like": Math.max(0,sample(cost_dists["looks_like"])),
+    "probably": Math.max(0,sample(cost_dists["probably"])),
+    "think": Math.max(0,sample(cost_dists["think"])),
+    "could": Math.max(0,sample(cost_dists["could"])),
+    "bare not": Math.max(0,sample(cost_dists["bare not"]))  
+  }
+
+  //var rat_alpha = Math.max(0, sample(rat_alpha_dist)); 
+  var rat_alpha = data.params[0]["rat_alpha"];
+
+  if (data.obs.length > 0) {
+
+    map(function(d) {
+      //return;
+      var p = d.percentage_blue;
+      var utt = d.modal;
+      observe(pragmaticSpeaker(p, thetas, costs, rat_alpha, utt),
+        utt);
+    }, data.obs);
+  }
+
+  
+  var ret_obj = {
+    "cost_bare": costs["bare"],
+    "cost_might": costs["might"],
+    "cost_looks_like": costs["looks_like"],
+    "cost_probably": costs["probably"],
+    "cost_think": costs["think"],
+    "cost_could": costs["could"],
+    "cost_bare_not": costs["bare not"],
+    "rat_alpha": rat_alpha
+  }
+  return extend(ret_obj, thetas);
+
+
+
+}

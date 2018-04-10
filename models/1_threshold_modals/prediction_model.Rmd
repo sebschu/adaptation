@@ -1,7 +1,7 @@
 ---
 title: "Threshold model inferred from data"
 author: "Sebastian Schuster"
-date: "3/15/2018"
+date: "4/4/2018"
 output: html_document
 ---
 
@@ -17,11 +17,45 @@ library(gridExtra)
 
 ```
 
+## Model
+
+Literal listener (tries to infer the probability $\phi$ of getting a blue gumball given an utterance $u$):
+
+$$P_L(\phi \mid u; \theta) \propto P(\phi) \left( {0.95} \times \mathbb{1}[\phi > \theta_{u}] + 0.05 * P_{uniform}(\phi; 0,1) \right)$$
+(The term $0.05 * P_{uniform}(\phi; 0,1)$) corresponds to the noise term which assigns a small non-zero probability to all $\phi$ idependent of the actual utterance.) We assume that the prior $P(\phi)$ is uniform.
+
+
+Pragmatic speaker (marginalizes over all possible values of $\theta$):
+
+$$P_S(u \mid \phi, condition) \propto \int P(\theta) \exp\left(\lambda * \left(\log P_L(\phi \mid u; \theta) - c(u, condition)\right)\right) d\theta $$
+
+Costs:
+
+$$
+c(u, condition) = 
+     \begin{cases}
+       0 &\quad\text{if } u  \text{ is one of the utterances in } condition\\
+       c_{u} &\quad\text{otherwise} \\
+     \end{cases}
+$$
+
+Prior over thresholds $\theta$:
+
+$$P(\theta_u) = Beta(\alpha_u, \beta_u)$$
+
+
+Estimated parameters:
+
+$\alpha_u, \beta_u \sim Uniform(0,30)$, $c_u\sim Uniform(0,5)$, $\lambda \sim Uniform(.1,3)$
+
+
 Left column: Experimental data.
 
 Middle column: Model predictions with parameters estimated from all conditions.
 
 Right column: Model predictions with parameters estimated from all conditions but the current one.
+
+## Experimental data and model predictions
 
 ```{r load_data, echo=FALSE} 
 
@@ -106,7 +140,7 @@ load_data = function(fname) {
 }
 
 make_plots = function(d) {
-  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none")
+  p1 = ggplot(d, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal, alpha=.5)) +  geom_smooth(aes(col=modal), method="loess") + ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none")
 
 p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
   geom_boxplot() +
@@ -130,22 +164,13 @@ webppl_model = '
 
 
 var limitedDiscreteUniform = cache(function(a,b) {
-return Infer({method: "enumerate"}, function(){
-  var bins = _.range(a, b + 1 , 5);
-  //var actualBins =  _.range(a, b + 1 , 5);
-  //var actualBinCounts = actualBins.length;
-  //var fakeBinCounts = bins.length - actualBinCounts;
-  //var remainingProb = a > 0 ? 0.02 * fakeBinCounts : 0;
-  var probs = map(function(x){
-  //  if (x < a) {
-  //    return remainingProb / fakeBinCounts;
-  //  } else {
-  //    return (1-remainingProb) / actualBinCounts;
-    return 1 / bins.length;
-  //  }
-} , bins);
-  return bins[discrete(probs)];
-});
+  return Infer({method: "enumerate"}, function(){
+    var bins = _.range(a, b + 1 , 5);
+    var probs = map(function(x){
+        return 1 / bins.length;
+      } , bins);
+    return bins[discrete(probs)];
+  });
 });
 
 var discreteUniform = limitedDiscreteUniform(0,100);
@@ -170,8 +195,7 @@ var thetaParamDist = Infer({method: "enumerate"}, function(){
 
 
 var thetaParamPrior = function() {
-return sample(Uniform({a:0, b:30}));  
-//return sample(thetaParamDist);
+  return sample(Uniform({a:0, b:30}));  
 }
 
 var costPrior = function() {
@@ -211,7 +235,6 @@ var literalListener = function(utterance, theta) {
 };
 
 
-var thetas_tmp = {might: 50, bare: 90};
 var pragmaticSpeaker =  cache(function(prob, alphas, betas, costs, rat_alpha, modal1, modal2) {
   
   var theta_dists = {
@@ -303,7 +326,7 @@ var run = function() {
   modals = c("bare", "might", "probably", "could", "looks_like", "think")
 
 
-  model_params_all = read.csv(file = "./param-estimation-output/params_all.csv")
+  model_params_all = read.csv(file = "./param-estimation-output-20k/params_all.csv")
 
   plot_posterior = function(modal1, modal2, exp_data, cond) {
 
@@ -326,7 +349,7 @@ var run = function() {
       
       
       
-      model_params_no_current_cond = read.csv(file = paste("./param-estimation-output/params_no_cond_",cond , ".csv", sep=""))
+      model_params_no_current_cond = read.csv(file = paste("./param-estimation-output-20k/params_no_cond_",cond , ".csv", sep=""))
       data_from_R = list(modal1=modal1, modal2=modal2, params=model_params_no_current_cond[1,])
 
       post2 <- webppl(program_code = webppl_model, model_var = "model",
@@ -403,7 +426,7 @@ for (cond in seq(0,14)) {
 
 ## Threshold distributions
 
-```{r fig2, fig.width=10, echo=FALSE}
+```{r fig2, fig.width=10, echo=FALSE, results='asis'}
 
 ps = list()
 
@@ -424,6 +447,29 @@ for (modal in modals) {
 
 grid.arrange(ps$bare, ps$might, ps$probably, ps$could, ps$think, ps$looks_like, ncol=3)
 
+
+for (cond in seq(0,14)) {
+  pair = pairs[,cond+1]
+  model_params_no_current_cond = read.csv(file = paste("./param-estimation-output-20k/params_no_cond_",cond , ".csv", sep=""))
+
+  for (modal in modals) {
+    alpha_param_name = paste("alpha", modal, sep="_")
+    beta_param_name = paste("beta", modal, sep="_")
+    
+    alpha_param = model_params_no_current_cond[1,alpha_param_name]
+    beta_param = model_params_no_current_cond[1,beta_param_name]
+    
+    x = seq(0,1,.001)
+    y = dbeta(x, alpha_param, beta_param)
+    
+    beta_density = data.frame(x = x, y = y)
+    
+    ps[[modal]] = ggplot(beta_density, aes(x=x, y=y)) + geom_line() + ggtitle(modal) + xlab("percentage")
+  }
+  
+  cat(paste("<h3>", paste(pair[1], pair[2], sep="-"), "</h3>", sep=""))
+  grid.arrange(ps$bare, ps$might, ps$probably, ps$could, ps$think, ps$looks_like, ncol=3)
+}
 
 ```
 

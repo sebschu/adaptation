@@ -1,0 +1,223 @@
+---
+title: "Adaptation model"
+author: "Sebastian Schuster"
+date: "4/4/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rwebppl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(gridExtra)
+library(scales)
+
+source("./utils.R")
+
+```
+
+```{r constants, echo=FALSE}
+  N_ITERATIONS = 40000
+
+
+```
+
+
+```{r functs, echo=FALSE}
+  
+compute_threshold_posterior = function(model_params, exposure_data) {
+  data_from_R = list(params=model_params, obs=exposure_data)
+  posterior <- webppl(program_file = "./adaptation_model.webppl", model_var = "model",
+        inference_opts = list(method = "MCMC", samples=N_ITERATIONS, burn=10000, verbose=TRUE), 
+        data_var = "data", data = data_from_R)
+  
+  plot(ggplot(posterior %>% filter(grepl(pattern = "cost_", x=Parameter)) , aes(x=value)) +geom_histogram() + facet_wrap (~Parameter))
+  
+    plot(ggplot(posterior %>% filter(grepl(pattern = "rat_", x=Parameter)) , aes(x=value)) +geom_histogram())
+
+      
+  #turn into distribution
+  theta_posterior = posterior %>%
+    filter(grepl(pattern = "cost_|rat_", x=Parameter) == FALSE) %>%
+    group_by(Parameter, value) %>% 
+    summarise(prob = n()/N_ITERATIONS)
+
+  param_posterior = posterior %>%
+        filter(grepl(pattern = "cost_|rat_", x=Parameter)) %>%
+        group_by(Parameter) %>% 
+        summarise(value = median(value))
+
+
+  
+  return(list(theta_posterior = theta_posterior, param_posterior = param_posterior))
+}
+
+compute_speaker_posterior = function(theta_posterior, modal1, modal2) {
+   # turn this into a complete distribution of values from 0 to 1
+  
+  theta_posterior$value = round(theta_posterior$value * 100)
+  for (val in seq(0,100,5)) {
+    theta_posterior = rbind(theta_posterior, list(Parameter="zzz_foo", value=val, prob = 0))
+  }
+  theta_posterior = theta_posterior %>% spread(key="value", value="prob", fill = 0)
+  
+  print(theta_posterior)
+
+  data_from_R = list(params=model_params_all[1,], modal1=modal1, modal2=modal2, 
+                       theta_bare=as.double(theta_posterior[theta_posterior$Parameter == "bare",2:22]),
+                       theta_might=as.double(theta_posterior[theta_posterior$Parameter == "might",2:22]),
+                       theta_looks_like=as.double(theta_posterior[theta_posterior$Parameter == "looks_like",2:22]),
+                       theta_probably=as.double(theta_posterior[theta_posterior$Parameter == "probably",2:22]),
+                       theta_think=as.double(theta_posterior[theta_posterior$Parameter == "think",2:22]),
+                       theta_could=as.double(theta_posterior[theta_posterior$Parameter == "could",2:22]))       
+  print(data_from_R)
+  
+  speaker_posterior <- webppl(program_file = "./prediction_model.webppl", model_var = "model",
+        inference_opts = list(method = "enumerate", verbose=TRUE), 
+        data_var = "data", data = data_from_R)
+  
+  speaker_posterior = speaker_posterior[, !(names(speaker_posterior) %in% c("prob"))]
+  colnames(speaker_posterior) <- c("percentage_blue", modal1, modal2, "other")
+  
+  speaker_posterior = speaker_posterior %>% 
+    gather("modal", "rating_pred", -percentage_blue)
+      
+  speaker_posterior$modal = factor(speaker_posterior$modal, 
+                                   levels = c(modal1, modal2, "other"), 
+                                   ordered = TRUE)
+  
+  return(speaker_posterior)
+}
+  
+```
+
+
+```{r call, echo=FALSE}
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think")
+  model_params_all = read.csv(file = "./params/params_all_20k.csv")
+  
+  # generate experimental data for probably-biased condition
+  exp1 = do.call("rbind", replicate(5, c(percentage_blue=100, modal="bare"), simplify = FALSE))
+  exp2 = do.call("rbind", replicate(5, c(percentage_blue=25, modal="might"), simplify = FALSE))
+  exp3 = do.call("rbind", replicate(10, c(percentage_blue=60, modal="probably"), simplify = FALSE))
+  exposure_data = data.frame(rbind(exp1,exp2,exp3))
+  exposure_data$percentage_blue = as.numeric(as.character(exposure_data$percentage_blue))
+
+  # compute prior (by not passing any data to the function)
+  priors = compute_threshold_posterior(model_params_all[1,], exposure_data[0,])
+  theta_prior = priors$theta_posterior
+  ggplot(theta_prior, aes(x = value, y = prob)) + 
+    geom_bar(stat="identity") + 
+    facet_wrap(~Parameter) +   
+    scale_y_continuous(labels = scales::percent, limits = c(0,1))
+
+  # compute threshold posterior  
+  posteriors = compute_threshold_posterior(model_params_all[1,], exposure_data)
+  
+  theta_posterior = posteriors$theta_posterior
+  ggplot(theta_posterior, aes(x=value,y=prob)) + 
+    geom_bar(stat="identity") +  
+    facet_wrap(~Parameter) + 
+    scale_y_continuous(labels = scales::percent, limits = c(0,1))
+  
+  param_posterior = posteriors$param_posterior %>% spread(key="Parameter", value="value")
+  model_params_all[1,][colnames(param_posterior)] = param_posterior[1,]
+  
+  speaker_posterior.probably = compute_speaker_posterior(theta_posterior, "might", "probably")  
+    
+  p.probably = ggplot(speaker_posterior.probably, aes(x=percentage_blue, y=rating_pred)) +
+    geom_line(aes(col=modal)) +
+    ggtitle("probably-biased") + 
+    xlab("percentage") +
+    theme(legend.position="none") +
+    scale_y_continuous(labels = scales::percent, limits = c(0,1))
+
+
+    plot(p.probably)
+    
+
+  #might-biased condition
+  # generate experimental data for probably-biased condition
+  exp1 = do.call("rbind", replicate(5, c(percentage_blue=100, modal="bare"), simplify = FALSE))
+  exp2 = do.call("rbind", replicate(5, c(percentage_blue=90, modal="probably"), simplify = FALSE))
+  exp3 = do.call("rbind", replicate(10, c(percentage_blue=60, modal="might"), simplify = FALSE))
+  exposure_data = data.frame(rbind(exp1,exp2,exp3))
+  exposure_data$percentage_blue = as.numeric(as.character(exposure_data$percentage_blue))
+
+  # compute threshold posterior  
+  posteriors = compute_threshold_posterior(model_params_all[1,], exposure_data)
+  
+  theta_posterior = posteriors$theta_posterior
+  ggplot(theta_posterior, aes(x=value,y=prob)) + 
+    geom_bar(stat="identity") +  
+    facet_wrap(~Parameter) + 
+    scale_y_continuous(labels = scales::percent, limits = c(0,1))
+  
+  param_posterior = posteriors$param_posterior %>% spread(key="Parameter", value="value")
+  model_params_all[1,][colnames(param_posterior)] = param_posterior[1,]
+  
+  speaker_posterior.might = compute_speaker_posterior(theta_posterior, "might", "probably")  
+    
+  p.might = ggplot(speaker_posterior.might, aes(x=percentage_blue, y=rating_pred)) +
+    geom_line(aes(col=modal)) +
+    ggtitle("might-biased") + 
+    xlab("percentage") +
+    theme(legend.position="none") +
+    scale_y_continuous(labels = scales::percent, limits = c(0,1))
+
+
+  plot(p.might)
+
+```
+
+
+```{r correlation, echo=FALSE}
+
+# Might-biased condition
+trials.might = read.csv("../../experiments/1_adaptation/data/1_adaptation-might-trials.csv")
+exp_trials.might = read.csv("../../experiments/1_adaptation/data/1_adaptation-might-exp_trials.csv")
+
+
+# Probably-biased condition
+trials.probably = read.csv("../../experiments/1_adaptation/data/1_adaptation-probably-trials.csv")
+exp_trials.probably = read.csv("../../experiments/1_adaptation/data/1_adaptation-probably-exp_trials.csv")
+
+
+ds = exclude_participants(trials.might, trials.probably, exp_trials.might, exp_trials.probably)
+
+d.might = ds$might
+d.probably = ds$probably
+
+exp_ps.probably = plot_condition(d.probably, "probably-biased")
+exp_ps.might = plot_condition(d.might, "might-biased")
+
+grid.arrange(exp_ps.probably$p1, p.probably, exp_ps.might$p1, p.might, ncol=2, nrow=2)
+
+      exp_data.might = d.might %>% 
+        group_by(percentage_blue, modal) %>%
+        summarise(rating_m = mean(rating))
+      
+      exp_data.probably = d.probably %>% 
+        group_by(percentage_blue, modal) %>%
+        summarise(rating_m = mean(rating))
+      
+      merged_data.probably = merge(speaker_posterior.probably, exp_data.probably, by=c("percentage_blue", "modal"))
+      merged_data.might = merge(speaker_posterior.might, exp_data.might, by=c("percentage_blue", "modal"))
+
+      
+      
+      model.probably = lm(rating_pred ~ rating_m, data=merged_data.probably)
+      cat(paste("R^2 for probably-biased condition:", summary(model.probably)$r.squared), "\n")
+
+      model.might = lm(rating_pred ~ rating_m, data=merged_data.might)
+      cat(paste("R^2 for might-biased condition:", summary(model.might)$r.squared), "\n")
+
+
+      print(merged_data.probably)
+      
+
+```
