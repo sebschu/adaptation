@@ -50,7 +50,7 @@ get_correct_catch_trial_counts = function (data) {
   return(ret)
 }
 
-EXCLUDE_BELOW = 4
+EXCLUDE_BELOW = 3
 
 catch_trial_perf.all.might = get_correct_catch_trial_counts(exp_trials.might)
 
