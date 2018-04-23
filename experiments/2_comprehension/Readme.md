@@ -30,8 +30,6 @@ See the following web-based experiments:
 
 ## Predictions
 
-We predict that the difference in AUC between the might ratings and the probably ratings will be significantly higher in the might-biased condition than in the probably-based condition.
-
 Based on participants' ratings, we compute the expected value of the distribution of the likelhood of the event happening after hearing an uncertainty expressions, i.e., E[P(event happening) | uncertainty expression].
 
 We predict that
