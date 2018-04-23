@@ -98,7 +98,7 @@ compute_speaker_posterior = function(theta_posterior, modal1, modal2) {
 ```{r call, echo=FALSE}
 
   modals = c("bare", "might", "probably", "could", "looks_like", "think")
-  model_params_all = read.csv(file = "./params/params_all_20k.csv")
+  model_params_all = read.csv(file = "../1_threshold_modals/param-estimation-output-100k/params_all.csv")
   
   # generate experimental data for probably-biased condition
   exp1 = do.call("rbind", replicate(5, c(percentage_blue=100, modal="bare"), simplify = FALSE))

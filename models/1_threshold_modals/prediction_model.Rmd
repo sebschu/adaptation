@@ -326,7 +326,7 @@ var run = function() {
   modals = c("bare", "might", "probably", "could", "looks_like", "think")
 
 
-  model_params_all = read.csv(file = "./param-estimation-output-20k/params_all.csv")
+  model_params_all = read.csv(file = "./param-estimation-output-100k/params_all.csv")
 
   plot_posterior = function(modal1, modal2, exp_data, cond) {
 
