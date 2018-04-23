@@ -16,13 +16,17 @@ We exclude participants who provide the wrong answer to more than 2 of the 5 cat
 See the following web-based experiments: 
 
 - Probably-biased condition, female speaker:
-  https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-0.html
+   
+   https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-0.html
 - Might-biased condition, female speaker:
-  https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-1.html
+   
+   https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-1.html
 - Probably-biased condition, male speaker:
-  https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-2.html
+   
+   https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-2.html
 - Might-biased condition, male speaker:
-  https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-3.html
+   
+   https://stanford.edu/~sebschu/experiments/2_comprehension/experiment-cond-3.html
 
 ## Predictions
 
