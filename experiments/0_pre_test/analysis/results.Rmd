@@ -82,7 +82,7 @@ return(list("p1" = p1, "p2" = p2))
 
 ```{r}
 
-for (i in 0:14) {
+for (i in 0:20) {
 
   ps = plot_condition(i)
   plot(ps$p1)
