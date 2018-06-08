@@ -1,0 +1,10 @@
+workerid,percentage_blue,rating,modal
+0,0,0,"""noise"""
+0,10,0.32,"""noise"""
+0,25,0.45,"""noise"""
+0,40,0.51,"""noise"""
+0,50,0.66,"""noise"""
+0,60,0.8,"""noise"""
+0,75,0.72,"""noise"""
+0,90,0.55,"""noise"""
+0,100,0.25,"""noise"""

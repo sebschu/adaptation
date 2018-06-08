@@ -1,0 +1,364 @@
+<html>
+
+<head>
+    <title>Language Learning Experiment</title>
+
+    <!--JS-->
+
+		<script type="text/javascript">
+			//probably/might
+			var MODAL_CONDITION = 5;
+			var CONDITION = "probably";
+			var SPEAKER_CONDITION = "f";
+			
+			var TEMPLATE_DICT = {
+				"{{woman}}" : "woman",
+				"{{she}}" : "she"
+			}
+			
+		</script>
+
+
+    <!-- external general utilities -->
+    <script src="../_shared/js/jquery-1.11.1.min.js "></script>
+    <script src="../_shared/full-projects/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../_shared/js/underscore-min.js"></script>
+    <!-- if you want to draw stuff: -->
+    <!-- <script src="../_shared/js/raphael-min.js"></script> -->
+
+    <!-- cocolab experiment logic -->
+    <script src="../_shared/js/exp-V2.js"></script>
+    <script src="../_shared/js/stream-V2.js"></script>
+
+    <!-- cocolab general utilities -->
+    <script src="../_shared/js/mmturkey.js "></script>
+    <script src="../_shared/js/browserCheck.js"></script>
+    <script src="./js/utils.js"></script>
+    <!-- if you want to draw cute creatures (depends on raphael): -->
+    <!-- <script src="../_shared/js/ecosystem.js"></script> -->
+
+    <!-- experiment specific helper functions -->
+    <!-- <script src="js/local-utils.js"></script> -->
+    <script src="../_shared/preload.js"></script>
+    <!--CSS-->
+    <link href="../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- experiment file -->
+    <script src="js/stims.js"></script>
+    <script src="js/template.js"></script>
+		
+		<script src="//uniqueturker.myleott.com/lib.js" type="text/javascript"></script>
+		<script type="text/javascript">
+		
+			(function() {
+			  var ut_id = "3106ca1d300363c2bcf482a261a2a4b2";
+			  if (UTWorkerLimitReached(ut_id)) {
+			      document.getElementById('mturk_form').style.display = 'none';
+			      document.getElementsByTagName('body')[0].innerHTML = "You have already completed the maximum number of HITs allowed by this requester. Please click 'Return HIT' to avoid any impact on your approval rating.";
+			  }
+			})();
+		
+		$(document).ready(function(){
+			if (screen.width < 850 || screen.height < 850) {
+        document.getElementById('mturk_form').style.display = 'none';
+        document.getElementsByTagName('body')[0].innerHTML = "<p>Unfortunately your screen resolution is too low to participate in this study.  Please click 'Return HIT' to avoid any impact on your approval rating.</p>";
+			}
+		});
+		</script>
+		
+
+</head>
+
+<body onload="init();">
+  <noscript>This task requires JavaScript.</noscript>
+
+  <div class="slide" id="i0" >
+  <img src="../_shared/images/alpslogo.png" alt="InterActive Language Processing Lab at Stanford">
+    <p id="cocolab">InterActive Language Processing Lab at Stanford</p>
+    <p id="instruct-text">
+      In this experiment, you will see several videos and a series of visual scenes and will be asked to answer some questions about them. You will need to listen what the people in the video have to say, so please make sure that your sound is turned on.  We recommend Google Chrome or Firefox. The HIT should take ~5 minutes. Please pay attention, thanks!</p>
+    <input id="start_button" type="button" class="button" value="Start Experiment">
+    <p id="legal">
+      <strong>LEGAL INFORMATION:</strong><br>
+       We invite you to participate in a research study on language production and comprehension. Your experimenter will ask you to do a linguistic task such as reading sentences or words, naming pictures or describing scenes, making up sentences of your own, or participating in a simple language game.
+<br><br>There are no risks or benefits of any kind involved in this study.
+<br><br>
+You will be paid for your participation at the posted rate.
+<br><br>
+If you have read this form and have decided to participate in this experiment, please
+understand your participation is voluntary and you have the right to withdraw your consent or discontinue participation at any time without penalty or loss of benefits to which you are otherwise entitled. You have the right to refuse to do particular tasks. Your individual privacy will be maintained in all published and written data resulting from the study.   You may print this form for your records.
+<br><br>
+<strong>CONTACT INFORMATION:</strong><br>
+If you have any questions, concerns or complaints about this research study, its procedures, risks and benefits, you should contact the Protocol Director Penelope Eckert (650)-725-1564.
+<br><br>
+If you are not satisfied with how this study is being conducted, or if you have any concerns, complaints, or general questions about the research or your rights as a participant, please contact the Stanford Institutional Review Board (IRB) to speak to someone independent of the research team at (650)-723-2480 or toll free at 1-866-680-2906. You can also write to the Stanford IRB, Stanford University, 3000 El Camino Real, Five Palo Alto Square, 4th Floor, Palo Alto, CA 94306 USA.
+<br><br>
+If you agree to participate, please proceed to the study tasks.</p>
+  </div>
+
+  <div class="slide" id="video_test">
+		<div id="video_test-1">
+		<p>Please watch this video and select the phrase that the <span class="placeholder">{{woman}}</span> said.</p>
+		
+		<p><video width="320" height="240" id="test_player">
+			 <source id="test_player-mp4" src="" type="video/mp4">
+		   <source id="test_player-ogg" src="" type="video/ogg">	 
+		</video>
+		<br />
+		<a href="#" onclick="$('#test_player').trigger('play');return false;">Replay video</a>
+		</p>
+    
+		
+		<p>
+			<label><input type="radio" name="videoquestion" value="1"> You'll get a green one</label>
+		</p>
+		<p>
+			<label><input type="radio" name="videoquestion" value="2"> You'll get an orange one</label>
+		</p>
+		<p>
+			<label><input type="radio" name="videoquestion" value="3"> You'll get a black one</label>
+		</p>
+		<p>
+			<label><input type="radio" name="videoquestion" value="4"> You'll get a blue one</label>
+		</p>
+		<p>
+			<label><input type="radio" name="videoquestion" value="5"> You'll get a white one</label>
+		</p>
+		
+		
+		<input type="button" onclick="_s.button()" class="button" value="Continue" id="video_test-button" disabled>
+		</div>
+		<div id="video_test-2">
+			<p>You chose the wrong response, probably because your sound is not working properly. Unfortunately, you will not be able to do this HIT without sound, so please return this HIT.</p>
+			
+			<p>Thank you for your understanding and we apologize for any inconveniences!</p>
+		</div>
+		
+		
+	</div>	
+
+  <div class="slide" id="instructions">
+    <div id="instructions-part1">
+		<h3>Instructions</h3>
+    <p>On the following pages, you will see a scene with a <span class="placeholder">{{woman}}</span> sitting behind a counter with a gumball machine. A girl is standing next to the counter. <strong>The girl cannot see the gumball machine as it is too high up for her to see.</strong> The <span class="placeholder">{{woman}}</span> can see all the gumballs in the machine, which are constantly being tossed around.</p>
+    
+		<p>Please watch the videos and listen to what the <span class="placeholder">{{woman}}</span> has to say to the girl.</p>
+		
+		
+		
+    
+		
+		
+    <input type="button" onclick="_s.button()" class="button" value="Continue">
+		</div>
+		<div id="instructions-part2">
+			<p>To continue, please answer the following question:</p>
+			<p>
+			   Can the girl see the contents of the gumball machine?
+			</p>
+			<p>
+			  <label>
+				  <input type="radio" name="checkquestion" id="checkquestion-yes" value="yes"> 
+				  Yes
+			  </label>
+			  <label>
+				  <input type="radio" name="checkquestion" id="checkquestion-no" value="no"> 
+					No
+				</label>
+			</p>
+	    <input type="button" onclick="_s.button()" class="button" value="Continue">
+		</div>
+		<div id="instructions-part3">
+			<p class="err">The answer you gave is incorrect.</p>
+			<p>Please click the button below to go back to the instructions.</p>
+	    <input type="button" onclick="_s.button()" class="button" value="Read instructions">
+		</div>
+		
+  </div>
+
+
+
+  <div class="slide" id="exp_trial">
+		
+		<div id="exp_trial-content">
+		
+		<img src="../_shared/images/attention_cross.png" style="position:relative;left:310px; top: 130px; display: none;" id="exp-attention-cross">
+    <p class="train-instructions">Consider the following scene:</p>
+		<div id="exp-canvas" style="width:320px; height: 240px; margin: 0 auto; padding: 12px 275px 175px 5px;">
+			<video id="exp-video" width="320" height="240">
+			 <source id="exp-video-source-mp4" src="" type="video/mp4">
+		   <source id="exp-video-source-ogg" src="" type="video/ogg">	 
+			</video>
+		</div>
+		<a href="#" onclick="$('#exp-video').trigger('play');return false;">Replay video</a>
+		
+  
+	  <p><input type="button" onclick="_s.button()" class="button" value="Continue" id="exp-button"></p>
+	</div>
+	<div id="exp_trial-catch">
+  <p class="train-instructions">Please answer the following question:</p>
+  <p><strong>Did you see a small gray X in the previous scene?</strong></p>
+  <input type="button" onclick="_s.button(true)" class="button" value="Yes">&nbsp;&nbsp;&nbsp;<input type="button" onclick="_s.button(false)" class="button" value="No">
+	
+	</div>
+	
+	
+	</div>
+
+  <div class="slide" id="test_instructions">
+		<h3>Instructions</h3>		
+		<p>On the following pages, the <span class="placeholder">{{woman}}</span> will say a sentence and you will see different gumball machines. <strong>Some of the recordings contain noise so you may not be able to hear part of the sentence.</strong> 
+		<p>Whether you hear the entire sentence or not, please rate for each gumball machine how likely you think it is that the <span class="placeholder">{{woman}}</span> saw this gumball machine when <span class="placeholder">{{she}}</span> said the sentence.</p>
+    
+		<input type="button" onclick="_s.button()" class="button" value="Continue">
+	
+	
+	</div>
+
+  <div class="slide" id="post_trial">
+		<div id="post_trial-content">
+
+    <p class="train-instructions">Listen to the recording</p>
+
+
+		<div id="post-canvas">
+				<audio controls id="audio-player">
+          <source src="" id="source-mp3" type="audio/mpeg">
+          <source src="" id="source-ogg" type="audio/ogg">
+        </audio>		
+		</div>
+
+      <div id="prompt">
+        <p style="margin: 40px 0 10px;">For each of these gumball machines, adjust the slider to indicate how likely you think it is that this was the machine that the <span class="placeholder">{{woman}}</span> saw.</p>
+				<p style="margin: 0px 0 50px;">(If you can't make out what the <span class="placeholder">{{woman}}</span> is saying, try to give ratings to the best of your ability.)</p>
+				
+				<p class="err"> Please provide a rating for each gumball machine!</p>
+				
+				<table>
+					<tr>
+						<td style="padding-bottom:20px;opacity:1.0" class="col-1"><img id="gumball-img-1" src="./stimuli/gumball_0.gif" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-2"><img id="gumball-img-2" src="./stimuli/gumball_10.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-3"><img id="gumball-img-3" src="./stimuli/gumball_25.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-4"><img id="gumball-img-4" src="./stimuli/gumball_40.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-5"><img id="gumball-img-5" src="./stimuli/gumball_50.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-6"><img id="gumball-img-6" src="./stimuli/gumball_60.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-7"><img id="gumball-img-7" src="./stimuli/gumball_75.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-8"><img id="gumball-img-8" src="./stimuli/gumball_90.png" width="86" height="116" /></td>
+						<td style="padding-bottom:20px;opacity:0.1" class="col-9"><img id="gumball-img-9" src="./stimuli/gumball_100.png" width="86" height="116" /></td>
+					</tr>
+					<tr>
+						<td style="text-align:center;padding:10px;opacity:1" class="col-1">very <br />likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-2">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-3">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-4">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-5">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-6">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-7">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-8">very <br /> likely</td>
+						<td style="text-align:center;padding:10px;opacity:0.1" class="col-9">very <br /> likely</td>
+					</tr>
+					<tr>
+						<td style="opacity: 1" class="col-1">
+								<span id="slider_1" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-2">
+								<span id="slider_2" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-3">
+								<span id="slider_3" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-4">
+								<span id="slider_4" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-5">
+								<span id="slider_5" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-6">
+								<span id="slider_6" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-7">
+								<span id="slider_7" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-8">
+								<span id="slider_8" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						<td style="opacity: 0.1" class="col-9">
+								<span id="slider_9" style="display:block; height:150px; margin: 0 auto;"></span>
+						</td>
+						
+					</tr>
+					<tr>
+						<td style="text-align:center;padding:10px 0;opacity: 1;" class="col-1">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-2">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-3">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-4">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-5">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-6">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-7">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-8">very <br /> unlikely</td>
+						<td style="text-align:center;padding:10px 0;opacity: 0.1;" class="col-9">very <br /> unlikely</td>
+					</tr>
+				</table>
+								
+		      </div>
+	    <input type="button" onclick="_s.button()" class="button" value="Next">
+			</div>
+		</div>
+
+
+
+  <div class="slide" id="subj_info">
+    <div class="long_form">
+      <div class="subj_info_title">Additional information</div>
+      <p class="info">Answering these questions is optional, but will help us understand your answers.</p>
+      <p>Did you read the instructions and do you think you did the HIT correctly?</p>
+      <label><input type="radio"  name="assess" value="No"/>No</label>
+      <label><input type="radio"  name="assess" value="Yes"/>Yes</label>
+      <label><input type="radio"  name="assess" value="Confused"/>I was confused</label>
+
+      <p>Were there any problems or bugs in the experiment?</p>
+      <textarea id="problems" rows="2" cols="50"></textarea>
+
+      <p>What do you think is a fair price for the work you did?</p>
+      <input type="text" id="fairprice" />
+
+
+      <p>Native Language: <input type="text" id="language"/></p>
+      <label>(the language(s) spoken at home when you were a child)</label>
+
+      <p>Other Languages: <input type="text" id="other-language"/></p>
+      <label>(other languages that you learned at some point in your life)</label>
+
+
+
+      <p>Did you enjoy the hit?</p>
+      <select id="enjoyment">
+        <label><option value="-1"></option></label>
+        <label><option value="0">Worse than the Average HIT</option></label>
+        <label><option value="1" >An Average HIT</option></label>
+        <label><option value="2">Better than average HIT</option></label>
+      </select>
+
+      <p>We would be interested in any comments you have about this experiment. Please type them here:</p>
+      <textarea id="comments" rows="3" cols="50"></textarea>
+      <br/>
+      <button onclick="_s.submit()">Submit</button>
+    </div>
+  </div>
+
+  <div id="thanks" class="slide js" >
+    <p  class="big">Thanks for your time!</p>
+  </div>
+
+  <div class="progress">
+    <span>Progress:</span>
+    <div class="bar-wrapper">
+      <div class="bar" width="0%">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
