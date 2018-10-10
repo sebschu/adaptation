@@ -1,0 +1,151 @@
+---
+title: "Analysis of comprehension experiment"
+author: "Sebastian Schuster"
+date: "4/21/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+source("../../0_pre_test/analysis/helpers.R")
+
+theme_set(theme_bw())
+
+modals = c("might", "probably")
+modals_labels = c("might", "probably")
+colscale = scale_color_manual(limits=modals_labels, values=c("#d95f02", "#66a61e"))
+
+```
+
+```{r utils, include=FALSE}
+remove_quotes = function(d) {
+  d$modal = gsub('"', '', d$modal)
+  d$color = gsub('"', '', d$color)
+  return(d)
+}
+```
+
+```{r load_data, echo=FALSE}
+
+trials = remove_quotes(read.csv("../data/4_comprehension_pre_test-trials.csv"))
+
+trials[trials$color == "orange",]$percentage_blue = 100 - trials[trials$color == "orange",]$percentage_blue
+
+trials = trials %>% group_by(modal, color, workerid) %>% mutate(rating_norm = rating / sum(rating)) %>% ungroup()
+
+trials.might = remove_quotes(read.csv("../../2_comprehension/data/2_comprehension-might-trials.csv"))
+trials.probably = remove_quotes(read.csv("../../2_comprehension/data/2_comprehension-probably-trials.csv"))
+
+trials.might[trials.might$color == "orange",]$percentage_blue = 100 - trials.might[trials.might$color == "orange",]$percentage_blue
+trials.probably[trials.probably$color == "orange",]$percentage_blue = 100 - trials.probably[trials.probably$color == "orange",]$percentage_blue
+
+trials.might = trials.might %>% group_by(modal, color, workerid) %>% mutate(rating_norm = rating / sum(rating), cond = "might") %>% ungroup()
+trials.probably = trials.probably %>% group_by(modal, color, workerid) %>% mutate(rating_norm = rating / sum(rating),  cond = "probably") %>% ungroup()
+
+exp_trials.might = read.csv("../../2_comprehension/data/2_comprehension-might-exp_trials.csv")
+exp_trials.probably = read.csv("../../2_comprehension//data/2_comprehension-probably-exp_trials.csv")
+
+
+get_correct_catch_trial_counts = function (data) {
+  ret = data %>% 
+  filter(., catch_trial == 1) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_trial_answer_correct))
+  
+  return(ret)
+}
+
+EXCLUDE_BELOW = 3
+
+catch_trial_perf.all.might = get_correct_catch_trial_counts(exp_trials.might)
+
+
+catch_trial_perf.all.probably = get_correct_catch_trial_counts(exp_trials.probably)
+
+exclude.might = catch_trial_perf.all.might %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+exclude.probably = catch_trial_perf.all.probably %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+print(paste("Excluded", length(exclude.might), "participants in might-biased condition."))
+print(paste("Excluded", length(exclude.probably), "participants in probably-biased condition."))
+
+
+#final data
+d.might = trials.might %>% filter(., !(workerid %in% exclude.might))
+d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))
+
+d.adaptation.all = rbind(d.might, d.probably)
+
+
+
+```
+
+
+## Results
+
+
+### Comparison between modals  (raw ratings)
+
+```{r per_cond, echo=FALSE, fig.width=10} 
+
+d.plot = trials
+
+d.plot$cond = "_norming"
+
+ggplot(d.plot, aes(y=rating, x=percentage_blue, col=modal)) + 
+  geom_point() + 
+  geom_smooth(method="loess") + 
+  xlab("percentage blue") + 
+  ylab("raw rating") +
+  guides(col=guide_legend(title="Modal")) +
+  colscale
+```
+
+
+### Comparison between modals  (normalized ratings)
+
+
+```{r per_cond_norm, echo=FALSE, fig.width=10} 
+
+
+ggplot(d.plot%>% group_by(modal,percentage_blue,speaker_cond) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m, linetype=speaker_cond, col=modal)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + ylab("mean rating") + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=14)) + ylim(0,1)
+
+ggplot(d.plot%>% group_by(modal,percentage_blue) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m,  col=modal)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + ylab("mean rating") + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=14)) 
+
+
+
+
+
+
+```
+
+## comparison to might-biased
+
+```{r echo=FALSE,fig.width=10}
+
+ggplot(rbind(d.plot,d.might) %>% filter(modal != "bare") %>% group_by(modal,percentage_blue, cond) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m,  col=modal, linetype=cond)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + ylab("mean rating") + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=10)) +ylim(0,.4)
+
+```
+
+## comparison to probably-biased
+
+```{r echo=FALSE,fig.width=10}
+
+ggplot(rbind(d.plot,d.probably) %>% filter(modal != "bare") %>% group_by(modal,percentage_blue, cond) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m,  col=modal, linetype=cond)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + ylab("mean rating") + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=10)) +ylim(0,.4)
+```
+
+
+## per-participant plots
+
+```{r per_participant, echo=FALSE, fig.width=10, fig.height=12}
+
+ggplot(d.plot%>% group_by(modal,percentage_blue, workerid, speaker_cond) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m,  col=modal)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + ylab("mean rating") + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=10)) + ylim(0,1) + facet_wrap(~workerid+speaker_cond, ncol=4)
+
+```
+

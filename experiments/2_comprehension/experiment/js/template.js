@@ -162,6 +162,7 @@ function make_slides(f) {
     for (var i = 1; i < 10; i++) {
       exp.data_trials.push({
         "modal": this.stim.modal,
+        "color": this.stim.color,
         "percentage_blue": percentages[i-1],
         "rating": $("#slider_" + i).slider("option", "value")
       });

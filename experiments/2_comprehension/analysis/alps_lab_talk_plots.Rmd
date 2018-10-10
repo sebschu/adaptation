@@ -1,0 +1,214 @@
+---
+title: "Analysis of comprehension experiment"
+author: "Sebastian Schuster"
+date: "4/21/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
+source("../../1_adaptation/analysis/helpers.R")
+
+theme_set(theme_bw())
+
+```
+
+```{r utils, include=FALSE}
+remove_quotes = function(d) {
+  d$modal = gsub('"', '', d$modal)
+  d$color = gsub('"', '', d$color)
+  return(d)
+}
+```
+
+```{r load_data, echo=FALSE}
+
+trials.might = remove_quotes(read.csv("../data/2_comprehension-might-trials.csv"))
+trials.probably = remove_quotes(read.csv("../data/2_comprehension-probably-trials.csv"))
+
+trials.might[trials.might$color == "orange",]$percentage_blue = 100 - trials.might[trials.might$color == "orange",]$percentage_blue
+trials.probably[trials.probably$color == "orange",]$percentage_blue = 100 - trials.probably[trials.probably$color == "orange",]$percentage_blue
+
+trials.might = trials.might %>% group_by(modal, color, workerid) %>% mutate(rating_norm = rating / sum(rating), cond = "might") %>% ungroup()
+trials.probably = trials.probably %>% group_by(modal, color, workerid) %>% mutate(rating_norm = rating / sum(rating),  cond = "probably") %>% ungroup()
+
+exp_trials.might = read.csv("../data/2_comprehension-might-exp_trials.csv")
+exp_trials.probably = read.csv("../data/2_comprehension-probably-exp_trials.csv")
+
+```
+
+## Catch trial performance
+
+```{r catch_trials, echo=FALSE}
+
+get_correct_catch_trial_counts = function (data) {
+  ret = data %>% 
+  filter(., catch_trial == 1) %>%
+  group_by(workerid) %>%
+  summarise(catch_perf = sum(catch_trial_answer_correct))
+  
+  return(ret)
+}
+
+EXCLUDE_BELOW = 3
+
+catch_trial_perf.all.might = get_correct_catch_trial_counts(exp_trials.might)
+
+
+catch_trial_perf.all.probably = get_correct_catch_trial_counts(exp_trials.probably)
+
+exclude.might = catch_trial_perf.all.might %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+exclude.probably = catch_trial_perf.all.probably %>%
+  filter(catch_perf < EXCLUDE_BELOW) %>%
+  .$workerid
+
+print(paste("Excluded", length(exclude.might), "participants in might-biased condition."))
+print(paste("Excluded", length(exclude.probably), "participants in probably-biased condition."))
+
+
+#final data
+d.might = trials.might %>% filter(., !(workerid %in% exclude.might))
+d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))
+
+d.all = rbind(d.might, d.probably)
+
+
+```
+
+```{r perf_plot_1, fig.height=2,fig.width=10, echo=FALSE}
+
+cutoff <- data.frame(yintercept=EXCLUDE_BELOW-0.5, cutoff=factor(EXCLUDE_BELOW-0.5))
+
+
+ggplot(catch_trial_perf.all.probably, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in probably-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+
+```
+
+```{r perf_plot_2, fig.height=2,fig.width=10, echo=FALSE}
+
+ggplot(catch_trial_perf.all.might, aes(x=factor(workerid), y=catch_perf)) + geom_bar(stat = "identity") + ggtitle("Catch trial performace in might-biased cond.") + xlab ("participant") + ylab("correct responses") + geom_hline(aes(yintercept=yintercept, linetype=cutoff, color="red"), data=cutoff) + theme(legend.position="none")
+```
+
+## Results
+
+### Comparison between conditions for each modal (raw ratings)
+
+```{r per_modal, echo=FALSE, fig.width=10} 
+
+d.plot = d.all
+d.plot$cond = factor(d.plot$cond, labels = c("cautious speaker", "confident speaker"), levels=c("might", "probably"))
+d.plot$modal = factor(d.plot$modal, levels= c("might", "probably", "bare"), ordered = T)
+
+ggplot(d.plot, aes(y=rating, x=percentage_blue, col=cond)) + 
+  geom_point() + 
+  facet_wrap(~modal) + 
+  geom_smooth(method="loess") + 
+  xlab("percentage blue") + 
+  ylab("raw rating") +
+  guides(col=guide_legend(title="Condition"))
+```
+
+### Comparison between conditions for each modal (normalized ratings)
+
+```{r per_modal_norm, echo=FALSE, fig.width=10}
+ggplot(d.plot, aes(y=rating_norm, x=percentage_blue, col=cond)) + 
+  geom_point() + 
+  facet_wrap(~modal) + 
+  geom_smooth(method="loess") + 
+  xlab("percentage blue") + 
+  ylab("normalized rating") +
+  guides(col=guide_legend(title="Condition"))
+
+```
+
+### Comparison between modals for each condition (raw ratings)
+
+```{r per_cond, echo=FALSE, fig.width=10} 
+
+ggplot(d.plot, aes(y=rating, x=percentage_blue, col=modal)) + 
+  geom_point() + 
+  facet_wrap(~cond) + 
+  geom_smooth(method="loess") + 
+  xlab("percentage blue") + 
+  ylab("raw rating") +
+  guides(col=guide_legend(title="Modal"))
+```
+
+
+### Comparison between modals for each condition (normalized ratings)
+
+
+```{r per_cond_norm, echo=FALSE, fig.width=10} 
+
+
+ ggplot(d.plot %>% group_by(modal,percentage_blue, cond) %>% summarise(rating_m = mean(rating_norm), ci_low=ci.low(rating_norm), ci_high=ci.high(rating_norm)), aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + #+ scale_color_manual(values = wes_palette("IsleofDogs1",3)) +
+  guides(col=guide_legend(title="Modal")) + ylab("normalized rating") +  theme(text = element_text(size=20)) +
+    facet_wrap(~cond) 
+
+
+```
+
+## Tests
+
+t-test for difference in expected value for "might" distributions:
+
+
+```{r test1, echo=FALSE}
+
+# computes the mean of the distribution for each worker and modal
+computeMeans = function(d) {
+  d.means = d %>% 
+    mutate(weighted_p = percentage_blue / 100 * rating_norm, weighted_p2 =  (percentage_blue / 100)^2 * rating_norm) %>% 
+    group_by(workerid, modal) %>% 
+    summarize(mu=sum(weighted_p)/sum(rating_norm), 
+              sd=sqrt(sum(weighted_p2)/sum(rating_norm) - (sum(weighted_p)/sum(rating_norm))^2))
+    
+  return(d.means)
+  
+}
+
+
+means.might_biased = computeMeans(d.might)
+means.probably_biased = computeMeans(d.probably)
+
+means.might_biased$cond = "cautious speaker"
+means.probably_biased$cond = "confident speaker"
+
+means.all = rbind(means.might_biased, means.probably_biased)
+means.all = means.all %>% 
+  group_by(cond, modal) %>% 
+  summarise(mu_m = mean(mu), 
+               ci_high = ci.high(mu), 
+               ci_low = ci.low(mu))
+
+
+t.test(means.might_biased %>% filter(modal == "might") %>% .$mu, means.probably_biased %>% filter(modal == "might") %>% .$mu, var.equal = TRUE)
+
+```
+
+t-test for difference in expected value for "probably" distributions:
+
+```{r test2, echo=FALSE, fig.width=6}
+t.test(means.might_biased %>% filter(modal == "probably") %>% .$mu, means.probably_biased %>% filter(modal == "probably") %>% .$mu, var.equal = TRUE)
+
+ggplot(means.all %>% filter(modal != "bare"), aes(x=0, y=mu_m, color=cond)) +
+    geom_errorbar(aes(ymin=mu_m-ci_low, ymax=mu_m+ci_high), width=.1) +
+    geom_point() +
+    xlab("") +
+    ylab("expected value of distribution") +
+    theme(axis.ticks=element_blank(), axis.text.x=element_blank(),
+          panel.grid.minor=element_blank(), 
+          plot.background=element_blank()) +
+    xlim(-.2, .2) +
+    facet_wrap(~modal) +
+    guides(col=guide_legend(title="Condition"))
+
+
+```
+
+  
