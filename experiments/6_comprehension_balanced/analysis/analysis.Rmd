@@ -1,7 +1,7 @@
 ---
-title: "Analysis of comprehension experiment"
+title: "Analysis of comprehension experiment (with balanced exposures)"
 author: "Sebastian Schuster"
-date: "4/21/2018"
+date: "10/10/2018"
 output: html_document
 ---
 
@@ -10,6 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(tidyverse)
 source("../../1_adaptation/analysis/helpers.R")
+
+theme_set(theme_bw())
+
+colscale = scale_color_manual(values=c("#7CB637","#4381C1", "#666666")) 
+colscale_fill = scale_fill_manual(values=c("#7CB637","#4381C1", "#666666"))
 
 ```
 
@@ -102,25 +107,45 @@ d.plot = d.all
 d.plot$cond = factor(d.plot$cond, labels = c("might-biased", "probably-biased"), levels=c("might", "probably"))
 d.plot$modal = factor(d.plot$modal, levels= c("might", "probably", "bare"), ordered = T)
 
-ggplot(d.plot, aes(y=rating, x=percentage_blue, col=cond)) + 
+d_means = d.plot %>%
+  group_by(workerid, percentage_blue, modal, cond) %>% 
+  summarise(participant_mean = mean(rating), participant_mean_norm=mean(rating_norm)) %>%
+  group_by(percentage_blue, modal, cond) %>%
+  summarise(mu = mean(participant_mean),
+         ci_high = ci.high(participant_mean), 
+         ci_low = ci.low(participant_mean),
+         mu_norm = mean(participant_mean_norm),
+         ci_high_norm = ci.high(participant_mean_norm),
+         ci_low_norm = ci.low(participant_mean_norm))
+
+ggplot(d_means, aes(y=mu, x=percentage_blue, col=cond)) + 
   geom_point() + 
-  facet_wrap(~modal) + 
-  geom_smooth(method="loess") + 
-  xlab("percentage blue") + 
-  ylab("raw rating") +
-  guides(col=guide_legend(title="Condition"))
+  xlab("% blue gumballs") +
+  ylab("mean ratings") +
+  geom_errorbar(aes(ymin=mu-ci_low, ymax=mu+ci_high), width=.1) +
+  geom_line() +
+  geom_point(size=1) +
+  guides(col=guide_legend(title="Condition")) +
+  colscale +
+  theme(legend.position="bottom") +
+  facet_wrap(~modal)
+
 ```
 
 ### Comparison between conditions for each modal (normalized ratings)
 
 ```{r per_modal_norm, echo=FALSE, fig.width=10}
-ggplot(d.plot, aes(y=rating_norm, x=percentage_blue, col=cond)) + 
+ggplot(d_means, aes(y=mu_norm, x=percentage_blue, col=cond)) + 
   geom_point() + 
-  facet_wrap(~modal) + 
-  geom_smooth(method="loess") + 
-  xlab("percentage blue") + 
-  ylab("normalized rating") +
-  guides(col=guide_legend(title="Condition"))
+  xlab("% blue gumballs") +
+  ylab("mean ratings") +
+  geom_errorbar(aes(ymin=mu_norm-ci_low_norm, ymax=mu_norm+ci_high_norm), width=.1) +
+  geom_line() +
+  geom_point(size=1) +
+  guides(col=guide_legend(title="Condition")) +
+  colscale +
+  theme(legend.position="bottom") +
+  facet_wrap(~modal)
 
 ```
 
@@ -128,13 +153,18 @@ ggplot(d.plot, aes(y=rating_norm, x=percentage_blue, col=cond)) +
 
 ```{r per_cond, echo=FALSE, fig.width=10} 
 
-ggplot(d.plot, aes(y=rating, x=percentage_blue, col=modal)) + 
+ggplot(d_means, aes(y=mu, x=percentage_blue, col=modal)) + 
   geom_point() + 
-  facet_wrap(~cond) + 
-  geom_smooth(method="loess") + 
-  xlab("percentage blue") + 
-  ylab("raw rating") +
-  guides(col=guide_legend(title="Modal"))
+  xlab("% blue gumballs") +
+  ylab("mean ratings") +
+  geom_errorbar(aes(ymin=mu-ci_low, ymax=mu+ci_high), width=.1) +
+  geom_line() +
+  geom_point(size=1) +
+  guides(col=guide_legend(title="Expression")) +
+  colscale +
+  theme(legend.position="bottom") +
+  facet_wrap(~cond)
+
 ```
 
 
@@ -144,13 +174,18 @@ ggplot(d.plot, aes(y=rating, x=percentage_blue, col=modal)) +
 ```{r per_cond_norm, echo=FALSE, fig.width=10} 
 
 
-ggplot(d.plot, aes(y=rating_norm, x=percentage_blue, col=modal)) + 
+ggplot(d_means, aes(y=mu_norm, x=percentage_blue, col=modal)) + 
   geom_point() + 
-  facet_wrap(~cond) + 
-  geom_smooth(method="loess") + 
-  xlab("percentage blue") + 
-  ylab("normalized rating") +
-  guides(col=guide_legend(title="Modal"))
+  xlab("% blue gumballs") +
+  ylab("mean ratings") +
+  geom_errorbar(aes(ymin=mu_norm-ci_low_norm, ymax=mu_norm+ci_high_norm), width=.1) +
+  geom_line() +
+  geom_point(size=1) +
+  guides(col=guide_legend(title="Expression")) +
+  colscale +
+  theme(legend.position="bottom") +
+  facet_wrap(~cond)
+
 
 ```
 
