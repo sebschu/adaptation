@@ -1,0 +1,267 @@
+---
+title: "Listener speaker relation"
+output:
+  html_document:
+    df_print: paged
+---
+
+How can we best characterize the listener/speaker relation?
+
+* Possibility 1: Listener is an $L_1$ that reasons about $S_1$ and speaker is an $S_1$.
+* Possibility 2: Listener is an $L_1$ that reasons about $S_1$ and speaker is an $S_2$ that reasons about $L_1$ (potentially with its own rationality parameter).
+
+```{r libs}
+
+library(tidyverse)
+library(ggplot2)
+library(data.table)
+
+source("helpers.R")
+
+```
+
+
+
+```{r load_prior_data}
+
+speaker_data_orig = read.csv("../../experiments/0_pre_test/data/0_pre_test-cond5_2-trials.csv")
+
+speaker_data_orig$workerid = rep(0:19, each=36)
+speaker_data_orig = prepare_data(speaker_data_orig)
+speaker_data_orig = remove_quotes(speaker_data_orig)
+
+
+speaker_data = read.csv("../../experiments/4_comprehension_pre_test/data/4_comprehension_pre_test-prod_trials.csv")
+listener_data = read.csv("../../experiments/4_comprehension_pre_test/data/4_comprehension_pre_test-trials.csv")
+
+speaker_data = prepare_data(speaker_data)
+speaker_data = remove_quotes(speaker_data)
+
+listener_data = remove_quotes(listener_data)
+listener_data = prepare_comp_data(listener_data)
+
+```
+
+
+```{r plot_speaker_data_indiv, fig.width=10, fig.height=20}
+
+speaker_data_orig %>% 
+  group_by(workerid,modal, percentage_blue) %>% 
+  summarize(mu=mean(rating)) %>% 
+  ggplot(aes(x=percentage_blue, y=mu, col=modal)) + geom_line() + facet_wrap(~workerid)
+
+speaker_data_orig$speaker_cond = "cartoon"
+speaker_data_orig$scene = "cartoon"
+speaker_data$scene = "real"
+
+```
+
+```{r plot_speaker_data_comp, fig.width=10}
+
+
+speaker_data_orig %>% rbind(speaker_data) %>%
+  group_by(speaker_cond,modal, percentage_blue) %>% 
+  summarize(mu=mean(rating), ci_low = ci.low(rating), ci_high = ci.high(rating)) %>% 
+  ggplot(aes(x=percentage_blue, y=mu, col=speaker_cond, pch=modal)) + geom_line() + geom_errorbar(aes(ymin=mu-ci_low, ymax=mu+ci_high), width=1) + geom_point(size=2)
+
+```
+
+```{r plot_speaker_data_indiv2, fig.width=10, fig.height=13}
+
+
+ speaker_data %>% 
+  group_by(workerid,modal, speaker_cond, percentage_blue) %>% 
+  summarize(mu=mean(rating)) %>% 
+  ggplot(aes(x=percentage_blue, y=mu, col=modal)) + geom_line() + facet_wrap(~speaker_cond + workerid) + geom_point()
+
+speaker_data %>%   group_by(workerid,modal, percentage_blue) %>% 
+  mutate(mu = mean(rating)) %>% ungroup %>%
+  ggplot(aes(x=percentage_blue, y=rating, col=modal)) + geom_line(aes(y=mu, col=modal)) + facet_wrap(~speaker_cond + workerid) + geom_jitter()
+
+l1_from_s1 = speaker_data %>% 
+  group_by(workerid,modal, percentage_blue) %>% 
+  summarize(mu=mean(rating)) %>%
+  group_by(workerid, modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred")
+
+l1_from_s1_08 = speaker_data %>% 
+  group_by(workerid, modal, percentage_blue) %>% 
+  summarize(mu=exp(0.8*log(mean(rating)))) %>%
+  group_by(workerid, modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred_08")
+
+l1_from_s1_06 = speaker_data %>% 
+  group_by(workerid, modal, percentage_blue) %>% 
+  summarize(mu=exp(0.5*log(mean(rating)))) %>%
+  group_by(workerid, modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred_05")
+
+listener_data_exp = listener_data %>% dplyr::filter(modal != "other") %>%
+      group_by(workerid, modal, percentage_blue) %>% 
+  summarize(l_prob_exp=mean(rating_norm)) %>% ungroup()
+
+listener_data %>% dplyr::filter(modal != "other") %>%
+      group_by(workerid, modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+    rbind(l1_from_s1) %>% 
+  dplyr::filter(modal != "other") %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line() + facet_wrap(~workerid)
+
+
+```
+
+### adaptation experiment 1
+
+```{r adaptation_1}
+
+speaker_adapt_1_might = read.csv("../../experiments/1_adaptation/data/1_adaptation-might-trials.csv")
+
+speaker_adapt_1_probably = read.csv("../../experiments/1_adaptation/data/1_adaptation-probably-trials.csv")
+
+listener_adapt_1_might = read.csv("../../experiments/2_comprehension/data/2_comprehension-might-trials.csv")
+
+listener_adapt_1_probably = read.csv("../../experiments/2_comprehension/data/2_comprehension-probably-trials.csv")
+
+
+speaker_adapt_1_might = prepare_data(speaker_adapt_1_might)
+speaker_adapt_1_might = remove_quotes(speaker_adapt_1_might)
+
+speaker_adapt_1_probably = prepare_data(speaker_adapt_1_probably)
+speaker_adapt_1_probably = remove_quotes(speaker_adapt_1_probably)
+
+listener_adapt_1_might = remove_quotes(listener_adapt_1_might)
+listener_adapt_1_might = prepare_comp_data(listener_adapt_1_might)
+
+listener_adapt_1_probably = remove_quotes(listener_adapt_1_probably)
+listener_adapt_1_probably = prepare_comp_data(listener_adapt_1_probably)
+
+
+l1_from_s1_might = speaker_adapt_1_might %>% 
+  group_by(modal, percentage_blue) %>% 
+  summarize(mu=exp(1*log(mean(rating)))) %>%
+  group_by(modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred")
+
+l1_from_s1_probably = speaker_adapt_1_probably %>% 
+  group_by(modal, percentage_blue) %>% 
+  summarize(mu=exp(1*log(mean(rating)))) %>%
+  group_by(modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred")
+
+listener_adapt_1_might %>% dplyr::filter(modal != "bare") %>%
+      group_by(modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+    rbind(l1_from_s1_might) %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line()
+
+listener_adapt_1_probably %>% dplyr::filter(modal != "bare") %>%
+      group_by(modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+    rbind(l1_from_s1_probably) %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line()
+
+
+```
+
+### adaptation experiment 2
+
+```{r adaptation_2}
+
+speaker_adapt_2_might = read.csv("../../experiments/5_adaptation_balanced//data/5_adaptation_balanced-might-trials.csv")
+
+speaker_adapt_2_probably = read.csv("../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-probably-trials.csv")
+
+listener_adapt_2_might = read.csv("../../experiments/6_comprehension_balanced//data/6_comprehension_balanced-might-trials.csv")
+
+listener_adapt_2_probably = read.csv("../../experiments/6_comprehension_balanced/data/6_comprehension_balanced-probably-trials.csv")
+
+
+speaker_adapt_2_might = prepare_data(speaker_adapt_2_might)
+speaker_adapt_2_might = remove_quotes(speaker_adapt_2_might)
+
+speaker_adapt_2_probably = prepare_data(speaker_adapt_2_probably)
+speaker_adapt_2_probably = remove_quotes(speaker_adapt_2_probably)
+
+listener_adapt_2_might = remove_quotes(listener_adapt_2_might)
+listener_adapt_2_might = prepare_comp_data(listener_adapt_2_might)
+
+listener_adapt_2_probably = remove_quotes(listener_adapt_2_probably)
+listener_adapt_2_probably = prepare_comp_data(listener_adapt_2_probably)
+
+
+l1_from_s1_might = speaker_adapt_2_might %>% 
+  group_by(modal, percentage_blue) %>% 
+  summarize(mu=exp(1*log(mean(rating)))) %>%
+  group_by(modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred")
+
+l1_from_s1_probably = speaker_adapt_2_probably %>% 
+  group_by(modal, percentage_blue) %>% 
+  summarize(mu=exp(1*log(mean(rating)))) %>%
+  group_by(modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred")
+
+l1_from_s1_probably_08 = speaker_adapt_2_probably %>% 
+  group_by(modal, percentage_blue) %>% 
+  summarize(mu=exp(.8*log(mean(rating)))) %>%
+  group_by(modal) %>%
+  mutate(l_prob = mu / sum(mu)) %>%
+    ungroup() %>%
+  select (-mu) %>%
+  mutate(src="pred_08")
+
+listener_adapt_2_might %>% dplyr::filter(modal != "bare") %>%
+      group_by(modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+    rbind(l1_from_s1_might) %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line()
+
+listener_adapt_2_probably %>% dplyr::filter(modal != "bare") %>%
+      group_by(modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+    rbind(l1_from_s1_probably, l1_from_s1_probably_08) %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line()
+
+
+listener_adapt_2_might %>% dplyr::filter(modal != "bare") %>%
+      group_by(workerid, modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line() + facet_wrap(~workerid)
+
+
+listener_adapt_2_probably %>% dplyr::filter(modal != "bare") %>%
+      group_by(workerid, modal, percentage_blue) %>% 
+  summarize(l_prob=mean(rating_norm)) %>%
+            mutate(src="exp") %>% ungroup() %>%
+  ggplot(aes(x=percentage_blue, y=l_prob, col=modal, lty=src)) + geom_line() + facet_wrap(~workerid)
+
+
+
+```

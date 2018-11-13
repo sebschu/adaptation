@@ -1,0 +1,166 @@
+var DELTA = 0;
+
+// Discrete uniform distribution over interval [a,b]
+var limitedDiscreteUniform = cache(function(a, b) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(a, b + 1, 5);
+    var allBins = _.range(0, 101, 5);
+    var probs = map(function(x) {
+      if (x >=a && x < (b + 1)) {
+        return (1 + DELTA) / (bins.length + DELTA * allBins.length);
+      } else {
+        return DELTA / (bins.length + DELTA * allBins.length);
+      }
+    }, allBins);
+    return allBins[discrete(probs)];
+  });
+});
+
+// Discrete unifrom distribution over interval [0,100]
+var discreteUniform = limitedDiscreteUniform(0, 100);
+
+// Discrete Beta distribution
+var discreteBeta = cache(function(params, utt) {
+  return Infer({
+    method: "enumerate"
+  }, function() {
+    var bins = _.range(0, 1.01, .05);
+    var probs = map(function(b) {
+      var c = (b < 0.001 && utt == "bare_not") ? 0.000001 : ((b > 0.999 && utt != "bare_not") ? 1 - .000001 : b);
+      Math.exp(Beta(params).score(c))
+    }, bins);
+    var ret = bins[discrete(probs)];
+    return ret;
+  })
+});
+
+// List of utterances
+var utterances = ["bare", "might", "probably", "other", "bare_not"]
+
+// P(u) (uniform over utterances)
+var utterancePrior = function() {
+  return uniformDraw(utterances);
+}
+
+// L_0
+var literalListener = function(utterance, theta) {
+  if (utterance == "other") {
+    // "Other" is entirely uninformative, i.e. uniform distribution over event
+    // probabilities
+    return discreteUniform;
+  } else if (utterance == "bare_not") {
+    // "bare not" has upper threshold instead of lower threshold
+    return limitedDiscreteUniform(0, theta);
+  } else {
+    return limitedDiscreteUniform(theta, 100);
+  }
+};
+
+
+
+// S1
+var pragmaticSpeaker = function(prob, alphas, betas, costs, rat_alpha, modal1, modal2, noise_prob, utt_other_prob) {
+
+  // Build descrete Beta distributions
+  var theta_dists = mapObject(function(key, val) {
+    return discreteBeta({
+      a: alphas[key],
+      b: betas[key]
+    }, key);
+  }, alphas);
+
+  return Infer({
+    model: function() {
+      if (flip(noise_prob)) {
+        // Noise
+        return uniformDraw([modal1, modal2, "other"]);
+      } else {
+        var dist = Infer({
+          model: function() {
+            var utt = utterancePrior(modal1, modal2, utt_other_prob);
+            // Cost function
+            var cost = (utt == modal1 || utt == modal2) ? 0 : costs[utt];
+            
+            var score = reduce(function(theta, s) {
+              return s + Math.exp(theta_dists[utt].score(theta)) * literalListener(utt, Math.round(theta*100)).score(prob);
+            }, 0, _.range(0, 1.01, .05));
+            factor(rat_alpha * (score - cost));
+            return (utt == modal1 || utt == modal2) ? utt : "other";
+          },
+          method: "enumerate"
+        });
+        return sample(dist);
+      }
+    },
+    "method": "enumerate"
+  });
+
+};
+
+var model = function() {
+  return run();
+}
+
+var run = function() {
+  var alphas = {
+    "bare": data.params[0]["alpha_bare"],
+    "might": data.params[0]["alpha_might"],
+    "probably": data.params[0]["alpha_probably"],
+    "other": 1,
+    "bare_not": data.params[0]["alpha_bare_not"]
+
+  };
+
+  var betas = {
+    "bare": data.params[0]["beta_bare"],
+    "might": data.params[0]["beta_might"],
+    "probably": data.params[0]["beta_probably"],
+    "other": 1,
+    "bare_not": data.params[0]["beta_bare_not"]
+  };
+
+  var rat_alpha = data.params[0]["rat_alpha"];
+  var noise_strength = 0.05;
+  var utt_other_prob = data.params[0]["utt_other_prior"];
+
+
+
+  var d = {
+    modal1: data.modal1[0],
+    modal2: data.modal2[0]
+  }
+
+  var costs = {
+    "bare": data.params[0]["cost_bare"],
+    "might": data.params[0]["cost_might"],
+    "probably": data.params[0]["cost_probably"],
+    "other": "cost_other" in data.params[0] ? data.params[0]["cost_other"] : 0,
+    "bare_not": data.params[0]["cost_bare_not"]
+  };
+
+
+  var xs = _.range(0, 101, 5)
+  var ys_modal1 = map(function(prob) {
+    return Math.exp(pragmaticSpeaker(prob, alphas, betas, costs, rat_alpha, d.modal1, d.modal2, noise_strength, utt_other_prob).score(d.modal1))
+  }, xs);
+  var ys_modal2 = map(function(prob) {
+    return Math.exp(pragmaticSpeaker(prob, alphas, betas, costs, rat_alpha, d.modal1, d.modal2, noise_strength, utt_other_prob).score(d.modal2))
+  }, xs);
+  var ys_other = map(function(prob) {
+    return Math.exp(pragmaticSpeaker(prob, alphas, betas, costs, rat_alpha, d.modal1, d.modal2, noise_strength, utt_other_prob).score("other"))
+  }, xs);
+
+  var res = map(function(idx) {
+    return {
+      x: xs[idx],
+      y_modal1: ys_modal1[idx],
+      y_modal2: ys_modal2[idx],
+      y_other: ys_other[idx]
+    };
+  }, _.range(0, xs.length));
+
+
+  return res;
+}

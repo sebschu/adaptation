@@ -1,0 +1,312 @@
+---
+title: "Model zoo"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r libraries, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rwebppl)
+library(gridExtra)
+
+theme_set(theme_bw())
+
+modals = c("bare", "might",  "could", "think",  "probably",  "looks_like", "bare_not", "other")
+modals_labels = c("bare", "might",  "could", "think",  "probably",  "looks like", "bare not", "other")
+colscale = scale_color_manual(
+  limits = modals_labels,
+  values = c(
+  "#E6AB02",
+  "#7CB637",
+  "#4C3B4D",
+  "#E7298A",
+  "#4381C1",
+  "#08415C",
+  "#FB3640",
+  "#999999"
+  )
+  )
+
+
+```
+
+
+## Model 1: Numerator marginalization
+
+In this model, the marginzalization happens over the numerator of the Softmax for each utterance.
+This is an incorrect model since it doesn't represent any rational process. However, it can potentially be seen as an approximation of Model 4.
+
+Literal listener:
+
+$$L_0(\phi \mid u, \theta_u) \propto 1\left[\phi > \theta_u\right]$$
+
+Pragmatic speaker:
+
+$$S_1(u \mid \phi) \propto \int_0^1P(\theta_u) \exp\left(\lambda \left(\log L_0(\phi \mid u, \theta_u\right)-c(u)\right)$$ 
+
+To predict participant's ratings, we use the following condition-dependent speaker and add a noise term:
+
+$$
+S_1'(u \mid \phi, \mbox{condition}) \propto \mbox{noise} + (1-\mbox{noise}) \times
+     \begin{cases}
+ \int_0^1P(\theta_u) \exp\left(\lambda \left(\log L_0(\phi \mid u,  \theta_u\right)-c(u, \mbox{condition})\right) & \mbox{if }u \mbox{ in condition} \\
+ O + \sum_{u' \not \in \mbox{condition}}  \int_0^1P(\theta_{u'}) \exp\left(\lambda \left(\log L_0(\phi \mid u',  \theta_{u'}\right)-c(u', \mbox{condition})\right) & \mbox{if u is "other"}
+\end{cases}
+$$ 
+
+
+
+Parameters:
+
+$$\mbox{noise} = 0.05$$
+
+$$P(\theta_u) \sim Beta(\alpha_u, \beta_u)$$
+$$
+c(u, condition) = 
+     \begin{cases}
+       0 &\quad\text{if } u  \text{ is one of the utterances in } condition\\
+       \gamma &\quad\text{otherwise} \\
+     \end{cases}
+$$
+
+We estimate $\alpha_u, \beta_u, \gamma$, and $O$ (the probability for other utterances) from the data.
+
+In the actual data, the set of utterances is:
+
+* bare
+* probably
+* might
+* looks like
+* could
+* think
+* bare not.
+
+To make things a little simpler, I'll limit the set of utterances in the following examples to 
+
+* bare
+* probably
+* might
+* bare not.
+
+
+
+```{r model1_webppl, fig.width=10}
+  model_params_all = read.csv(file = "../1_threshold_modals/param-estimation-output-python/params_all_1_cost_other_cost.csv")
+  plot_posterior = function(modal1, modal2, webppl_model, save_predictions_path = NULL) {
+
+      data_from_R = list(modal1=modal1, modal2=modal2, params=model_params_all[1,])
+      
+      if (! is.null(save_predictions_path) && file.exists(save_predictions_path) ) {
+        post = readRDS(save_predictions_path)
+      } else {
+       post <- webppl(program_file = webppl_model, model_var = "model",
+         inference_opts = list(method = "enumerate", verbose=TRUE), 
+          data_var = "data", data = data_from_R)
+      
+        post2 = post
+        post = post[, !(names(post) %in% c("prob"))]
+        colnames(post) <- c("percentage_blue", modal1, modal2, "other")
+      
+        post = (post %>% gather("modal", "rating_pred", -percentage_blue))
+      
+        post$modal = factor(post$modal, levels = modals, labels=modals_labels, ordered = TRUE)
+      }
+      
+      p = ggplot(post, aes(x=percentage_blue, y=rating_pred)) + 
+        geom_line(aes(col=modal)) +
+        ggtitle(paste(modal1, modal2, sep="-")) + 
+        xlab("percentage") +  
+        theme(legend.position="right") +
+        colscale
+      
+      if (! is.null(save_predictions_path) && ! file.exists(save_predictions_path) ) {
+        saveRDS(post, save_predictions_path)
+      }
+      
+      return(p)
+
+  }
+  
+  p1 = plot_posterior("might", "probably", "./model_zoo/model1.webppl", save_predictions_path = "might-probably-predictions-model1.Rds")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model1.webppl", save_predictions_path = "might-bare-predictions-model1.Rds")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+  
+
+```
+
+## Model 2a: Expected utility
+
+In this model, the speaker is uncertain about the threshold and chooses an utterance based on their expected utility:
+
+$$EU(\phi, u, \mbox{condition}) = \int_0^1 P\left(\theta_u\right) \log L_0(\phi \mid u, \theta_u) - c(u, \mbox{condition})$$
+
+The literal listener is identical as in previous model 1:
+
+$$L_0(\phi \mid u, \theta_u) \propto 1\left[\phi > \theta_u\right]$$
+
+The speaker model is:
+
+$$
+S_1'(u \mid \phi, \mbox{condition}) \propto \mbox{noise} + (1-\mbox{noise}) \times
+     \begin{cases}
+  \exp\left(\lambda EU(\phi, u, \mbox{condition}) \right) & \mbox{if }u \mbox{ in condition} \\
+ O + \sum_{u' \not \in \mbox{condition}} \exp\left(\lambda EU(\phi, u', \mbox{condition}) \right)  & \mbox{if u is "other"}
+\end{cases}
+$$ 
+
+
+As the figures below show, this model is degnerate. This is because we sum (or integrate) over the log-probabilities of a literal listener inferring $\phi$ when hearing $u$ given a threshold $\theta_u$ and the log-probability is $-\infty$ for all cases where $\theta_u > \phi$. Since we use a beta distribution over $\theta_u$ it always assigns non-zero probabilities to each threshold $\theta_u$, which means that unless $\phi=1$, there is always a term in the sum that evaluates to $-\infty$ and hence the sum will also always evaluate to $-\infty$. So except for $\phi=1$, the speaker distribution is just governed by the noise and the probability of other utterances $O$ and therefore the model predicts for the interval $[0,0.95]$ that "other" is much more likely than the two choices that were presented to participants.
+
+```{r model2a, fig.width=10}
+
+
+  p1 = plot_posterior("might", "probably", "./model_zoo/model2a.webppl")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model2a.webppl")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+```
+
+## Models 2b+c: Finite expected utility
+
+We can solve the degenerecy problem by assigning a small probability $\delta$ to all semantically infelicituous world-utterance mappings, resulting in the following literal listener:
+
+$$L_0(\phi \mid u, \theta_u) \propto \delta + 1\left[\phi > \theta_u\right]$$
+
+The following plots show the model predictions if we set $\delta=10^{-5}$.
+
+
+```{r model2b, fig.width=10}
+
+
+  p1 = plot_posterior("might", "probably", "./model_zoo/model2b.webppl")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model2b.webppl")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+```
+
+And the following plots show the model predictions if we set $\delta=10^{-2}$.
+
+```{r model2c, fig.width=10}
+
+
+  p1 = plot_posterior("might", "probably", "./model_zoo/model2c.webppl")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model2c.webppl")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+```
+
+Compared to all other models, models 2b and 2c don't seem to give the correct predictions and 
+seem to heavily depend on $\delta$. If $\delta$ is very low, most of the probability mass is assigned to "other" and if $\delta$ is set to a higher value, there seem to be some strange artifacts in the left region of the plot (e.g., notice the small bump of probability for producing the bare utterance in the right panel of model 2c).
+
+
+## Model 3: Marginalization in the literal listener
+
+In this model, a pragmatic speaker reasons about a literal listener who is uncertain about the threshold. This can also be interpreted as the pragmatic listener being uncertain about
+the semantics of the utterance.
+
+Literal listener:
+
+$$L_0(\phi \mid u) \propto \int_0^1 P\left(\theta_u\right) 1\left[\phi > \theta_u\right]$$
+
+Pragmatic speaker:
+
+$$
+S_1'(u \mid \phi, \mbox{condition}) \propto \mbox{noise} + (1-\mbox{noise}) \times
+     \begin{cases}
+ \exp\left(\lambda \left(\log L_0(\phi \mid u)-c(u, \mbox{condition})\right)\right) & \mbox{if }u \mbox{ in condition} \\
+ O + \sum_{u' \not \in \mbox{condition}}  \exp\left(\lambda \left(\log L_0(\phi \mid u')-c(u', \mbox{condition})\right)\right) & \mbox{if u is "other"}
+\end{cases}
+$$
+As the following plots show, this model leads to very similar predictions as Model 1.
+
+
+```{r model3, fig.width=10}
+  p1 = plot_posterior("might", "probably", "./model_zoo/model3.webppl", save_predictions_path = "might-probably-predictions-model3.Rds")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model3.webppl", save_predictions_path = "might-bare-predictions-model3.Rds")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+```
+
+
+## Model 4: Marginalization outside the pragmatic speaker
+
+This model is similar to Model 1 with the exception that this model performs
+the marginalization after the normalization of the pragmatic speaker. In this model,
+the individual thresholds are no longer independent which leads to tractability problems.
+This model corresponds to an agent (the participant) who is uncertain about the thresholds
+and provides a rating by taking a weighted sum of pragmatic speakers that use differnt thresholds
+according to the participant's beliefs about likely thresholds.
+
+Literal listener:
+
+$$L_0(\phi \mid u, \theta_u) \propto 1\left[\phi > \theta_u\right]$$
+
+Pragmatic speaker:
+
+$$
+S_1'(u \mid \phi, \mbox{condition}, \theta) \propto \mbox{noise} + (1-\mbox{noise}) \times
+     \begin{cases}
+ \exp\left(\lambda \left(\log L_0(\phi \mid u,  \theta_u)-c(u, \mbox{condition})\right)\right) & \mbox{if }u \mbox{ in condition} \\
+ O + \sum_{u' \not \in \mbox{condition}}\exp\left(\lambda \left(\log L_0(\phi \mid u',  \theta_{u'})-c(u', \mbox{condition})\right)\right) & \mbox{if u is "other"}
+\end{cases}
+$$ 
+
+Participant's ratings:
+
+$$S_1''(u \mid  \phi, \mbox{condition})  = \int_0^1P(\theta) \times S_1'(u \mid \phi, \mbox{condition}, \theta) $$
+
+($P(\theta)$ is the joint probability over thresholds $\theta_u$ for all utterances $u$.)
+
+```{r model4, fig.width=10}
+  
+  p1 = plot_posterior("might", "probably", "./model_zoo/model4.webppl", save_predictions_path = "might-probably-predictions-model4.Rds")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model4.webppl", save_predictions_path = "might-bare-predictions-model4.Rds")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+
+```
+
+## Comparison of Model 1, Model 3, and Model 4:
+
+The plots below compare the model predictions of models 1, 3 and 4.
+
+```{r comparison, fig.width = 10}
+
+  might_prob_post_model1 = readRDS("./might-probably-predictions-model1.Rds") %>% 
+    mutate(model = "model 1")
+  might_prob_post_model3 = readRDS("./might-probably-predictions-model3.Rds") %>% 
+    mutate(model = "model 3")
+  might_prob_post_model4 = readRDS("./might-probably-predictions-model4.Rds") %>% 
+    mutate(model = "model 4")
+
+  might_prob_post = rbind(might_prob_post_model1, might_prob_post_model3, might_prob_post_model4)
+  
+  might_bare_post_model1 = readRDS("./might-bare-predictions-model1.Rds") %>% 
+    mutate(model = "model 1")
+  might_bare_post_model3 = readRDS("./might-bare-predictions-model3.Rds") %>% 
+    mutate(model = "model 3")
+  might_bare_post_model4 = readRDS("./might-bare-predictions-model4.Rds") %>% 
+    mutate(model = "model 4")
+  
+  might_bare_post = rbind(might_bare_post_model1, might_bare_post_model3, might_bare_post_model4)
+  
+  p1 = ggplot(might_prob_post, aes(x=percentage_blue, y=rating_pred, lty=model)) + 
+        geom_line(aes(col=modal)) +
+        ggtitle("might-probably") + 
+        xlab("percentage") +  
+        theme(legend.position="right") +
+        colscale
+  
+   p2 = ggplot(might_bare_post, aes(x=percentage_blue, y=rating_pred, lty=model)) + 
+        geom_line(aes(col=modal)) +
+        ggtitle("might-bare") + 
+        xlab("percentage") +  
+        theme(legend.position="right") +
+        colscale
+   
+   grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+
+  
+```
+
+This comparison suggests that all three models make similar qualitative predictions, and presumably, if we obtained MAP parameters for the three models independently (all parameters were estimated to fit model 1!), one could obtain virtually indentical predictions.
+
+Since inference is easiest for model 3, and there is a very clear interpretation of this model, it seems reasonable to use model 3.
+
