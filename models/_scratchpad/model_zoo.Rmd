@@ -1,5 +1,5 @@
 ---
-title: "Model zoo"
+title: "Model zoo 🦁🐧🐼🦒"
 output:
   html_document:
     df_print: paged
