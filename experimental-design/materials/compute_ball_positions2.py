@@ -60,7 +60,7 @@ n_orange = NUM_BALLS - n_blue
 colors = (["blue"] * n_blue) + (["orange"] * n_orange)
 shuffle(colors)
 
-prev_img = "scene_empty_blue_video.png"
+prev_img = sys.argv[2]
 for i, x in enumerate(zip(positions, colors)):
 	pos, col = x
 	print(pos)
@@ -72,7 +72,7 @@ command = ["mv", prev_img, "scene_blue_video_%d.png" % int(perc_blue)]
 call(command)
 
 
-prev_img = "scene_empty_orange_video.png"
+prev_img = sys.argv[3]
 for i, x in enumerate(zip(positions, colors)):
 	pos, col = x
 	print(pos)
