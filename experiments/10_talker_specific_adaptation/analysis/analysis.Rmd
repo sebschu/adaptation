@@ -76,8 +76,8 @@ format_data = function(d) {
 ```{r data, echo=FALSE}
 # Load data
 
-trials = remove_quotes(format_data(read.csv("../data/pilot/10_talker_specific_adaptation-trials.csv")))
-exp_trials = remove_quotes(read.csv("../data/pilot/10_talker_specific_adaptation-exp_trials.csv"))
+trials = remove_quotes(format_data(read.csv("../data/10_talker_specific_adaptation-trials.csv")))
+exp_trials = remove_quotes(read.csv("../data/10_talker_specific_adaptation-exp_trials.csv"))
 
 trials[, c("test_order", "first_speaker_type", "confident_speaker")] = str_split(trials$condition, "_", simplify=T)
 
