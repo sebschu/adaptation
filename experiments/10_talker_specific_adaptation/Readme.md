@@ -52,3 +52,6 @@ We predict that the difference in AUC between the might ratings and the probably
 
 See [analysis/analysis.Rmd](analysis/analysis.Rmd) for the exact analysis procedures.
 
+## Pilots
+
+We conducted one pilot experiment with students in a class that we taught. The experiment did not lead to significant results and as a result, we modified the manipulation and changed the random order of trials into a block design. The experiment as well as the results can be found [here](../7_adaptation_ling_145).
