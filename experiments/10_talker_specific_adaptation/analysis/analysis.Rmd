@@ -22,8 +22,8 @@ source("helpers.R")
 
 theme_set(theme_bw())
 
-colscale = scale_color_manual(values=c("#7CB637","#4381C1", "#666666")) 
-colscale_fill = scale_fill_manual(values=c("#7CB637","#4381C1", "#666666"))
+colscale = scale_color_manual(values=c("#7CB637", "#666666", "#4381C1")) 
+colscale_fill = scale_fill_manual(values=c("#7CB637", "#666666", "#4381C1")) 
 
 remove_quotes = function(d) {
   if (!is.null(d$modal)) {
@@ -53,7 +53,7 @@ format_data = function(d) {
   d = rbind(d2, d3, d4)
 
   d$modal = gsub('"', '', d$modal)
-  d$modal = factor(d$modal, levels = c("might", "probably", "other"))
+  d$modal = factor(d$modal, levels = c("might", "probably", "other"), ordered = T)
   
   d$percentage_blue_f = factor(d$percentage_blue)
   d_blue = d %>% filter(., grepl("blue", sentence2))
@@ -76,8 +76,8 @@ format_data = function(d) {
 ```{r data, echo=FALSE}
 # Load data
 
-trials = remove_quotes(format_data(read.csv("../data/10_talker_specific_adaptation-trials.csv")))
-exp_trials = remove_quotes(read.csv("../data/10_talker_specific_adaptation-exp_trials.csv"))
+trials = remove_quotes(format_data(read.csv("../data/pilot/10_talker_specific_adaptation-trials.csv")))
+exp_trials = remove_quotes(read.csv("../data/pilot/10_talker_specific_adaptation-exp_trials.csv"))
 
 trials[, c("test_order", "first_speaker_type", "confident_speaker")] = str_split(trials$condition, "_", simplify=T)
 
