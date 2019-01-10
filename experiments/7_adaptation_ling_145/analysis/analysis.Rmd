@@ -1,0 +1,167 @@
+---
+title: "Analysis of adaptation experiment"
+author: "Sebastian Schuster"
+date: "11/28/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(data.table)
+library(gridExtra)
+library(DescTools)
+library(splines)
+source("helpers.R")
+
+theme_set(theme_bw())
+colscale = scale_color_manual(values=c("#7CB637","#4381C1", "#666666")) 
+
+```
+
+```{r data, echo=FALSE}
+# Load data
+
+# Might-biased condition
+trials = read.csv("../data/ling-145-data-adaptation-anon.csv")
+exp_trials = read.csv("../data/ling-145-data-adaptation-exp-anon.csv")
+
+get_correct_catch_trial_counts = function (data) {
+  ret = data %>% 
+  dplyr::filter(., catch_trial == 1) %>%
+  group_by(subjectid) %>%
+  summarise(catch_perf = sum(catch_trial_answer_correct))
+  
+  return(ret)
+}
+
+EXCLUDE_BELOW = 12
+
+catch_trial_perf.trials = get_correct_catch_trial_counts(trials)
+catch_trial_perf.exp_trials = get_correct_catch_trial_counts(exp_trials)
+catch_trial_perf.all = rbind(catch_trial_perf.trials, catch_trial_perf.exp_trials) %>%
+  group_by(subjectid) %>%
+  summarise(catch_perf = sum(catch_perf))
+
+trials = prepare_data(trials)
+confident_m_speakers = trials[trials$condition == "confident_m",]$speaker
+confident_m_speakers = ((as.integer(confident_m_speakers)-1)*-1) + 2
+confident_m_speakers = factor(confident_m_speakers, levels=c(1, 2), labels=c("f", "m"))
+trials[trials$condition == "confident_m",]$speaker = confident_m_speakers
+
+trials$speaker = factor(trials$speaker, labels=c("confident", "cautious"))
+
+trials = trials %>% dplyr::filter(subjectid != "12284d6642bcee215090ab80c61119fe584abc5178ed")
+
+```
+
+Let's first plot the mean utterance ratings before and after the exposure phase:
+
+```{r summary_plots, fig.width=10, echo=FALSE}
+trials %>% 
+  mutate(phase = factor(phase, levels=c("pre_exposure", "post_exposure"), labels=c("pre-exposure", "post-exposure"), ordered = TRUE)) %>%
+  group_by(phase,percentage_blue,modal,speaker) %>%
+  summarize(mu = mean(rating), ci_low = ci.low(rating), ci_high = ci.high(rating)) %>%
+  ggplot( aes(x=percentage_blue, y=mu, col=modal, lty=speaker)) + geom_line() +
+  facet_wrap(~phase) + 
+  geom_errorbar(aes(ymin = mu - ci_low, ymax = mu + ci_high)) + 
+  colscale +
+  xlab("event probability") +
+  ylab("mean utterance rating") +
+  guides(col=guide_legend(title="Expression")) +
+  guides(lty=guide_legend(title="Speaker type"))  +
+  theme(legend.position = "bottom")
+```
+
+### Statistical tests:
+
+There seems to be a small numerical difference between the ratings of the _cautious_ and the _confident_ speaker. We can perform a t-test following the analysis of Yildirim et al. (2016), to determine whether this difference is significant.
+
+```{r test, echo=FALSE}
+
+auc_method1 = function(rating_m, percentage_blue) {
+      #estimate linear model
+    d= data.frame(rating_m = rating_m, percentage_blue=percentage_blue)
+    model = lm(formula = rating_m ~ ns(percentage_blue, df = 4), data = d)
+  
+    pred = data.frame(0:1000)
+    pred$percentage_blue = (0:1000)/10
+    pred$rating = predict(model, pred)
+
+    auc = AUC(x = pred$percentage_blue, y=pred$rating)
+    return(auc)
+}
+
+auc_for_participants = function(d, method) {
+  
+  aucs = data.frame()
+
+  #i = 1
+  
+  for (wid in unique(d$subjectid)) {
+    d.might_ratings = d %>% 
+      filter (., subjectid == wid) %>%
+      filter (modal == "might") %>%
+      group_by(subjectid, percentage_blue, speaker) %>%
+      summarise(rating_m = mean(rating)) %>%
+      group_by(subjectid, speaker) %>%
+      summarise(auc_might = method(rating_m, percentage_blue))
+    
+
+    d.probably_ratings = d %>% 
+      filter (., subjectid == wid) %>%
+      filter (modal == "probably") %>%
+      group_by(subjectid, percentage_blue, speaker) %>%
+      summarise(rating_m = mean(rating)) %>%
+      group_by(subjectid, speaker) %>%
+      summarise(auc_probably = method(rating_m, percentage_blue))
+    
+   
+    aucs = rbind(aucs,  merge(d.might_ratings, d.probably_ratings))
+    #aucs$auc_probably[i] = method(d.probably_ratings)
+
+    #i = i + 1
+  }
+  
+  aucs$auc_diff = aucs$auc_might - aucs$auc_probably
+  
+  return(aucs)
+}
+
+aucs = auc_for_participants(trials, method=auc_method1)
+
+aucs.all = aucs %>% 
+  group_by(., speaker) %>% 
+  summarise(., auc_diff_m = mean(auc_diff), 
+               ci_high = ci.high(auc_diff), 
+               ci_low = ci.low(auc_diff))
+
+
+
+
+ggplot(aucs.all, aes(x=0, y=auc_diff_m, color=speaker)) +
+    geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+    geom_point() +
+    xlab("") +
+    ylab("AUC difference (might ratings - probably ratings)") +
+    theme(axis.ticks=element_blank(), axis.text.x=element_blank(),
+          panel.grid.minor=element_blank(), 
+          plot.background=element_blank()) +
+    xlim(-.2, .2) 
+
+```
+
+```{r}
+print(summary(lm(auc_diff ~ speaker, data = aucs)))
+```
+
+Both the plot and the t-test suggest, that the manipulation did not have an effect and that there is no significant difference between the ratings for the _cautious_ and the _confident_ speaker.
+
+
+
+

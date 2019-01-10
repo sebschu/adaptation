@@ -1,0 +1,241 @@
+<html>
+
+<head>
+    <title>Language Learning Experiment</title>
+
+    <!--JS-->
+
+	
+
+
+    <!-- external general utilities -->
+    <script src="../_shared/js/jquery-1.11.1.min.js "></script>
+    <script src="../_shared/full-projects/jquery-ui/jquery-ui.min.js"></script>
+    <script src="../_shared/js/underscore-min.js"></script>
+    <!-- if you want to draw stuff: -->
+    <!-- <script src="../_shared/js/raphael-min.js"></script> -->
+
+		<script type="text/javascript">
+			//probably/might
+			var MODAL_CONDITION = 5;
+			var CONDITION = _.sample(["confident_m", "confident_f"]);
+			var SPEAKER_CONDITION = "f";
+		</script>
+
+    <!-- cocolab experiment logic -->
+    <script src="../_shared/js/exp-V2.js"></script>
+    <script src="../_shared/js/stream-V2.js"></script>
+
+    <!-- cocolab general utilities -->
+    <script src="../_shared/js/mmturkey.js "></script>
+    <script src="../_shared/js/browserCheck.js"></script>
+    <script src="../_shared/js/utils.js"></script>
+    <!-- if you want to draw cute creatures (depends on raphael): -->
+    <!-- <script src="../_shared/js/ecosystem.js"></script> -->
+
+    <!-- experiment specific helper functions -->
+    <!-- <script src="js/local-utils.js"></script> -->
+    <script src="../_shared/preload.js"></script>
+    <!--CSS-->
+    <link href="../_shared/full-projects/jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="../_shared/css/cocolab-style.css" rel="stylesheet" type="text/css"/>
+    <link href="css/local-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- experiment file -->
+    <script src="js/stims.js"></script>
+    <script src="js/template.js"></script>
+		
+
+</head>
+
+<body onload="init();">
+  <noscript>This task requires JavaScript.</noscript>
+
+  <div class="slide" id="i0" >
+  <img src="../_shared/images/alpslogo.png" alt="InterActive Language Processing Lab at Stanford">
+    <p id="cocolab">InterActive Language Processing Lab at Stanford</p>
+    <p id="instruct-text">
+      In this experiment, you will see a series of visual scenes and will be asked to answer some questions about some of them. You will need to listen what the people in the video have to say, so please make sure that your sound is turned on.  We recommend Google Chrome or Firefox. Please pay attention, thanks!</p>
+    <input id="start_button" type="button" class="button" value="Start Experiment">
+  </div>
+
+ 
+
+  <div class="slide" id="instructions">
+    <div id="instructions-part1">
+		<h3>Instructions</h3>
+		
+    <p>On the following pages, you will see a scene with an adult and a girl standing next to a table with a gumball machine on it. Importantly, <strong>the girl cannot see the gumball machine as it is too high up for her to see</strong>. The adult can see all the gumballs in the machine, which are constantly being tossed around.</p>
+    <p>After observing each scene, consider the two sentences below the scene and rate how likely you think it is that the adult would say each of 
+			the two sentences. If you think that both answers are unlikely, you can indicate this by giving the third option, 
+			<i>something else</i>, a high rating. To rate the sentences, use the sliders to distribute 100 points across the two 
+			sentences and <i>something else</i>. The sliders will automatically snap back if you try to assign more than 100 points.</p>
+		
+		
+		
+    
+		
+		
+    <input type="button" onclick="_s.button()" class="button" value="Continue">
+		</div>
+		<div id="instructions-part2">
+			<p>To continue, please answer the following question:</p>
+			<p>
+			   Can the girl see the contents of the gumball machine?
+			</p>
+			<p>
+			  <label>
+				  <input type="radio" name="checkquestion" id="checkquestion-yes" value="yes"> 
+				  Yes
+			  </label>
+			  <label>
+				  <input type="radio" name="checkquestion" id="checkquestion-no" value="no"> 
+					No
+				</label>
+			</p>
+	    <input type="button" onclick="_s.button()" class="button" value="Continue">
+		</div>
+		<div id="instructions-part3">
+			<p class="err">The answer you gave is incorrect.</p>
+			<p>Please click the button below to go back to the instructions.</p>
+	    <input type="button" onclick="_s.button()" class="button" value="Read instructions">
+		</div>
+		
+  </div>
+
+
+  <div class="slide" id="exp_instructions">
+		<h3>Instructions</h3>		
+		<p>On the following pages, you will see several short video clips.</p>
+		<p>Please listen to what the speaker has to say!</p>
+    
+		<input type="button" onclick="_s.button()" class="button" value="Continue">
+	
+	
+	</div>
+
+  <div class="slide" id="exp_trial">
+		
+		<div id="exp_trial-content">
+		
+		<img src="../_shared/images/attention_cross.png" style="position:relative;left:310px; top: 130px; display: none;" id="exp-attention-cross">
+    <p class="train-instructions">Consider the following scene:</p>
+		<div id="exp-canvas" style="width:320px; height: 240px; margin: 0 auto; padding: 12px 275px 175px 5px;">
+			<video id="exp-video" width="320" height="240">
+			 <source id="exp-video-source-mp4" src="" type="video/mp4">
+		   <source id="exp-video-source-ogg" src="" type="video/ogg">	 
+			</video>
+		</div>
+		<a href="#" onclick="$('#exp-video').trigger('play');return false;">Replay video</a>
+		
+  
+	  <p><input type="button" onclick="_s.button()" class="button" value="Continue" id="exp-button"></p>
+	</div>
+	<div id="exp_trial-catch">
+  <p class="train-instructions">Please answer the following question:</p>
+  <p><strong>Did you see a small gray X in the previous scene?</strong></p>
+  <input type="button" onclick="_s.button(true)" class="button" value="Yes">&nbsp;&nbsp;&nbsp;<input type="button" onclick="_s.button(false)" class="button" value="No">
+	
+	</div>
+	
+	
+	</div>
+
+  <div class="slide" id="test_instructions">
+		<h3>Instructions</h3>		
+		<p>Now, you will see similar scenes as in the first part of the experiment. Again, observe each scene and consider the two sentences below the scene and <strong>rate how likely you think it is that the adult would say each of the two sentences</strong>.</p>
+    
+		<input type="button" onclick="_s.button()" class="button" value="Continue">
+	
+	
+	</div>
+
+  <div class="slide" id="post_trial">
+		<div id="post_trial-content">
+		<img src="../_shared/images/attention_cross.png" style="position:relative;left:310px; top: 130px; display: none;" id="post-attention-cross">
+
+    <p class="train-instructions">Consider the following scene:</p>
+
+
+		<div id="post-canvas" style="width:320px; height: 240px; margin: 0 auto; padding: 12px 275px 198px 5px;">
+			<img src="./stimuli/still_f.jpg" id="speaker-img" width="320" height="240">
+		</div>
+
+      <div id="prompt">
+        <p>How likely do you think it is that the <span id="speaker-ref">adult</span> will respond with each of the following sentences?</p>
+				
+				<p class="err"> Please make sure that the three ratings sum to 100!</p>
+				
+				<table>
+					<tr>
+						<td><strong><span class="display_condition" id="sent_1">{}</span></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_1" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_1_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><span class="display_condition" id="sent_2">{}</span></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_2" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_2_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+					<tr>
+						<td><strong><em><span class="sent_other">something else</span></em></strong></td>
+						<td>
+							<div style="width:275px; padding: 15px; margin: 0 auto; overflow: hidden;"><span id="slider_3" style="display:block; width:200px; float:left; margin: 0 20px;"></span><input type="text" style="width: 30px; float: left; text-align: center" id="slider_3_val" value="0" disabled="disabled"></div>
+						</td>
+					</tr>
+				</table>
+				
+		      </div>
+	    <input type="button" onclick="_s.button()" class="button" value="Next">
+			</div>
+			<div id="post_trial-catch">
+      <p class="train-instructions">Please answer the following question:</p>
+      <p><strong>Did you see a small gray X in the previous scene?</strong></p>
+	    <input type="button" onclick="_s.button(true)" class="button" value="Yes">&nbsp;&nbsp;&nbsp;<input type="button" onclick="_s.button(false)" class="button" value="No">
+			
+			</div>
+  </div>
+
+
+
+  <div class="slide" id="subj_info">
+    <div class="long_form">
+      <div class="subj_info_title">Additional information</div>
+      <p>What's your name?</p>
+      <input type="text" id="name" />
+
+      <p>How old are you?</p>
+      <input type="text" id="age" />
+
+      <p>Please select your gender</p>
+      <select id="gender" name="gender">
+        <label><option value="f">female</option></label>
+        <label><option value="m" >male</option></label>
+        <label><option value="o">non-binary</option></label>
+      </select>
+
+      <p>Native Language: <input type="text" id="language"/></p>
+      <label>(the language(s) spoken at home when you were a child)</label>
+      
+      <br/>
+      <button onclick="_s.submit()">Submit</button>
+    </div>
+  </div>
+
+  <div id="thanks" class="slide js" >
+    <p  class="big" id="uploading-text">Uploading results... Please don't close this window!</p>
+    <p  class="big" id="thanks-text">Thanks for your time!</p>
+  </div>
+
+  <div class="progress">
+    <span>Progress:</span>
+    <div class="bar-wrapper">
+      <div class="bar" width="0%">
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
