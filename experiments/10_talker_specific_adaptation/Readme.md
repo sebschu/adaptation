@@ -4,13 +4,13 @@ Each participant sees two speakers: a male and a female speaker. One of them is 
 
 ## Controls
 
-We assign 13 (1/8 of all participants) to each of these combinations:
+We assign 13 (1/8 of all participants) to all possible combinations of these three variables.
 
 - whether the "cautious" or "confident" exposure phase is presented first
 - whether the male or the female speaker is the "confident" speaker
 - whether the test blocks ("cautious" and "confident") are presented in the same order as in the exposure phase or the opposite order.
 
-We don't expect any of these manipulations to have an effect on participant's ratings.
+We do not expect any of these variables to have an effect on participant's ratings.
 
 ## Participants
 
