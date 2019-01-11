@@ -78,7 +78,7 @@ var exposure_trial_generators = {
     }	
 
 
-    // 5 critical trials with orange and blue 100%
+    // 5 filler trials with orange and blue 100%
     for (var i = 0; i < 5; i++) {
       var t_idx = exposure_trials.length;
       var col = _.sample(colors);
@@ -96,8 +96,8 @@ var exposure_trial_generators = {
       exposure_trials.push(trial);
     }
 
-    // 10 critical trials with orange and blue 75%
-    for (var i = 0; i < 10; i++) {
+    // 5 filler trials with orange and blue 75%
+    for (var i = 0; i < 5; i++) {
       var t_idx = exposure_trials.length;
       var col = _.sample(colors);
       var p = col == "orange" ? "75" : "25";
@@ -144,7 +144,7 @@ var exposure_trial_generators = {
     }	
 
 
-    // 5 critical trials with orange and blue 100%
+    // 5 filler trials with orange and blue 100%
     for (var i = 0; i < 5; i++) {
       var t_idx = exposure_trials.length;
       var col = _.sample(colors);
@@ -163,8 +163,8 @@ var exposure_trial_generators = {
       exposure_trials.push(trial);
     }
 
-    // 10 critical trials with orange and blue 90%
-    for (var i = 0; i < 10; i++) {
+    // 5 filler trials with orange and blue 90%
+    for (var i = 0; i < 5; i++) {
       var t_idx = exposure_trials.length;
       var col = _.sample(colors);
       var p = col == "orange" ? "10" : "90";
