@@ -220,6 +220,9 @@ As the following plots show, this model leads to very similar predictions as Mod
 
 
 ```{r model3, fig.width=10}
+  model_params_all = read.csv(file = "../1_threshold_modals/param-estimation-output-python/listener-marg-condition-cost-1cost-other-cost-neg-utt.csv")
+
+
   p1 = plot_posterior("might", "probably", "./model_zoo/model3.webppl", save_predictions_path = "might-probably-predictions-model3.Rds")
   p2 = plot_posterior("might", "bare", "./model_zoo/model3.webppl", save_predictions_path = "might-bare-predictions-model3.Rds")
   grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
@@ -263,6 +266,19 @@ $$S_1''(u \mid  \phi, \mbox{condition})  = \int_0^1P(\theta) \times S_1'(u \mid 
 
 ```
 
+Approximation:
+
+```{r model5, fig.width=10}
+  
+    model_params_all = read.csv(file = "../1_threshold_modals/param-estimation-output-python/params_all_1_cost_other_cost.csv")
+
+
+  p1 = plot_posterior("might", "probably", "./model_zoo/model5.webppl", save_predictions_path = "might-probably-predictions-model5.Rds")
+  p2 = plot_posterior("might", "bare", "./model_zoo/model5.webppl", save_predictions_path = "might-bare-predictions-model5.Rds")
+  grid.arrange(p1 + theme(legend.position="none"), p2, widths=c(4.5, 5.5), ncol=2)
+
+```
+
 ## Comparison of Model 1, Model 3, and Model 4:
 
 The plots below compare the model predictions of models 1, 3 and 4.
@@ -275,8 +291,10 @@ The plots below compare the model predictions of models 1, 3 and 4.
     mutate(model = "model 3")
   might_prob_post_model4 = readRDS("./might-probably-predictions-model4.Rds") %>% 
     mutate(model = "model 4")
-
-  might_prob_post = rbind(might_prob_post_model1, might_prob_post_model3, might_prob_post_model4)
+  might_prob_post_model5 = readRDS("./might-probably-predictions-model5.Rds") %>% 
+    mutate(model = "model 5")
+  
+  might_prob_post = rbind(might_prob_post_model1, might_prob_post_model3, might_prob_post_model4, might_prob_post_model5)
   
   might_bare_post_model1 = readRDS("./might-bare-predictions-model1.Rds") %>% 
     mutate(model = "model 1")
@@ -284,8 +302,11 @@ The plots below compare the model predictions of models 1, 3 and 4.
     mutate(model = "model 3")
   might_bare_post_model4 = readRDS("./might-bare-predictions-model4.Rds") %>% 
     mutate(model = "model 4")
-  
-  might_bare_post = rbind(might_bare_post_model1, might_bare_post_model3, might_bare_post_model4)
+  might_bare_post_model5 = readRDS("./might-bare-predictions-model5.Rds") %>% 
+    mutate(model = "model 5")
+
+    
+  might_bare_post = rbind(might_bare_post_model1, might_bare_post_model3, might_bare_post_model4, might_bare_post_model5)
   
   p1 = ggplot(might_prob_post, aes(x=percentage_blue, y=rating_pred, lty=model)) + 
         geom_line(aes(col=modal)) +

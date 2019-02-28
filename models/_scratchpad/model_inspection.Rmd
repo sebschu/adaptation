@@ -1,0 +1,144 @@
+---
+title: "Inspecting model behavior"
+author: "Sebastian Schuster"
+date: "1/14/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+
+lit_list = function(theta,phi) {
+    theta_cat = round(theta *20)
+    return(1/(21-theta_cat))
+    
+}
+
+pragmatic_speaker = function(theta1,theta2,phi) {
+  
+  utt1_num = 0
+  if (theta1 <= phi) {
+    utt1_num = lit_list(theta1, phi)
+  }
+  
+  utt2_num = 0
+   if (theta2 <= phi) {
+    utt2_num = lit_list(theta2, phi)
+   }
+  
+  other_num = 0.001
+  
+  denom = other_num + utt1_num + utt2_num
+  return(utt1_num/denom)
+
+}
+
+
+
+approx_pragmatic_speaker = function(theta1,theta2,phi) {
+  
+  utt1_num = 0
+  if (theta1 <= phi) {
+    theta1_cat = round(theta1 *20)
+    utt1_num = 1/(21-theta1_cat)
+  }
+  
+  utt2_num = 0
+   if (theta2 <= phi) {
+    if (theta2 < 1.1) {
+      x = seq(0, min(1, phi), 0.05)
+      y = lit_list(x, phi)
+      utt2_num =weighted.mean(y, c(1,1,1,1,1,1,2,3,5,10,5,3,2,1,1,1,1,1,1,1,1)[1:length(y)])
+    } else {
+      x = seq(0.9, phi, 0.05)
+      y = lit_list(x, phi)
+      utt2_num = mean(y)
+    }
+   }
+  
+  other_num = 0.001
+  
+  denom = other_num + utt1_num + utt2_num
+  return(utt1_num/denom)
+
+}
+
+crude_approx_pragmatic_speaker = function(theta1,theta2,phi) {
+  
+  utt1_num = 0
+  if (theta1 <= phi) {
+    theta1_cat = round(theta1 *20)
+    utt1_num = 1/(21-theta1_cat)
+  }
+  
+  utt2_num = 0
+   if (theta2 <= phi) {
+    x = seq(0, phi, 0.05)
+    y = lit_list(x, phi)
+    t = (21 - length(y))
+    if (length(y) < 21) {
+      y = c(y, rep.int(0, t))
+    }
+    utt2_num = weighted.mean(y, c(1,1,1,1,1,1,2,3,5,10,5,3,2,1,1,1,1,1,1,1,1))
+   }
+  
+  other_num = 0.001
+  
+  denom = other_num + utt1_num + utt2_num
+  return(utt1_num/denom)
+
+}
+
+```
+
+
+```{r plots1, fig.width=20, fig.height=40, cache=TRUE}
+
+  d = data.frame(phi = rep(seq(0,1,0.05), 1, each=441), theta1 = rep(seq(0,1,0.05), 21, each=21), theta2 = rep(seq(0,1,0.05), 441))
+  
+d$type = "exact"
+d = d %>%
+  rowwise() %>%
+  mutate(speaker = pragmatic_speaker(theta1, theta2, phi))
+
+
+d2 =  d %>%
+  rowwise() %>%
+  mutate(speaker = approx_pragmatic_speaker(theta1, theta2, phi), type="approx")
+
+d = rbind(d,d2)
+
+  d %>% ggplot(aes(x=theta2, y=speaker, col=type)) + geom_line() + geom_point() + facet_wrap(~theta1+phi,ncol=21)
+
+```
+
+
+```{r plot_summary}
+
+  d = data.frame(phi = rep(seq(0,1,0.05), 1, each=441), theta1 = rep(seq(0,1,0.05), 21, each=21), theta2 = rep(seq(0,1,0.05), 441))
+  
+d$type = "exact"
+d = d %>%
+  rowwise() %>%
+  mutate(speaker = pragmatic_speaker(theta1, theta2, phi))
+
+
+d2 =  d %>%
+  rowwise() %>%
+  mutate(speaker = approx_pragmatic_speaker(theta1, theta2, phi), type="approx")
+
+d3 =  d %>%
+  rowwise() %>%
+  mutate(speaker = crude_approx_pragmatic_speaker(theta1, theta2, phi), type="crude_approx")
+
+
+d = rbind(d,d2, d3)
+
+
+  d %>% group_by(type,phi) %>% summarize(speaker_m=mean(speaker)) %>%
+    ggplot(aes(x=phi, y=speaker_m, col=type)) + geom_line() + geom_point()
+
+```
