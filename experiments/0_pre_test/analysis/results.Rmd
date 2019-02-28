@@ -103,7 +103,7 @@ d_by_modal_col$modal = factor(d_by_modal_col$modal, levels=modals, labels = moda
 
 p1 = ggplot(d_by_modal_col, aes(x=percentage_blue, y=rating_m, group=interaction(modal, blue), col=modal, linetype=blue)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + facet_wrap(~pair) + colscale
 
-p1a = ggplot(d_comparison %>% group_by(modal,percentage_blue, pair) %>% summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + geom_point(aes(col=modal), size=4) + geom_line(size=2) + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=5, size=1) + ylab("mean rating") + facet_wrap(~pair) + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=14))
+p1a = ggplot(d_comparison %>% group_by(modal,percentage_blue, pair) %>% summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + geom_point(aes(col=modal), size=1) + geom_line(size=1) + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=5, size=1) + ylab("mean rating") + facet_wrap(~pair) + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=14))
 
 
 
@@ -221,23 +221,37 @@ cat(paste("Correlation between might-probably run1  and might-probably run2: ", 
 ```
 
 
-```{r echo=FALSE, fig.width=10, fig.height=3.125}
+```{r echo=FALSE, fig.width=10, fig.height=10.125}
 
 
+# participant_plot = ggplot(ps_old$d %>% 
+#                             group_by(modal,percentage_blue, pair, workerid) %>% 
+#                             summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>% 
+#                             filter(workerid %in% c(15,8,12)), 
+#                           aes(x=percentage_blue/100, y=rating_m, group=modal, col=modal)) + 
+#   geom_point(aes(col=modal), size=1) + 
+#   geom_line(size=1) + 
+#   xlab("event probability") + 
+#   ylab("utterance rating") + 
+#   facet_wrap(~workerid, labeller=function(variable, value) {return(paste("Subject", value))}) + 
+#   scale_color_manual(limits=c("might", "probably", "other"), values=c("#7CB637", "#3885B4", "#999999"))+
+#   guides(col=guide_legend(title="Expression", nrow = 1)) + 
+#   theme(legend.position="bottom", legend.text=element_text(size=14))
+  
 participant_plot = ggplot(ps_old$d %>% 
                             group_by(modal,percentage_blue, pair, workerid) %>% 
-                            summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>% 
-                            filter(workerid %in% c(15,8,12)), 
+                            summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), 
                           aes(x=percentage_blue/100, y=rating_m, group=modal, col=modal)) + 
-  geom_point(aes(col=modal), size=3) + 
-  geom_line(size=2) + 
+  geom_point(aes(col=modal), size=1) + 
+  geom_line(size=1) + 
   xlab("event probability") + 
   ylab("utterance rating") + 
-  facet_wrap(~workerid, labeller=function(variable, value) {return(paste("Subject", value))}) + 
+  facet_wrap(~workerid, labeller=function(variable, value) {return(paste("Subject", value))}, ncol=7) + 
   scale_color_manual(limits=c("might", "probably", "other"), values=c("#7CB637", "#3885B4", "#999999"))+
   guides(col=guide_legend(title="Expression", nrow = 1)) + 
   theme(legend.position="bottom", legend.text=element_text(size=14))
   
+
 plot(participant_plot)
 
 ```
