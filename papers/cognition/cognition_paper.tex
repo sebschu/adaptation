@@ -135,6 +135,8 @@ circumstances syntactic adaptation can be observed \citep[see ][]{Liu2017,Harrin
 lexical associations \citep{DelaneyBusch2019},
 and intonation and prosody \citep{Kurumada2012,Roettger2019}. 
 
+
+
 At most linguistic levels, it also
 seems clear what kind of expectations listeners are updating. At the level of phonetics, for example, 
 listeners seem to be updating their expectations about speakers' \textbf{associations} between acoustic cues and phonemes \citep[e.g.,][]{Kleinschmidt2015}.
@@ -144,6 +146,13 @@ In particular, while the results by \cite{Yildirim2016} suggest that listeners a
 \textit{some} expectations about specific speakers' language use, 
 it is an open question what kind of expectation updates underlie semantic/pragmatic adaptation. 
 Answering this question is the focus of the current study.
+
+\begin{figure}
+\center
+\includegraphics[width=\textwidth]{plots/implicatures.pdf}
+\caption{Lexica, utterance preferences and likely interpretation of \textit{probably} for three different speakers. \label{fig:inference-example}}
+\end{figure}
+
 
 Conceptually, from a Gricean perspective of utterance interpretation \citep{Grice1975}, 
 there seem to be two likely types of expectations that could get updated during semantic/pragmatic adaptation.
@@ -572,7 +581,7 @@ mean ratings that participants had provided in the pre-exposure experiments. We 
 about its predictions.
 
 Figure~\ref{fig:norming-results-model-main} shows the model predictions and the experimental data for three conditions 
-(see Table~\ref{tbl: correlations} and the Supplementary Material for modeling results for all 21 conditions). As these plots show, the model
+(see Table~\ref{tbl:correlations} and the Supplementary Material for modeling results for all 21 conditions). As these plots show, the model
 is able to capture almost the entire variance in participants' average ratings. Further, the 95\% HDIs are very small which suggests
 that the model is certain about its predictions. Both of these observations are also true for the model's predictions for all the other
 conditions. For 19 of the 21 conditions, the $R^2$ value between the model predictions and the experimental data exceeds 0.9,
@@ -584,7 +593,7 @@ getting a target color gumball. In these situations, participants presumably tho
 utterances and therefore rate \textit{something else} highly unless we provide them with the {\sc bare} or {\sc bare not} options. The model predicts
 this behavior to some extent but seems to assume that participants were cued more heavily towards the presented utterance options than they actually were.
 This could be an indicator that we should revisit our unconventional approach of treating the bare forms like uncertainty expressions with a threshold semantics,
-since the model would predict higher ratings for the \texit{something else} at both ends of the scale if we assumed that the bare form and its negation were only true
+since the model would predict higher ratings for the \textit{something else} at both ends of the scale if we assumed that the bare form and its negation were only true
 in the cases of 100\% and 0\% event probabilities, respectively. 
 However, for our purposes in this paper, the exact predictions about production choices for objectively certain events are not as important and hence
 we decided against revising the assumption that all utterances in the model have a threshold semantics.
@@ -595,7 +604,7 @@ This seems unlikely considering that we are estimating only 18 parameters to pre
 (27 data points for each one of the 21 conditions) but to nevertheless rule out this possibility, we performed a leave-one-out cross-validation of
 our model. For each condition $x$, we estimated a distribution over parameters $\Theta_x$ using the data from all conditions but $x$. We then
 compared the model predictions of the model parametrized by $\Theta_x$ to participants' ratings in condition $x$. This way, the model has to predict
-participant behavior which it has not observed during parameter estimation. Table~\ref{tbl: correlations} shows the $R^2$ values for participants's
+participant behavior which it has not observed during parameter estimation. Table~\ref{tbl:correlations} shows the $R^2$ values for participants's
 ratings and model predictions for the model estimated from all conditions and the leave-one-out models.
 
 \begin{table}
@@ -625,7 +634,7 @@ ratings and model predictions for the model estimated from all conditions and th
  bare not-looks like  &  0.927  & 0.903 \\
       bare not-think  &  0.933  & 0.920 \\
 \end{tabular}
-\caption{$R^2$ values for experimental data and model predictions for model estimated from all data and for models estimated from all conditions except the predicted condition. \label{tbl: correlations}}
+\caption{$R2$ values for experimental data and model predictions for model estimated from all data and for models estimated from all conditions except the predicted condition. \label{tbl:correlations}}
 \end{table}
 
 
