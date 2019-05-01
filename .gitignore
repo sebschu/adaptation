@@ -7,3 +7,12 @@ models/1_threshold_modals/param-estimation-output/*/*.json
 .Rhistory
 runs
 runs_nu
+*.aux
+*.bbl
+*.blg
+*.bcf
+papers/cognition/*.log
+papers/cognition/*.run.xml
+*.synctex.gz
+papers/cognition/cognition_paper_jd.pdf
+papers/cognition/cognition_paper.pdf
