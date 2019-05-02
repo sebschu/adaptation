@@ -42,6 +42,12 @@
 
 \newcommand{\jd}[1]{\textbf{\color{green}[jd: #1]}}
 
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\tableref}[1]{Table \ref{#1}}
+\newcommand{\figref}[1]{Figure \ref{#1}}
+\newcommand{\appref}[1]{Appendix \ref{#1}}
+\newcommand{\sectionref}[1]{Section \ref{#1}}
+
 \newcommand{\todo}[1]{}
 \renewcommand{\todo}[1]{{\bf \color{red} (TODO: {#1})}}
 
@@ -142,13 +148,13 @@ listeners update their expectations about speakers' \textbf{associations} \jd{`a
 At the syntactic level, listeners update their expectations about speakers' \textbf{preferences} 
 for different syntactic structures.  At the semantic/pragmatic level, however, the adaptation process is still poorly understood: while the results by \cite{Yildirim2016}, discussed in more detail below, suggest that listeners update
 \textit{some} expectations about specific speakers' language use, 
-it is an open question what kind of expectation updates underlie semantic/pragmatic adaptation. 
+it is an open question what the nature of the representations is that are updated during semantic/pragmatic adaptation. 
 Answering this question is the focus of the work reported here.
 
-While any number of beliefs may get updated during semantic/pragmatic adaptation, we investigate two likely candidates here, motivated by recent advances in probabilistic modeling of pragmatic language understanding \cite{FrankGoodman2012,GoodmanFrank2016,FrankeJaeger2016}. First -- analogous to phonetic adaptation -- listeners might track speakers' associations \jd{need to think of better word and way to describe this functionally} between 
+We  investigate two likely candidates for representations that are updated during semantic/pragmatic adaptation, motivated by recent advances in probabilistic modeling of pragmatic language understanding \cite{FrankGoodman2012,GoodmanFrank2016,FrankeJaeger2016}. First -- analogous to phonetic adaptation -- listeners might update their beliefs about speakers' associations \jd{need to think of better word and way to describe this functionally} between 
 words and world states, i.e., speakers' lexicon. Alternatively -- analogous to syntactic adaptation -- 
-listeners might track speakers' preferences
-for different words. Finally, listeners might track both associations and preferences.
+listeners might update their beliefs about speakers' preferences
+for expressions. Finally, listeners might track both associations and preferences.
 
 
 %Conceptually, from a Gricean perspective of utterance interpretation \citep{Grice1975}, 
@@ -181,9 +187,6 @@ Finally, consider speaker {\bf C}. {\bf C} uses the same mapping between express
 producing \textit{almost certainly}. If a listener has accurate beliefs about {\bf C}'s lexicon and production preferences, 
 they will be likely to infer a chance of snow between 75\% and 100\% when they hear {\bf C} produce \textit{It will probably snow} since they will not
 consider  \textit{almost certainly} a likely alternative. That is, the scalar inference will be blocked by the additional knowledge of the speaker's production preferences. 
-
-\jd{at this point there needs to be more of a segue. get back to what the questions are -- ie, instead of assuming ONE literal semantics and ONE cost for each expression, do listeners have variable expectations about language use? can these expectations be updated? and which kinds of expectations are updated? how can we tell? computational modeling as hypothesis-testing tool.}
-
 
 
 
@@ -265,29 +268,44 @@ consider  \textit{almost certainly} a likely alternative. That is, the scalar in
 %be that listeners are forming speaker-specific expectations about lexica, i.e., listeners learn speaker-specific form-meaning mappings. 
 %Further, it could be that semantic adaptation is a result of listeners updating expectations about preferences and lexica.
 
-In this work, we investigate the nature of semantic adaptation through a combination of experiments and computational modeling.
-We study this phenomenon in the domain of uncertainty expressions -- words or phrases that can be used to express uncertainty -- as used in descriptions of potential future events. This includes epistemic modals (see, for example, \citep{Kratzer1991} and \citep{Hacquard2011}) such as \textit{might}, 
+
+
+
+%\jd{at this point there needs to be more of a segue. get back to what the questions are -- ie, instead of assuming ONE literal semantics and ONE cost for each expression, do listeners have variable expectations about language use? can these expectations be updated? and which kinds of expectations are updated? how can we tell? computational modeling as hypothesis-testing tool.}
+
+Thus, a listener who tracks the variability in these hypothetical speakers' lexica and production preferences will draw on average more accurate inferences about the world. We investigate the nature of the representations updated during semantic/pragmatic adaptation in the the domain of uncertainty expressions, i.e., words or phrases that can be used to express uncertainty, as used in descriptions of potential future events. These expressions include epistemic modals (see, for example, \citep{Kratzer1991} and \citep{Hacquard2011}) such as \textit{might}, 
 \textit{probably}, and \textit{could} but also phrases such as \textit{it looks like} which have been primarily investigated in the experimental pragmatics literature (e.g., \cite{Kurumada2014,Pogue2018}).
 
 Uncertainty expressions have several properties that make them a good testing ground for studying semantic and pragmatic
 adaptation. First, there is no direct mapping between uncertainty expressions and a speaker's belief about the likelihood of future events 
 (see, for example, \citet{Clark1990}, \citet{PepperPrytulak1974}). \jd{what does this mean?} Second, there is considerable inter-speaker variability 
 in the use of these expressions \citep{Wallsten1986} and therefore it is likely that listeners expect different speakers to use these expressions
-differently. Lastly, interpreting uncertainty expressions play an important role in many everyday situations such as communicating and  
-interpreting health risks \citep{Berry2004, Lipkus2007, Politi2007} or making financial decisions \citep{Doupnik2003}. 
-For this reason, listeners often have a vested interest in inferring  how a given speaker uses these expressions and are therefore 
-potentially more attuned to subtle differences across speakers than in cases where variation may have a smaller effect on decision-making.
+differently. Lastly, interpreting uncertainty expressions plays an important role in many everyday situations from the banal -- such as talking about the weather -- to the serious -- such as communicating about health risks \citep{Berry2004, Lipkus2007, Politi2007} or making financial decisions \citep{Doupnik2003}. 
+Thus, listeners would benefit from tracking  how a given speaker uses these expressions. %and are therefore  potentially more attuned to subtle differences across speakers than in cases where variation may have a smaller effect on decision-making.
 
-The rest of this paper is structured as follows. In the next section, we present results from a norming study that show that listeners vary in their
-expectations of what uncertainty expressions a generic speaker will use to describe different event probabilities. 
-In section~3, we present a game-theoretic computational model of listeners expectations about a generic speaker's use of uncertainty expressions.
-In section~4, we present an experiment that provides evidence for listener's updating their expectations after brief exposure to different speakers.
-In section~5, we present our adaptation model and argue based on model simulations that listeners are updating their expectations about preferences and
-lexica.
-In section~6, we discuss how our model also predicts updated interpretations of uncertainty expressions after a brief exposure to a different speaker and 
-we present an experiment whose results confirm this prediction. We conclude this paper with a discussion of remaining open questions and the implications of our findings.
+In order to establish the nature of the representations that are updated during adaptation to variable use of uncertainty expressions we proceed through the following steps:
+\begin{enumerate}
+	\item Quantify the variability in listeners' expectations about a generic speaker's production of uncertainty expressions (Experiment 1, \sectionref{sec:exp-norming}).
+	\item Propose a probabilistic computational pragmatics model of the production of uncertainty expressions that functions as proxy for listeners' baseline generative model of a generic speaker. Evaluate the model on the data from Experiment 1. (\sectionref{sec:model-baseline}).
+	\item Measure whether and to what extent listeners update their expectations when exposed to a speaker who is either more cautious or more confident in their use of uncertainty expressions than the baseline speaker model (Experiment 2, \sectionref{sec:exp-prod-adaptation}).
+	\item Create three versions of the baseline model which differ  in terms of which model components are updated in response to exposure to simulated cautious and confident speakers: update on only production preferences, only the lexicon, or both. Use model comparison between these three adaptation models as a hypothesis-testing tool to infer which representations undergo adaptation, by evaluating which adaptation model best captures the observed post-exposure expectation data from Experiment 2 (\sectionref{sec:model-adapt}).
+	\item To further test the adaptation models, use them to derive predictions about post-exposure interpretation. Measure interpretation and evaluate the model (Experiment 3, \sectionref{sec:exp-model-interpretation}).
+\end{enumerate}
+
+
+%The rest of this paper is structured as follows. In the next section, we present results from a norming study that show that listeners vary in their
+%expectations of what uncertainty expressions a generic speaker will use to describe different event probabilities. 
+%In section~3, we present a game-theoretic computational model of listeners expectations about a generic speaker's use of uncertainty expressions.
+%In section~4, we present an experiment that provides evidence for listener's updating their expectations after brief exposure to different speakers.
+%In section~5, we present our adaptation model and argue based on model simulations that listeners are updating their expectations about preferences and
+%lexica.
+%In section~6, we discuss how our model also predicts updated interpretations of uncertainty expressions after a brief exposure to a different speaker and 
+%we present an experiment whose results confirm this prediction. 
+
+We find that listeners indeed update their beliefs about more cautious and more confident speakers' use of uncertainty expressions, and that this adaptation is reflected both in post-exposure measures of production expectations and interpretation. The data are best captured by the adaptation model in which both the lexicon and the speaker's production preferences are updated. We conclude with a discussion of remaining open questions and the implications of our findings.
 
 \section{Pre-exposure ratings}
+\label{sec:exp-norming}
 
 We first conducted a series of norming studies, which served the following purposes.
 First, they allowed us to investigate whether listeners vary in their expectations about
@@ -391,6 +409,7 @@ to study listeners' adaptation to variable uses of uncertainty expressions.
 
 
 \section{Production belief model}
+\label{sec:model-baseline}
 
 The norming data confirmed previous findings that participants' expectations 
 about how a generic speaker would use uncertainty expressions 
@@ -670,6 +689,7 @@ about an unknown speaker's utterance choices.
 
 
 \section{Experiment 1: Adaptation of Speaker Expectations}
+\label{sec:exp-prod-adaptation}
 
 We now turn to our main research questions of whether and how listeners adapt to variable uses of uncertainty expressions.
 In our norming studies, we found that participants show variation and uncertainty in their expectations about a generic speaker's 
@@ -763,6 +783,7 @@ In summary, taking all these results together, our experiment provides evidence 
 % 
 
 \section{Adaptation model}
+\label{sec:model-adapt}
 
 The experimental results presented in the previous section suggest that listeners are updating some expectations about language use when they are interacting with a speaker. 
 However, what kind of expectations listeners are updating is unclear. It could be that listeners are updating their expectations about the speaker's lexicon 
@@ -907,6 +928,7 @@ exposed to multiple {\sc bare} utterances in the simulations, it learned that th
 
 
 \section{Adaptation of interpretations}
+\label{sec:exp-model-interpretation}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{plots/adaptation-posterior-comp.pdf}
