@@ -125,7 +125,7 @@ however, that some of these studies failed to replicate and it is still unclear 
 circumstances syntactic adaptation can be observed \citep[see ][]{Liu2017,HarringtonStack2018}.}, intonation and prosody \citep{Kurumada2012,Roettger2019}, and with phenomena such as referring expressions
 \citep{Clark1986,Brennan1996,Metzing2003,Horton2005,Brennan2009} and lexical associations \citep{DelaneyBusch2019}. 
 
-For most of these phenomena, it has been established what kind of expectations listeners are updating.At the phonetic level, 
+For most of these phenomena, it has been established what kind of expectations listeners are updating. At the phonetic level, 
 listeners update their expectations about speakers' \textbf{mapping} between acoustic cues and phonemes \citep[e.g.,][]{Kleinschmidt2015}.
 At the syntactic level, listeners update their expectations about speakers' \textbf{preferences} 
 for different syntactic structures. However, as mentioned above, at the semantic/pragmatic level, the adaptation process is still poorly understood. 
@@ -171,7 +171,7 @@ Thus, listeners would benefit from tracking  how a given speaker uses these expr
 
 In order to establish the nature of the representations that are updated during adaptation to variable use of uncertainty expressions we proceed through the following steps:
 \begin{enumerate}
-	\item Quantify the variability in listeners' expectations about a generic speaker's production of uncertainty expressions (Experiment 1, \sectionref{sec:exp-norming}).
+	\item Quantify the variability in listeners' expectations about a generic speaker's production of uncertainty expressions (\sectionref{sec:exp-norming}).
 	\item Propose a probabilistic computational pragmatics model of the production of uncertainty expressions that functions as proxy for listeners' baseline generative model of a generic speaker. Evaluate the model on the data from Experiment 1. (\sectionref{sec:model-baseline}).
 	\item Measure whether and to what extent listeners update their expectations when exposed to a speaker who is either more cautious or more confident in their use of uncertainty expressions than the baseline speaker model (Experiment 2, \sectionref{sec:exp-prod-adaptation}).
 	\item Create three versions of the baseline model which differ  in terms of which model components are updated in response to exposure to simulated cautious and confident speakers: update on only production preferences, only the lexicon, or both. Use model comparison between these three adaptation models as a hypothesis-testing tool to infer which representations undergo adaptation, by evaluating which adaptation model best captures the observed post-exposure expectation data from Experiment 2 (\sectionref{sec:model-adapt}).
@@ -469,7 +469,8 @@ We assume that these beliefs are guided by participants' beliefs about the speak
 that participants are averaging over their uncertainty. For this reason, we assume that the population-level 
 average ratings of what participants expect the speaker to say in different situations 
 correspond to the probabilities predicted by the \textit{expected pragmatic speaker} model.
-However, given the forced choice nature of the experiment and that we are estimating model parameters from limited and potentially noisy data, we make the following additional linking assumptions.
+However, given the forced choice nature of the experiment and that we are estimating model 
+parameters from limited and potentially noisy data, we make the following additional linking assumptions.
 
 \begin{itemize}
 \item \textbf{Set of utterances}: Across all conditions, we assume that the set of utterances that participants are considering is the set of all utterances that we used in the norming study, i.e., $U= \{$ \textsc{bare}, \textsc{might}, \textsc{probably}, \textsc{think}, \textsc{looks like}, \textsc{could}, \textsc{bare not}$\}$. We include all utterances instead of only the utterances that are presented in a given condition since we assume that participants' general knowledge about English uncertainty expressions also influences their ratings. Ideally, we would include even more utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for which we collected ratings, we are limited to the expressions in $U$.
@@ -512,7 +513,8 @@ $$
 Theoretically, we could have also used a different constant $\gamma_u$ for each utterance. The data from
 the norming experiments, however, suggests that participants generally did not prefer one utterance over 
 the other. To limit the number of free model parameters and to prevent overfitting, we therefore use a single
-constant $\gamma$ for all utterances. 
+constant $\gamma$ for all utterances. We will, however, relax this assumption in our adaptation model in \sectionref{sec:model-adapt}, which
+we use to investigate whether listeners are updating their beliefs about preferences during adaptation.
 
 \item \textbf{Noise}: Finally, to account for participants not paying attention or making mistakes, 
 we also include a noise term that models participants providing random ratings.
@@ -634,35 +636,65 @@ As this table shows, the $R^2$ values remain high even if we exclude the data on
 which suggests that our proposed model indeed explains
 participants' expectations of a generic speaker's uncertainty expressions.
 
-\todo{Revise below here.}
-
-
-Lastly, one of the advantages of Bayesian cognitive models is that their parameters are interpretable. Figure~\ref{fig:threshold-distributions} shows the 
-maximum likelihood estimates of the inferred threshold distributions $P(\theta)$ for the seven uncertainty expressions that we included in our experiments. 
-These distributions, which were entirely inferred from the data, lend additional credence to our model. As we would expect,
-the threshold distributions for the bare form and the negated bare form have almost all their probability mass concentrated around
-$\theta=1$ and $\theta=0$, respectively. Further, the threshold distribution for \textit{might} is concentrated around values slightly
-above 0, and the distribution for \textit{probably} concentrates most probability mass above 0.5. This is in line with qualitative
-accounts of epistemic modals. For example, \cite{Kratzer1991} argued that \textit{might} can embed propositions which
-are true in at least one epistemically accessible world and \textit{probably} can embed propositions that are true in more than
-half of the epistemically accessible worlds. The threshold distributions for the other uncertainty expressions are reasonable as well: 
-\textit{could} has a similar threshold distribution as \textit{might}; the distribution for \textit{think} has most of its probability mass concentrated
-at high thresholds; and the distribution for \textit{looks like} is very similar to the distribution of the bare form.
 
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/threshold-distributions-prior.pdf}
-\caption{Inferred threshold distributions. \label{fig:threshold-distributions}}
+\caption{Inferred threshold distributions. For the negative bare utterance (\textsc{bare not}) the distribution corresponds to an upper threshold, i.e., a bare statement embedded under negation is true if the probability of the event is lower than the threshold. For all other utterances, the distributions correspond to a lower threshold.
+\label{fig:threshold-distributions}}
 \end{figure}
 
-Overall, despite some small deviations between the model predictions and participants' behavior, our model
-seems to be a plausible model of participants' average expectations of utterance choices in different
-situations. And as we will see in Section~5, this model is also well suited to capture participants' prior beliefs
-about an unknown speaker's utterance choices.
+Lastly, one of the advantages of Bayesian cognitive models is that their parameters are interpretable. Figure~\ref{fig:threshold-distributions} shows the 
+maximum likelihood estimates of the inferred threshold distributions $P(\theta)$ for the seven uncertainty expressions that we included in our experiments.
+As we discussed above, for the bare form and its negation, we expected the model to infer threshold distributions whose probability mass is concentrated 
+around $\theta=1$ and $\theta=0$, respectively.\footnote{Note that since the negation of the bare form is a negative form, $\theta$ is an upper threshold. For the bare form as well as
+all the other utterances that we are are considering in this paper, $\theta$ is a lower threshold.} As  Figure~\ref{fig:threshold-distributions} shows, this is indeed what
+the inferred threshold distributions look like. 
+
+The threshold distribution for \textit{might} has most of its probability mass concentrated at values slightly above 0. This 
+is in line with non-probabilistic accounts of the interpretation of epistemic modals. These accounts generally assume that \textit{might} $p$ is true 
+if there exists \textit{some} world $w$ in a set of (contextually restricted) epistemically accessible worlds $E$ such that $p$ is true in $w$ 
+\citep[e.g.,][]{Kratzer1991,Swanson2008,Hacquard2012}. One way to translate this logical condition into our probabilisitic framework is to assume that 
+in our gumball machine context, there exists an epistemically accessible world $w$ for each gumball $g$ and that in world $w$, one gets gumball $g$. 
+Under this assumption, \textit{``You might get a blue gumball''} is true if there exists an epistemically accessible world $w$  in which one gets a
+gumball $g$ that is blue. At the same time, if such a world exists, then $P(\mbox{blue gumball})$ is greater than 0, which approximately corresponds
+to the threshold semantics with the inferred threshold distribution of our model. The inferred threshold distribution for \textit{could} is similar to the one of \textit{might}, 
+which is again in line with non-probabilistic accounts, which assume that epistemic \textit{might} and epistemic \textit{could} are semantically equivalent \citep{Kratzer1991,Hacquard2012}.
+
+The threshold distribution for \textit{probably} has most of its probability mass concentrated at thresholds above .5. This is again compatible with existing accounts that assume 
+that \textit{probably} $p$ is true if $p$ is more likely than the negation of $p$ \citep[e.g.,][]{Kratzer1991}. However, it is also noteworthy, that the inferred
+distribution has some probability mass below .5, which empirically corroborates theoretical arguments by \citet{Yalcin2010} that \textit{probably} $p$ can
+sometimes also be true if $p$ is less likely than the negation of $p$.
+
+The threshold distributions for the remaining expressions, \textit{looks like} and \textit{think} also match intuitions. The distribution for 
+\textit{looks like} has most of its probability mass near threshold values of 1 but is overall slightly weaker, i.e., assigns higher probabilities to lower thresholds,
+than the bare form. The distribution for \textit{think} assigns most probability mass to high thresholds, which is compatible with the intuition
+that speakers use \textit{think} when they strongly belief in the embedded proposition but are not entirely certain that the proposition is true.
+ 
+ \todo{Include and discuss MAP estimates of other paramerters.}
+ 
+ \subsection{Interim summary}
+ 
+ In this section, we described a computational model of production expectations of uncertainty expressions. This model
+ is based on the RSA framework and assumes that listeners hold beliefs about speaker thresholds (in the form
+ of threshold distributions) and about speaker preferences (in the form of cost functions). We estimated 
+ the free parameters of this model from the norming data, which resulted in a model that is able to accurately predict
+ participant's utterance ratings in our norming study across all conditions with a shared set of parameters.
+ 
+ In the following sections of this paper, we will use this model as the basis for our adaptation model. Since this model
+ is able to capture different beliefs about thresholds and preferences, it provides us with the opportunity to simulate 
+ the adaptation process as a result of updating beliefs about these model parameters. Further, in order to answer
+ our primary research question of whether listeners update their beliefs about lexica or preferences, we can compare
+ different adaptation simulations in which we allow different types of parameters to be updated.
+
+
 
 
 
 \section{Experiment 1: Adaptation of Speaker Expectations}
 \label{sec:exp-prod-adaptation}
+
+\todo{Revise below here.}
+
 
 We now turn to our main research questions of whether and how listeners adapt to variable uses of uncertainty expressions.
 In our norming studies, we found that participants show variation and uncertainty in their expectations about a generic speaker's 
@@ -701,7 +733,9 @@ However, instead of the cartoon adult, they showed a video of an adult male or f
 \emph{confident} & 5 & 25\% & {\bf 10}  & {\bf 60\%} & 5  & 100\%\\  
 \bottomrule
 \end{tabular}
-\caption{Number of exposure trials ($n$) per utterance ({\sc might}, {\sc probably}, {\sc bare}) and associated proportion of target color gumballs ($\phi$) in the \emph{cautious} vs.~\emph{confident} speaker conditions. Critical trials bolded. \label{tab:materials}}
+\caption{Number of exposure trials ($n$) per utterance ({\sc might}, {\sc probably}, {\sc bare}) 
+and associated proportion of target color gumballs ($\phi$) in the \emph{cautious} vs.~\emph{confident} 
+speaker conditions. Critical trials bolded. \label{tab:materials}}
 
 \end{table}
 
