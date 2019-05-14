@@ -43,10 +43,10 @@
 \newcommand{\jd}[1]{\textbf{\color{green}[jd: #1]}}
 
 \newcommand{\eref}[1]{(\ref{#1})}
-\newcommand{\tableref}[1]{Table \ref{#1}}
-\newcommand{\figref}[1]{Figure \ref{#1}}
-\newcommand{\appref}[1]{Appendix \ref{#1}}
-\newcommand{\sectionref}[1]{Section \ref{#1}}
+\newcommand{\tableref}[1]{Table~\ref{#1}}
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\appref}[1]{Appendix~\ref{#1}}
+\newcommand{\sectionref}[1]{Section~\ref{#1}}
 
 \newcommand{\todo}[1]{}
 \renewcommand{\todo}[1]{{\bf \color{red} (TODO: {#1})}}
@@ -693,23 +693,25 @@ that speakers use \textit{think} when they strongly belief in the embedded propo
 \section{Experiment 1: Adaptation of Speaker Expectations}
 \label{sec:exp-prod-adaptation}
 
-\todo{Revise below here.}
 
 
 We now turn to our main research questions of whether and how listeners adapt to variable uses of uncertainty expressions.
-In our norming studies, we found that participants show variation and uncertainty in their expectations about a generic speaker's 
-use of \textit{might} and \textit{probably}. Based on these results, we investigate in this experiment whether participants update 
-their expectations about the use of uncertainty expressions of a specific speaker after observing this speaker's use of 
+In our norming studies, we found that participants show uncertainty in their expectations about a generic speaker's 
+use of \textit{might} and \textit{probably}. Based on these results, we investigate in two experiments whether participants
+form speaker-specific expectations about the use of \textit{might} and \textit{probably}.
+
+\subsection{Experiment 1a}
+In this experiment, we test whether participants update their production expectations after observing a specfici speaker's use of 
 uncertainty expressions for a short period of time. The procedure, materials and analyses were pre-registered at \url{https://osf.io/w926x/}.
 
 
-\subsection{Participants}
+\subsubsection{Participants}
 We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. 
 We required participants to have a US-based IP address and a minimal approval rating 
 of 95\%. Participants were paid \$2 which amounted to an hourly wage of approximately 
 \$12--\$15. None of the participants had previously participated in the norming study.
 
-\subsection{Materials and Procedure}
+\subsubsection{Materials and procedure}
 
 \paragraph{Exposure trials:} In the first part of the experiment, participants saw 20 exposure trials. 
 These trials had a similar setup as the trials in the norming study: 
@@ -735,11 +737,11 @@ However, instead of the cartoon adult, they showed a video of an adult male or f
 \end{tabular}
 \caption{Number of exposure trials ($n$) per utterance ({\sc might}, {\sc probably}, {\sc bare}) 
 and associated proportion of target color gumballs ($\phi$) in the \emph{cautious} vs.~\emph{confident} 
-speaker conditions. Critical trials bolded. \label{tab:materials}}
+speaker conditions. Critical trials bolded. \label{tbl:materials}}
 
 \end{table}
 
-The number of trials with each of these utterances as well as the gumball proportions varied across two conditions (see Table \ref{tbl:materials} for an overview). In the {\it confident speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{probably} (target color was randomized across trials), 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 25\% target color gumballs and the speaker producing {\sc might}. In the {\it cautious speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{might}, 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 90\% target color gumballs and the speaker producing {\sc probably}. The filler trials were intended to boost confidence in the speaker and contained event probability-utterance combinations, which were rated highly in the norming study. 
+The number of trials with each of these utterances as well as the gumball proportions varied across two conditions (see Table \ref{tbl:materials} for an overview). In the {\it confident speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{probably} (target color was randomized across trials), 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 25\% target color gumballs and the speaker producing {\sc might} condition of the norming study; see \figref{fig:norming-results-main}). In the {\it cautious speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{might}, 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 90\% target color gumballs and the speaker producing {\sc probably}. The filler trials contained utterance-event probability pairs that were rated very highly in the \textit{might-probably} condition of the norming study (see \figref{fig:norming-results-main}) and were intended to boost confidence in the speaker.
 
 Participants were instructed to watch what the speaker had to say to the child. The video started automatically after a 400ms delay and participants had the option to replay the video as often as they wanted. To advance to the next scene, participants had to press a button which was disabled until the video clip had finished.
 
@@ -750,25 +752,27 @@ Both speakers were from the East Coast and Native Speakers of North American Eng
 
 \paragraph{Attention checks}  In order to verify that participants were paying attention to the video and the scenes, we included 15 attention checks (6 during exposure and 9 during test trials), which were randomly positioned within the two experimental phases. Trials that contained an attention check either displayed or did not display (pseudo-randomized) a small grey X somewhere around the gumball machine. After completing a trial with an attention check, participants were asked whether they had seen a grey X in the previous scenes or not.
 
-\subsection{Exclusions} We excluded participants who provided incorrect responses to more than 3 of the catch trials. Based on this criterion, we excluded 11 participants in the \textit{confident speaker} condition and 8 participants in the \textit{cautious speaker} condition. None of the results reported below depend on these exclusions.
+\subsubsection{Exclusions} We excluded participants who provided incorrect responses to more than 3 of the attention checks. Based on this criterion, we excluded 11 participants in the \textit{confident speaker} condition and 8 participants in the \textit{cautious speaker} condition. None of the results reported below depend on these exclusions.
 
 
-\subsection{Analysis and Predictions}  
+\subsubsection{Analysis and predictions}  
 
-Intuitively, a more confident speaker uses {\sc probably} for a larger and {\sc might} for a smaller range of event probabilities than a more cautious speaker. 
+Intuitively, we expect a more confident speaker to use lower thresholds for {\it probably} and {\it might} than a more cautious speaker.
 Therefore, if participants track these different uses, we expect their ratings to depend on how the speaker used uncertainty expressions during the exposure phase. 
+Concretely,  in our forced choice production paradigm, we expect participants in the \textit{confident speaker} condition to rate {\sc probably} highly for a larger range of event probabilities than participants
+in the \textit{cautious speaker} condition. 
 Following \cite{Yildirim2016}, we quantified this prediction by fitting a spline with four knots for each expression and each participant and computing the area 
 under the curve (AUC) for the splines corresponding to each expression and participant. The area under the curve is proportional to how highly and for how large 
-of event probabilities participants rate an utterance. If an utterance is rated highly for a larger range of event probabilities, the AUC will also be higher. 
+of event probabilities participants rate an utterance. If an utterance is rated highly for a larger range of event probabilities, the AUC will also be larger. 
 We therefore tested whether listeners updated their expectations according to these intuitions by computing the difference between the AUC of the spline for 
-{\sc might} and of the spline for {\sc probably} for each participant. We predicted that the mean AUC difference would be higher in the 
+{\sc might} and of the spline for {\sc probably} for each participant. We predicted that the mean AUC difference would be bigger in the 
 \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
 
-\subsection{Results and Discussion}
+\subsubsection{Results and discussion}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/exp-1-ratings.pdf}
-\caption{Mean post-exposure ratings from Experiment 1. Error bars correspond to bootstrapped 95\%-confidence intervals.  The grey dotted line highlights the ratings for the 60\% event probability ratings.  \label{fig:adaptation-results-prod}}
+\caption{Mean post-exposure ratings from Experiment 1a. Error bars correspond to bootstrapped 95\%-confidence intervals.  The grey dotted line highlights the ratings for the 60\% event probability ratings.  \label{fig:adaptation-results-prod}}
 \end{figure}
 
 \begin{figure}
@@ -777,20 +781,63 @@ We therefore tested whether listeners updated their expectations according to th
 \caption{Area under the curve (AUC) differences from Experiment 1. Error bars correspond to bootstrapped 95\%-confidence intervals.  \label{fig:adaptation-auc-prod}}
 \end{figure}
 
-Figure~\ref{fig:adaptation-results-prod} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use and therefore made different predictions about how the speaker would use uncertainty expressions. In the \emph{cautious speaker} condition, participants gave high ratings for {\sc might} for a larger range of event probabilities than in the \emph{confident speaker} condition. On the other hand, participants gave high ratings for {\sc probably} for a larger range of gumball proportions in the \emph{confident speaker} condition than in the \emph{cautious speaker} condition. These differences result in a significantly greater AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(59) = 4.98$, $p < 0.001$, see also Figure~\ref{fig:adaptation-auc-prod}).
+Figure~\ref{fig:adaptation-results-prod} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use and therefore made different predictions about how the speaker would use uncertainty expressions. In the \emph{cautious speaker} condition, participants gave high ratings for {\sc might} for a larger range of event probabilities than in the \emph{confident speaker} condition. On the other hand, participants gave high ratings for {\sc probably} for a larger range of gumball proportions in the \emph{confident speaker} condition than in the \emph{cautious speaker} condition. These differences result in a significantly bigger AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(59) = 4.98$, $p < 0.001$, see also Figure~\ref{fig:adaptation-auc-prod}).
 
 As Figure~\ref{fig:adaptation-results-prod} shows, participants also differed in their ratings of the two utterances when they were presented with a scene with 60\% target color gumballs. In the {\emph cautious speaker} condition, participants rated {\sc might} higher than {\sc probably}; in the {\emph confident speaker} condition, the pattern was reversed and participants rated {\sc probably} higher than {\sc might}. These expectations mirror the speaker behavior during the exposure phase and provide additional evidence that participants tracked the speaker's usage of uncertainty expressions. 
 
-Our results also seem to rule out several alternative explanations. If we  considered only the ratings for {\sc might} and {\sc probably}, an alternative explanation for the results would be that participants did not form speaker-specific expectations about the mapping between event probabilities and uncertainty expressions but were instead inferring different higher-level goals of the speakers. For example, it could be that participants in the \emph{confident speaker} condition were inferring from the speaker's language use that the speaker wanted to be very encouraging towards the child. While this seems prima facie a reasonable explanation, we would then also expect participants' ratings of \emph{ something else} for high event probabilities to differ across the two conditions. If participants inferred that the adult wants to be highly encouraging, then we would expect that participants assumed that the adult used more encouraging language when there is a high probability of getting a target color gumball. This in return should lead participants to give higher ratings to the \emph{something else} option for high event probabilities, which we did not observe in this experiment. In fact, numerically, the rating of \emph{something else} was higher in the \emph{cautious speaker} condition than in the \textit{confident speaker} condition.
+Our results also seem to rule out an alternative explanation according to which participants were inferring higher-level speaker goals rather than forming expectations about the speaker's language use. For example, prima facie, it could be that participants inferred that the  \textit{confident speaker} wanted to appear encouraging towards the child. However, if participants inferred such a higher-level goal, then we would expect participants to belief that the speaker would use utterances that are even more encouraging when there is a high probability of getting a target color gumball, resulting in higher ratings of the \textit{something else} option for high event probabilities. We did not observe such an effect, and  in fact, numerically, the rating of \emph{something else} was higher in the \emph{cautious speaker} condition than in the \textit{confident speaker} condition.
 
-Further, we can also rule out that participants were only learning something about the speaker's preferences for different uncertainty expressions. One potential objection to our experiment is that the number of utterances with {\sc might} and {\sc probably} differed across the two conditions (see Table~\ref{tbl:materials}) and a possible alternative explanation for our results is that participants learned that the {\it cautious speaker} overall prefers to use {\sc might} and the {\it connfident speaker} prefers {\sc probably}. To rule out this possibility, we conducted a replication of our experiment with equal number of exposures to both utterances in both conditions. In this replication, we again found a greater AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(58) = 3.12$, $p < 0.01$).
+Our results further suggest that participants are updating their mappings between uncertainty expressions and event probabilities: In the {\it confident speaker} condition, {\sc might} and {\sc probably} were rated highly for lower event probabilities than in the {\it cautious speaker} condition. However, one potential confound in this experiment is that the number of utterances with \textit{might} and \textit{probably} differed across the two conditions (see Table~\ref{tbl:materials}). It could therefore be, that participants only learned that the {\it cautious speaker} overall prefers to use {\sc might} and the {\it confident speaker} prefers {\sc probably}. We therefore conducted another experiment in which we balanced the number of exposures to {\sc might} and {\sc probably} in both conditions.
 
-In summary, taking all these results together, our experiment provides evidence for listener adaptation to a specific speaker's use of uncertainty expressions after a brief exposure phase.
+\subsection{Experiment 1b}
+
+In this experiment, we aim to replicate the results from Experiment~1a and test whether listeners are updating their 
+mappings between the uncertainty expressions and event probabilities when they are exposed to a speaker who
+uses \textit{might} and \textit{probably} with the same frequency.  The procedure, materials and analyses were pre-registered at \url{https://osf.io/qnam7}.
+\subsubsection{Participants}
+We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. 
+We required participants to have a US-based IP address and a minimal approval rating 
+of 95\%. Participants were paid \$2.20 which amounted to an hourly wage of approximately 
+\$12--\$15. None of the participants had previously participated in the norming study.
+
+\subsubsection{Materials and procedure}
+
+Materials, conditions, and procedure were identical as in Experiment~1a except that we added 5 additional fillers such
+that the frequency of \textsc{might} and \textsc{probably} was the same (10 utterances per expression) in both conditions.
+
+\subsubsection{Analysis and predictions}  
+
+The analysis was identical as in Eperiment~1a. We again predicted that the mean AUC difference would be bigger in the 
+\emph{cautious speaker} condition than in the \emph{confident speaker} condition.
+
+\subsubsection{Exclusions} We used the attention checks and exclusion criteria as in Experiment~1a.  Based on these criteria, we excluded 8 participants in the \textit{cautious speaker} condition, and 7 participants in the \textit{confident speaker} condition.
+
+\subsubsection{Results and discussion}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/exp-1-replication-ratings.pdf}
+\caption{Mean post-exposure ratings from Experiment 1b. Error bars correspond to bootstrapped 95\%-confidence intervals.  The grey dotted line highlights the ratings for the 60\% event probability ratings.  \label{fig:adaptation-results-prod2}}
+\end{figure}
+
+Figure~\ref{fig:adaptation-results-prod2} shows the mean ratings for the three options in the two conditions. As these plots show, participants also updated their expectations about the speaker's language use in this experiment and the
+AUC difference was bigger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(63) = 2.99$, $p < 0.01$). 
+
+This experiment provides evidence against an account according to which participants only learn that the \emph{cautious speaker} prefers to use {\sc might} and the {\it confident speaker} prefers {\sc probably}. 
+Since the frequency of both expressions was the same in this experiment, participants could not have inferred a preference for one of these two utterances and therefore we would not expect different ratings if participants
+had only tracked the frequencies of the utterances. 
+
+In summary, the results from our two experiments provide evidence for listener adaptation to a specific speaker's use of uncertainty expressions after a brief exposure phase. Further, taken together, these experiments
+suggest that listeners' expectations about a speaker's language use are at least not exclusively driven by tracking speaker's preferences for different utterances. We investigate the nature of speaker-specific expectations
+in the next section.
+
 
 % 
 
 \section{Adaptation model}
 \label{sec:model-adapt}
+
+\todo{Revise below here.}
+
 
 The experimental results presented in the previous section suggest that listeners are updating some expectations about language use when they are interacting with a speaker. 
 However, what kind of expectations listeners are updating is unclear. It could be that listeners are updating their expectations about the speaker's lexicon 
@@ -1048,6 +1095,8 @@ future directions:
 
 * long-term speaker-specific mappings
 	
+\todo{Speaker-specific}
+
 
 \printbibliography
 %\bibliography{qp-references}
