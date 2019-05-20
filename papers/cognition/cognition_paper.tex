@@ -380,27 +380,30 @@ to study listeners' adaptation to variable uses of uncertainty expressions.
 \jd{it would be helpful to address the issues raised in the intro to section 2 in order}
 
 
-\section{Production belief model}
+\section{Modeling the production of uncertainty expressions}
 \label{sec:model-baseline}
 
-The norming data confirmed previous findings that participants' expectations 
+%Propose a probabilistic computational pragmatics model of the production of uncertainty expressions that functions as proxy for listeners' baseline generative model of a generic speaker. Evaluate the model on the data from Experiment 1. (\sectionref{sec:model-baseline}).
+
+In this section we report a computational model of the production of uncertainty expressions that is informed by the data from the experiment reported above, and which will serve as proxy for listeners' baseline generative model of a generic speaker, and which we will use as the basis for investigating adaptation processes. What are the properties that this model should have?
+
+The norming data \jd{i'm increasingly starting to think that we shouldn't call the first expeirment a norming experiment. it undersells its importance for both the whole modeling enterprise and for the theoretical points about listeners having uncertainty about and displaying variability in expectations about use of uncertainty expressions } confirmed previous findings that participants' expectations 
 about how a generic speaker would use uncertainty expressions 
 depend on the set of utterances that participants can choose from.
 We further found that ratings were graded since participants seemed to have uncertainty
-in their expectations about how a generic speaker would use uncertainty expressions.
+in their expectations about how a generic speaker would use uncertainty expressions. \jd{the previous sentence sounds like you're making a causal claim about the relationship between expectations and gradedness of ratings. is that intentional?}
 Hence, a model predicting participants' beliefs about a speaker's productions of uncertainty expressions
- should  (a) be able to capture differences based on the availability of alternative utterances; 
-(b) provide graded predictions; 
-and (c) be able to capture uncertainty within participants.
+ should  (a) be able to capture differences \jd{between what and what?} based on the availability of alternative utterances; 
+(b) provide graded predictions about utterance probabilities; 
+and (c) be able to capture within-participant uncertainty about probability of use.
 
-Computational game-theoretic models such as the Rational Speech Act (RSA; \cite{Goodman2016}) 
-framework are uniquely suited to fulfill these desiderata.
-Crucially, RSA models  base their predictions on a set of alternative utterances and 
+Computational game-theoretic models such as the Rational Speech Act 
+framework (RSA; \cite{Goodman2016})  are uniquely suited to fulfill these desiderata.
+Crucially, RSA models \jd{before these idiosyncratic properties, first mention that it's a probabilistic formalization of grice and developed to treat comprehension as probabilistic inference over prior beliefs and speaker model; and that you'll focus here specifically on the speaker model}  base their predictions on a set of alternative utterances and 
 they make probabilistic predictions.  According to an RSA model, a speaker who wants to
  convey some information to a listener 
-chooses her utterance based on the utterance utility compared to the utility of alternative utterances. 
-The speaker's utility of an utterance is determined by taking the listener utility and the speaker cost into accounnt: 
-it is the difference between the informativity of the utterance to a listener and the speaker's cost of the utterance.
+chooses her utterance based on the utterance's utility compared to the utility of alternative utterances. 
+The speaker's utterance utility  is determined by trading off the informativity of the utterance to a literal listener on the one hand and the cost of the utterance on the other.
 
 In defining the informativity of an utterance, we follow previous RSA models of uncertainty expressions (\cite{Lassiter2013,Herbstritt2019}) 
 and assume that uncertainty expressions have a threshold semantics, 
@@ -413,12 +416,12 @@ Formally, we base the computation of informativity on a probability distribution
 which is usually referred to as the \textit{literal listener} $L_0$ in the RSA framework. 
 
 $$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi > \theta_u \right] \qquad \mbox{(for positive utterances)}$$
-$$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi < \theta_u \right] \qquad \mbox{(for negated utterances)}$$
+$$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi < \theta_u \right] \qquad \mbox{(for negated utterances)}$$ \jd{wait is this really what you're assuming for negated utterances? this isn't right, is it?}
 
 $P(\phi)$ is a prior distribution over event probabilities, which is independent of the utterance by the speaker.
 
 
-A \textit{pragmatic speaker} $S_1$ who wants to communicate an event probability $\phi$ then chooses her utterance $u$ from a set of utterances $U$ according to a soft-max choice rule \cite{Luce1959,SuttonBarto} such that she chooses $u$ with a probability proportional to her speaker utility. 
+A \textit{pragmatic speaker} $S_1$ who wants to communicate an event probability $\phi$ then chooses her utterance $u$ \jd{notation issue: here you use u to refer to the whole uttearnce; above you specifically say u corresonds to an uncertainty expression} from a set of utterances $U$ according to a soft-max choice rule \cite{Luce1959,SuttonBarto} such that she chooses $u$ with a probability proportional to her speaker utility. 
 $$S_1\left(u \mid \phi, \theta, c\right) \propto \exp \left( \lambda \left( \log L_0\left(\phi \mid u, \theta_u\right)  - c(u)\right)\right)$$
 $\lambda$ is a rationality parameter which governs how likely a speaker is to choose the utterance that maximizes her utility; as $\lambda$ approaches infinity, a speaker is more likely to always choose the optimal utterance.  
 
@@ -434,8 +437,8 @@ $\lambda$ is a rationality parameter which governs how likely a speaker is to ch
 
 
 $S_1$ crucially depends on a vector of thresholds $\theta$ which contains a threshold for each utterance in $U$, 
-as well as  a cost function $c(u)$, and it is still largely an open question what values speakers and listeners assign 
-to these variables. In our norming studies, we found that both at the population-level and at the individual-level, 
+as well as  a cost function $c(u)$. The values that speakers and listeners \jd{why speakers AND listeners?} assign 
+to these variables are unknown a priori; we infer these values from the data collected in the previously above reported experiment. In our norming studies, we found that both at the population-level and at the individual-level, 
 participants' ratings of the different expressions gradually increased and decreased with changing event probabilities 
 (as, for example, shown in Figure~\ref{fig:norming-results-indiv}). This is expected if we assume that participants
 have probabilistic beliefs about thresholds $\theta$ (as illustrated in the right panels of Figure~\ref{fig:model-visualization}) but not so if we assume that
@@ -449,7 +452,7 @@ Using these two distributions, we can define the \textit{expected pragmatic spea
 
 $$ES_1\left(u \mid \phi \right) = \int P(c) \int_0^1 P(\theta) S_1\left(u \mid \phi, \theta, c\right) d\theta \  d c$$
 
-This model predicts what a listener having uncertainty about a speaker's thresholds (or threshold distributions) and cost function would expect that speaker to say in different situations.
+This model predicts which utterance a listener who has uncertainty about a speaker's thresholds (or threshold distributions) \jd{needs to be unpacked, can't be casually thrown into parens :)} and cost function would expect that speaker to use to describe different event probabilities.
 Intuitively, this model is a weighted average of different speaker models with differing thresholds and cost functions where the weights are determined by the listener's belief distributions over thresholds
 and costs. 
 
@@ -462,17 +465,16 @@ and costs.
 
 \subsection{Linking function}
 
-Overall, we assume that participants' reason about what they believe a speaker would say 
-in different situations when asked to provide ratings for utterances. 
+We assume that in Exp.~1 participants, when asked to provide ratings for utterances, reasoned about what a speaker would say in different situations. 
 We assume that these beliefs are guided by participants' beliefs about the speaker's thresholds and costs, and 
 that participants are averaging over their uncertainty. For this reason, we assume that the population-level 
 average ratings of what participants expect the speaker to say in different situations 
 correspond to the probabilities predicted by the \textit{expected pragmatic speaker} model.
 However, given the forced choice nature of the experiment and that we are estimating model 
-parameters from limited and potentially noisy data, we make the following additional linking assumptions.
+parameters from limited and potentially noisy data, we make the following additional linking assumptions. \jd{this last sentenec ,especially the "however", is weird. what makes the following linking assumptions different from the first? why not say at the beginning that you make n linking assumptions, and then spell out each?}
 
 \begin{itemize}
-\item \textbf{Set of utterances}: Across all conditions, we assume that the set of utterances that participants are considering is the set of all utterances that we used in the norming study, i.e., $U= \{$ \textsc{bare}, \textsc{might}, \textsc{probably}, \textsc{think}, \textsc{looks like}, \textsc{could}, \textsc{bare not}$\}$. We include all utterances instead of only the utterances that are presented in a given condition since we assume that participants' general knowledge about English uncertainty expressions also influences their ratings. Ideally, we would include even more utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for which we collected ratings, we are limited to the expressions in $U$.
+\item \textbf{Set of utterances}: Across all conditions, we assume that the set of utterances that participants are considering is the set of all utterances that we used in the norming study, i.e., $U= \{$ \textsc{bare}, \textsc{might}, \textsc{probably}, \textsc{think}, \textsc{looks like}, \textsc{could}, \textsc{bare not}$\}$. We include all utterances instead of only the utterances that are presented in a given condition since we assume that participants' general knowledge of English uncertainty expressions also influences their ratings. Ideally, we would include even more utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for which we collected ratings, we are limited to the expressions in $U$.
 
 \item \textbf{\textit{something else} option}: Participants in condition $\mathscr{C} = \{u_a, u_b\}$ 
 could only choose between the three utterances $U' = \{u_a, u_b,$ \textit{something else}$\}$.
@@ -548,7 +550,7 @@ Beta distribution, most probability mass is assigned to values of $\theta$ close
 a traditional semantics.\footnote{Alternatively, one can also see the threshold distribution for the bare form as a distribution over a verification parameter $\eta$ that governs 
 how certain a speaker has to be to utter a bare assertion \cite{TODO ask Dan}. Mathematically, our assumption of bare forms having a threshold
 semantics is equivalent to assuming that there is a verification threshold $\eta$. \todo{Should we provide a proof in the SI?}}
-Therefore, by using Beta distributions for the threshold distributions, we argue that we can treat all expressions in the model the same.
+Therefore, by using Beta distributions for the threshold distributions, we argue that we can treat all expressions in the model the same. \jd{for the naive reader, it will be hard to evaluate how reasonable or unreasonable these different assumptions are. can you include a sentence either at the beginning or the end of this subsection saying which assumptions (and its alternatives) the model is robust to? or flag the assumptions you think are more problematic than others?}
 
 
 \subsection{Parameter estimation}
@@ -593,7 +595,7 @@ we decided against revising the assumption that all utterances in the model have
 
 
 One potential concern given the flexibility of the model is that it could be overfitting the data. 
-This seems unlikely considering that we are estimating only 18 parameters to predict in total 567 data points 
+This is unlikely considering that we are estimating only 18 parameters to predict in total 567 data points 
 (27 data points for each one of the 21 conditions) but to nevertheless rule out this possibility, we performed a leave-one-out cross-validation of
 our model. For each condition $x$, we estimated a distribution over parameters $\Theta_x$ using the data from all conditions but $x$. We then
 compared the model predictions of the model parametrized by $\Theta_x$ to participants' ratings in condition $x$. This way, the model has to predict
@@ -647,7 +649,7 @@ maximum likelihood estimates of the inferred threshold distributions $P(\theta)$
 As we discussed above, for the bare form and its negation, we expected the model to infer threshold distributions whose probability mass is concentrated 
 around $\theta=1$ and $\theta=0$, respectively.\footnote{Note that since the negation of the bare form is a negative form, $\theta$ is an upper threshold. For the bare form as well as
 all the other utterances that we are are considering in this paper, $\theta$ is a lower threshold.} As  Figure~\ref{fig:threshold-distributions} shows, this is indeed what
-the inferred threshold distributions look like. 
+the inferred threshold distributions look like. \jd{would be helpful to say here what the result should have been under a categorical semantic view -- ie distributions peaked on a particular value. highlight that this is NOT what is observed}
 
 The threshold distribution for \textit{might} has most of its probability mass concentrated at values slightly above 0. This 
 is in line with non-probabilistic accounts of the interpretation of epistemic modals. These accounts generally assume that \textit{might} $p$ is true 
@@ -674,12 +676,12 @@ that speakers use \textit{think} when they strongly belief in the embedded propo
  \subsection{Interim summary}
  
  In this section, we described a computational model of production expectations of uncertainty expressions. This model
- is based on the RSA framework and assumes that listeners hold beliefs about speaker thresholds (in the form
+ is couched within the RSA framework and assumes that listeners hold beliefs about speaker thresholds (in the form
  of threshold distributions) and about speaker preferences (in the form of cost functions). We estimated 
  the free parameters of this model from the norming data, which resulted in a model that is able to accurately predict
- participant's utterance ratings in our norming study across all conditions with a shared set of parameters.
+ participant's utterance ratings -- i.e., their expectations of use --  in our norming study across all conditions with a shared set of parameters.
  
- In the following sections of this paper, we will use this model as the basis for our adaptation model. Since this model
+ In the following sections of this paper, we will use this model as the basis for modeling adaptation. Since this model
  is able to capture different beliefs about thresholds and preferences, it provides us with the opportunity to simulate 
  the adaptation process as a result of updating beliefs about these model parameters. Further, in order to answer
  our primary research question of whether listeners update their beliefs about lexica or preferences, we can compare
@@ -689,7 +691,7 @@ that speakers use \textit{think} when they strongly belief in the embedded propo
 
 
 
-\section{Experiment 1: Adaptation of Speaker Expectations}
+\section{Experiment 1: Adaptation of speaker expectations}
 \label{sec:exp-prod-adaptation}
 
 
