@@ -40,7 +40,9 @@
 \newcommand{\possessivecite}[1]{\textciteauthor{#1}'s (\textciteyear{#1})}
 \renewcommand{\exp}{\text{exp }}
 
-\newcommand{\jd}[1]{\textbf{\color{green}[jd: #1]}}
+
+\definecolor{PinkyPurple}{RGB}{178,0,178}
+\newcommand{\jd}[1]{\textcolor{PinkyPurple}{\textbf{[jd: #1]}}}
 
 \newcommand{\eref}[1]{(\ref{#1})}
 \newcommand{\tableref}[1]{Table~\ref{#1}}
@@ -113,24 +115,24 @@ One of the key assumptions in Gricean pragmatic reasoning \citep{Grice1975} is t
     \ex \label{ex:snow-inf} $\rightsquigarrow$  It is not certain that it will snow tomorrow.
   \end{xlist}
 \end{exe}
-According to Gricean pragmatic theories, listeners assume that a speaker is cooperative and arrive at the inference in (\ref{ex:cookie-inf}) through a counterfactual reasoning process: they reason that if Alex had wanted to communicate that Bill ate all of the cookies, Alex would have uttered the more informative statement \textit{Bill ate all of the cookies}. Therefore, considering that Alex did not make a more informative statement, it must be that the more informative statement is not compatible with the state of the world, which leads the listener to conclude (\ref{ex:cookie-inf}) . Analogous reasoning leads to the inferences in (\ref{ex:movie-inf})  and (\ref{ex:snow-inf}) .
+According to Gricean pragmatic theories, listeners assume that a speaker is cooperative and arrive at the inference in (\ref{ex:cookie-inf}) through a counterfactual reasoning process: they reason that if Alex had wanted to communicate that Bill ate all of the cookies, Alex would have uttered the more informative statement \textit{Bill ate all of the cookies}. Assuming that Alex knew the truth regarding the more informative sentence, it must be that the more informative statement is not true, which leads the listener to conclude (\ref{ex:cookie-inf}). Analogous reasoning leads to the inferences in (\ref{ex:movie-inf})  and (\ref{ex:snow-inf}) .
 
 An implicit assumption in such an account of pragmatic reasoning is that listeners have precise expectations about the speaker's language use in different situations -- listeners will only be able to draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems (\todo{Cite something??}) and different speakers  often agree on descriptions for different world states. However, for more abstract function words such as quantifiers like \textit{some} and \textit{many} or uncertainty expressions like \textit{might} and \textit{probably}, there exists more variability across speakers. For example, in a norming study, \citet{Yildirim2016} found that participants varied considerably in their expectations about the use of different quantifiers. Similarly, \citet{Wallsten1986} found considerable inter-subject variability in the interpretation of uncertainty expressions. 
 
-Recent work suggests that listeners deal with this kind of variability by adapting to it and updating their expectations about a speaker's language use, a process known as semantic/pragmatic adaptation. In a series of experiments, \citet{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied. After exposure, they probed participants' expectations about the speakers' language use and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners are updating \textit{some} type of expectations, the nature of the expectations that listeners are updating is unknown. Answering this question is the focus of the work reported here.
+Recent work suggests that listeners deal with this kind of variability by adapting to it and updating their expectations about a speaker's language use, a process known as semantic/pragmatic adaptation. In a series of experiments, \citet{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied. After exposure, they probed participants' expectations about the speakers' language use and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners are updating \textit{some} type of expectations, the nature of the expectations that listeners are updating is unknown. \jd{and why do we care about the nature of the expectation? be clearer already here about what the implications are for theories that assume static meanings}Answering this question is the focus of the work reported here.
 
 As a starting point for this investigation, we consider adaptation in other linguistic domains. Apart from the work on quantifiers, linguistic adaptation has been observed in  phonetics \citep[e.g.,][]{Goldinger1998,Norris2003,Kraljic2005,Kraljic2007,Babel2012,Kleinschmidt2015}, 
 syntax \citep{Kamide2012,Fine2013,Fine2016,Myslin2016,Kroczek2017},\footnote{Note, 
 however, that some of these studies failed to replicate and it is still unclear under what 
-circumstances syntactic adaptation can be observed \citep[see ][]{Liu2017,HarringtonStack2018}.}, intonation and prosody \citep{Kurumada2012,Roettger2019}, and with phenomena such as referring expressions
+circumstances syntactic adaptation can be observed \citep[see ][]{Liu2017,HarringtonStack2018}.} intonation and prosody \citep{Kurumada2012,Roettger2019}, and with phenomena such as referring expressions
 \citep{Clark1986,Brennan1996,Metzing2003,Horton2005,Brennan2009} and lexical associations \citep{DelaneyBusch2019}. 
 
-For most of these phenomena, it has been established what kind of expectations listeners are updating. At the phonetic level, 
+For most of these phenomena, it has been established what kind of expectations listeners are updating. \jd{this may be a little too strong?} At the phonetic level, 
 listeners update their expectations about speakers' \textbf{mapping} between acoustic cues and phonemes \citep[e.g.,][]{Kleinschmidt2015}.
 At the syntactic level, listeners update their expectations about speakers' \textbf{preferences} 
-for different syntactic structures. However, as mentioned above, at the semantic/pragmatic level, the adaptation process is still poorly understood. 
+for different syntactic structures. In contrast, at the semantic/pragmatic level the adaptation process and the nature of the updated representations is still poorly understood. \jd{is semprag adaptation inherently a more difficult problem than phonetic and syntactic adaptation? if so, it's worth emphasizing here}
 
-We therefore investigate two likely candidates for representations that are updated during semantic/pragmatic adaptation, motivated by recent advances in probabilistic modeling of pragmatic language understanding \cite{FrankGoodman2012,GoodmanFrank2016,FrankeJaeger2016}. First -- analogous to phonetic adaptation -- listeners might update their beliefs about speakers' mappings between 
+We investigate two likely candidates for representations that are updated during semantic/pragmatic adaptation, motivated by recent advances in probabilistic modeling of pragmatic language understanding \cite{FrankGoodman2012,GoodmanFrank2016,FrankeJaeger2016}. First -- analogous to phonetic adaptation -- listeners might update their beliefs about speakers' mappings between 
 words and world states, i.e., speakers' lexica. Alternatively -- analogous to syntactic adaptation -- 
 listeners might update their beliefs about speakers' preferences
 for expressions. Finally, listeners might track both mappings and preferences.
@@ -148,7 +150,7 @@ A listener's beliefs about the three speakers' lexica and preferences are schema
 \end{figure}
 
 First, consider speaker {\bf A}, for whom \textit{might} is semantically felicitous if the described event probability (e.g., of snowing) exceeds 10\%, 
-\textit{probably} if the event probability exceeds 60\% and \textit{almost certainly}  if the event probability exceeds 90\%.  If a listener has accurate beliefs about {\bf A}'s mapping between expressions and event probabilities and observes {\bf A}  produce the sentence \emph{It will probably snow}, they will be likely to infer a probability of snowing between 60 and 90\%. As illustrated above, the reasoning follows the schema of a standard scalar implicature \citep{Grice1975, Horn1984}: if  {\bf A} had intended to communicate a probability above 90\%, they could have said \emph{It will almost certainly snow}, which would have been more informative and equally relevant. Assuming the speaker knows the actual event probability and is cooperative, it is therefore likely that the intended probability is not above 90\%.\footnote{Under a standard Gricean view, the negation of the stronger alternative is inferred categorically. However, we adopt probabilistic language here in keeping with recent results that scalar inferences are more aptly viewed as probabilistic inference under uncertainty.} 
+\textit{probably} if the event probability exceeds 60\% and \textit{almost certainly}  if the event probability exceeds 90\%.  If a listener has accurate beliefs about {\bf A}'s mapping between expressions and event probabilities and observes {\bf A}  produce the sentence \emph{It will probably snow}, they will be likely to infer a probability of snowing between 60 and 90\%. As illustrated above, the reasoning follows the schema of a standard scalar implicature \citep{Grice1975, Horn1984}: if  {\bf A} had intended to communicate a probability above 90\%, they could have said \emph{It will almost certainly snow}, which would have been more informative and equally relevant. Assuming the speaker knows the actual event probability and is cooperative, it is therefore likely that the intended probability is not above 90\%.\footnote{Under a standard Gricean view, the negation of the stronger alternative is inferred categorically. However, we adopt probabilistic language here in keeping with recent results that scalar inferences are more aptly viewed as probabilistic inference under uncertainty.\jd{cite}} 
 
 Now, consider speaker {\bf B}, for whom \textit{might} is semantically felicitous if the event probability exceeds 30\%, 
 \textit{probably} if the event probability exceeds 75\% and \textit{almost certainly}  if the event probability exceeds 95\%. If a listener has
@@ -159,12 +161,12 @@ producing \textit{almost certainly}. If a listener has accurate beliefs about {\
 they will be likely to infer a chance of snow between 75\% and 100\% when they hear {\bf C} produce \textit{It will probably snow} since they will not
 consider  \textit{almost certainly} a likely alternative. That is, the scalar inference will be blocked by the additional knowledge of the speaker's production preferences. 
 
-Thus, a listener who tracks the variability in these hypothetical speakers' lexica and production preferences will draw on average more accurate inferences about the world. We investigate the nature of the representations updated during semantic/pragmatic adaptation in the the domain of uncertainty expressions, i.e., words or phrases that can be used to express uncertainty, as used in descriptions of potential future events. These expressions include epistemic modals (see, for example, \citep{Kratzer1991} and \citep{Hacquard2011}) such as \textit{might}, 
-\textit{probably}, and \textit{could} but also phrases such as \textit{it looks like} which have been primarily investigated in the experimental pragmatics literature (e.g., \cite{Kurumada2014,Pogue2018}).
+Thus, a listener who tracks the variability in these hypothetical speakers' lexica and production preferences will draw on average more accurate inferences about the world. We investigate the nature of the representations updated during semantic/pragmatic adaptation in the the domain of uncertainty expressions, i.e., words or phrases that can be used to express uncertainty, as used in descriptions of potential future events. These expressions include epistemic modals such as \textit{might}, 
+\textit{probably}, and \textit{could} (see, for example, \citep{Kratzer1991} and \citep{Hacquard2011}) but also phrases such as \textit{it looks like}, which have been primarily investigated in the experimental pragmatics literature (e.g., \cite{Kurumada2014,Pogue2018}).
 
 Uncertainty expressions have several properties that make them a good testing ground for studying semantic and pragmatic
 adaptation. First, there is no consistent mapping between uncertainty expressions and event probabilities
-(see, for example, \citet{Clark1990}, \citet{PepperPrytulak1974}). Second, there is considerable inter-speaker variability 
+(see, for example, \citet{Clark1990}, \citet{PepperPrytulak1974}). \jd{is it worth problematizing more clearly the semantic assumption of invariance of meaning for these uncertainty expressions? take inspiration from dan's book?} Second, there is considerable inter-speaker variability 
 in the use of these expressions \citep{Wallsten1986} and therefore it is likely that listeners expect different speakers to use these expressions
 differently. Lastly, interpreting uncertainty expressions plays an important role in many everyday situations from the banal -- such as talking about the weather -- to the serious -- such as communicating about health risks \citep{Berry2004, Lipkus2007, Politi2007} or making financial decisions \citep{Doupnik2003}. 
 Thus, listeners would benefit from tracking  how a given speaker uses these expressions. %and are therefore  potentially more attuned to subtle differences across speakers than in cases where variation may have a smaller effect on decision-making.
@@ -188,7 +190,7 @@ In order to establish the nature of the representations that are updated during 
 %In section~6, we discuss how our model also predicts updated interpretations of uncertainty expressions after a brief exposure to a different speaker and 
 %we present an experiment whose results confirm this prediction. 
 
-We find that listeners indeed update their beliefs about different  speakers' use of uncertainty expressions, and that this adaptation is reflected both in post-exposure measures of production expectations and interpretation. The data are best captured by the adaptation model in which both the lexicon and the speaker's production preferences are updated. We conclude with a discussion of remaining open questions and the implications of our findings.
+We find that listeners indeed update their beliefs about different  speakers' use of uncertainty expressions, and that this adaptation is reflected both in post-exposure measures of production expectations and interpretation. The data are best captured by the adaptation model in which both the lexicon and the speaker's production preferences are updated. We conclude with a discussion of remaining open questions and the implications of our findings. \jd{implications for what? maybe at least mention here the theories of adaptation that already exist? also mention somewhere that the computational model is formulated within ``the Rational Speech Act framework, a state-of-the-art probabilistic formalization of the Gricean program'' and that this is one of the first extensions of the model to model learning}
 
 
 %%%%%%%%%%%%%
@@ -280,13 +282,12 @@ We find that listeners indeed update their beliefs about different  speakers' us
 \section{Pre-exposure ratings}
 \label{sec:exp-norming}
 
-We first conducted a series of norming studies, which served the following purposes.
-First, they allowed us to investigate whether listeners vary in their expectations about
-a generic speaker's use of uncertainty expressions in our experimental context. 
-Second, they served as a check whether our paradigm and the manipulation of different event probabilities work. 
-Third, we used the results from these studies to inform the experimental design of the adaptation experiments. 
-Lastly, as we will discuss in Section 5, we used the data collected in the norming studies to 
-estimate population-level prior beliefs for our adaptation model.
+We first conducted a series of norming studies, which served the following theoretical and methodological purposes.
+First, they addressed the theoretical question of whether listeners vary in their expectations about
+a generic speaker's use of uncertainty expressions, by collecting participants' judgments about expressions of uncertainty they expected speakers to use for varying probabilities of receiving gumballs of a particular color from a gumball machine. 
+Second, they served as a methodological check on whether the paradigm is suited for manipulating fine-grained event probabilities. Third,  the results from these studies informed the experimental design of the adaptation experiments reported in later sections, by allowing us to both choose which pair of expressions of uncertainty to test adaptation on, and to determine the particular event probability for which participants had roughly equi-probable expectations about which expression of uncertainty a generic speaker would use to report an event with that probability. 
+Lastly, we used the data collected in the norming studies to 
+estimate population-level prior beliefs for the adaptation model reported in Section 5.
 
 \subsection{Participants}
 We recruited a total of 420 participants 
@@ -307,33 +308,30 @@ which amounted to an hourly wage of approximately \$12--\$15.
 The norming study was a forced-choice production experiment. Participants were instructed 
 that over the course of the experiment, they would see several scenes with an adult man, 
 a young girl, and a gumball machine on a table and 
-that the gumball machine is too high up on the table for the girl to see. 
+that the gumball machine is too high up on the table for the girl to see (see Figure~\ref{fig:norming-trial} for an example scene). 
 After completing an attention check which asked participants whether 
 the girl could see the gumball machine,\footnote{Participants had to go back to the instructions in case they responded incorrectly. This was the case for 41 participants.} 
-participants saw a series of scenes (see Figure~\ref{fig:norming-trial} for an example scene) and were asked to rate how likely they thought it was that the 
+participants saw a series of scenes  and were asked to rate how likely they thought it was that the 
 adult would produce two given responses by distributing 100 points across the two given utterances and the 
 blanket \textit{something else} option. Sliders automatically jumped back if participants tried to distribute more than 100 points. 
-In each scene, the child uttered \textit{``I want a blue one''} (target color: blue) or  \textit{``I want an orange one''} (target color: orange)
-(randomized across participants\footnote{In condition 1 (\textit{bare-might}), as well as conditions 16-21 (all conditions with \textit{bare not}), the target color was randomized across trials. While randomization of the target color across trials increased the correlation between the ratings for the two colors,  the average ratings for each condition independent of the target color were not affected by this choice. See the supplementary material for a detailed discussion of the effect of this manipulation on the ratings.}). The gumballs in the machines were being tossed around to prevent participants counting the gumballs
+In each scene, the child uttered \textit{``I want a blue one''} (target color: blue) or  \textit{``I want an orange one''} (target color: orange), randomized across participants\footnote{In condition 1 (\textit{bare-might}), as well as conditions 16-21 (all conditions with \textit{bare not}), the target color was randomized across trials. While randomization of the target color across trials increased the correlation between the ratings for the two colors,  the average ratings for each condition independent of the target color were not affected by this choice. See the supplementary material for a detailed discussion of the effect of this manipulation on the ratings.}. The gumballs in the machines were tossed around continuously to prevent participants from counting the gumballs
 and to make sure that participants did not consider it more likely to get one of the gumballs at the bottom of the machine.
  In each of the 21 conditions, participants saw only  two of the following seven possible adult utterances with different uncertainty expressions:
 
  \begin{itemize}
-\item You'll get a blue/orange one (\textsc{bare})
-\item You might get a blue/orange one (\textsc{might})
-\item You'll probably get a blue/orange one (\textsc{probably})
-\item I think you'll get a blue/orange one (\textsc{think})
-\item It looks like you'll get a blue/orange one (\textsc{looks like})
-\item You could get a blue/orange one (\textsc{could})
-\item You won't get a blue/orange one (\textsc{bare not})
+\item You'll get a blue/orange one. (\textsc{bare})
+\item You might get a blue/orange one. (\textsc{might})
+\item You'll probably get a blue/orange one. (\textsc{probably})
+\item I think you'll get a blue/orange one. (\textsc{think})
+\item It looks like you'll get a blue/orange one. (\textsc{looks like})
+\item You could get a blue/orange one. (\textsc{could})
+\item You won't get a blue/orange one. (\textsc{bare not})
 \end{itemize}
 
 
-\noindent Within each condition, we manipulated the percentage of target color gumballs across trials. 
+\noindent Within each condition, we manipulated the percentage of target color gumballs across trials, which we take as proxy for the objective probability of receiving a gumball of the target color. 
 Each participant saw 3 trials\footnote{In condition 1 (\textit{bare-might}), participants saw each gumball machine 6 times -- 3 times when being asked to produce a statement about orange gumballs and 3 times when being asked to produce a statement about blue gumballs. In conditions 15-20 (all conditions with \textit{bare not}), participants saw each machine 4 times: 2 times for each color.} 
-for each of the following percentages: \\ 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\%, 90\%, 100\%.
-
-\noindent We randomized the order of expressions across participants and trials were presented in pseudo-randomized order.
+for each of the following percentages: 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\%, 90\%, 100\%. We randomized the order of expressions across participants and trials were presented in pseudo-randomized order. \jd{pseudo-randomized how?}
 
 
 \subsubsection{Results and Discussion}
@@ -344,9 +342,8 @@ for each of the following percentages: \\ 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\
 \end{figure}
 
 Figure~\ref{fig:norming-results-main} shows participants' ratings for different gumball proportions for 3 of the 21 conditions, namely all combinations of the conditions
-with the utterances \textsc{bare}, \textsc{probably}, and \textsc{might}. 
-(see the Supplementary Material for the results from other conditions). 
-The results from these three conditions highlight several important properties about participants'
+with the utterances \textsc{bare}, \textsc{probably}, and \textsc{might} (see the Supplementary Material for the results from the other 18 conditions). 
+The results from these three conditions highlight several important properties of participants'
 behavior in this experiment that generalize to all conditions.
 First, the ratings for individual utterances are influenced by the utterance choices presented to participants.
 If we compare the ratings for \textsc{might} in the \textit{bare-might} and the \textit{might-probably} condition, we see that \textit{might} received high ratings for a larger
@@ -354,7 +351,7 @@ range of event probabilities when it is paired with \textsc{bare} than when it i
 This suggests that participants are primed to use the utterances provided in the experiment and that their ratings depend on the presented alternatives -- an effect that
 has also been observed for quantifiers \citep{DegenTanenhaus2015}.
 
-Second, the results suggest that participants are sensitive to the different event probabilities and that our paradigm is well suited to study 
+Second, the results suggest that participants are sensitive to the different event probabilities and that this paradigm is well suited to study 
 the mapping between event probabilities and uncertainty expressions. For example, in the \textit{might-probably} condition, participants
 provided considerably different ratings when they were presented with a gumball machine with 50\% target color gumballs than when they
 were presented with 60\% target color gumballs.
@@ -372,36 +369,41 @@ It could also be that participants' individual ratings are graded which could re
 and that these individual graded ratings drive the  graded average ratings. If we look at individual participants' ratings, it appears to be a combination of both.
 Figure~\ref{fig:norming-results-indiv} shows the responses of three individual participants in the \emph{might-probably} condition. These figures show that there 
 is a range of gumball proportions for each participant for which they assigned similar ratings to two utterances, which suggests uncertainty about the speaker's 
-utterance choice. At the same time, however, this range also differed across participants: Participant \#8, a ``\textit{cautious}'' speaker, thought that the speaker would only be likely to use {\sc probably} 
-when the objective probability of getting a target color gumball was greater than 75\%, whereas participant \#15, a ``\textit{confident}'' speaker, thought that  {\sc probably} was a better utterance choice than {\sc might} 
-when the objective probability of getting a target color gumball was just greater than 50\%. These observations suggest that participants have uncertainty about a 
+utterance choice. At the same time, however, this range also differed across participants: Participant \#8, who considered the experimental speaker a ``\textit{cautious}'' speaker, thought that the speaker would only be likely to use {\sc probably} 
+when the objective probability of getting a target color gumball was greater than 75\%, whereas participant \#15, who considered the experimental speaker a ``\textit{confident}'' speaker, thought that  {\sc probably} was a better utterance choice than {\sc might} 
+when the objective probability of getting a target color gumball was just greater than 50\%. These observations suggest that participants have uncertainty \jd{these plots just tell us that htey have varying beliefs, but not necessarily uncertainty!} about a 
 speaker's use of uncertainty expressions and that they have a priori different expectations about how a generic speaker would use these expressions.
 
 This uncertainty and variability seems to be particularly borne out in the \emph{might-probably} condition. For this reason, we chose this pair of expressions
 to study listeners' adaptation to variable uses of uncertainty expressions.
 
+\jd{it would be helpful to address the issues raised in the intro to section 2 in order}
 
-\section{Production belief model}
+
+\section{Modeling the production of uncertainty expressions}
 \label{sec:model-baseline}
 
-The norming data confirmed previous findings that participants' expectations 
+%Propose a probabilistic computational pragmatics model of the production of uncertainty expressions that functions as proxy for listeners' baseline generative model of a generic speaker. Evaluate the model on the data from Experiment 1. (\sectionref{sec:model-baseline}).
+
+In this section we report a computational model of the production of uncertainty expressions that is informed by the data from the experiment reported above, and which will serve as proxy for listeners' baseline generative model of a generic speaker, and which we will use as the basis for investigating adaptation processes. What are the properties that this model should have?
+
+The norming data \jd{i'm increasingly starting to think that we shouldn't call the first expeirment a norming experiment. it undersells its importance for both the whole modeling enterprise and for the theoretical points about listeners having uncertainty about and displaying variability in expectations about use of uncertainty expressions } confirmed previous findings that participants' expectations 
 about how a generic speaker would use uncertainty expressions 
 depend on the set of utterances that participants can choose from.
 We further found that ratings were graded since participants seemed to have uncertainty
-in their expectations about how a generic speaker would use uncertainty expressions.
+in their expectations about how a generic speaker would use uncertainty expressions. \jd{the previous sentence sounds like you're making a causal claim about the relationship between expectations and gradedness of ratings. is that intentional?}
 Hence, a model predicting participants' beliefs about a speaker's productions of uncertainty expressions
- should  (a) be able to capture differences based on the availability of alternative utterances; 
-(b) provide graded predictions; 
-and (c) be able to capture uncertainty within participants.
+ should  (a) be able to capture differences \jd{between what and what?} based on the availability of alternative utterances; 
+(b) provide graded predictions about utterance probabilities; 
+and (c) be able to capture within-participant uncertainty about probability of use.
 
-Computational game-theoretic models such as the Rational Speech Act (RSA; \cite{Goodman2016}) 
-framework are uniquely suited to fulfill these desiderata.
-Crucially, RSA models  base their predictions on a set of alternative utterances and 
+Computational game-theoretic models such as the Rational Speech Act 
+framework (RSA; \cite{Goodman2016})  are uniquely suited to fulfill these desiderata.
+Crucially, RSA models \jd{before these idiosyncratic properties, first mention that it's a probabilistic formalization of grice and developed to treat comprehension as probabilistic inference over prior beliefs and speaker model; and that you'll focus here specifically on the speaker model}  base their predictions on a set of alternative utterances and 
 they make probabilistic predictions.  According to an RSA model, a speaker who wants to
  convey some information to a listener 
-chooses her utterance based on the utterance utility compared to the utility of alternative utterances. 
-The speaker's utility of an utterance is determined by taking the listener utility and the speaker cost into accounnt: 
-it is the difference between the informativity of the utterance to a listener and the speaker's cost of the utterance.
+chooses her utterance based on the utterance's utility compared to the utility of alternative utterances. 
+The speaker's utterance utility  is determined by trading off the informativity of the utterance to a literal listener on the one hand and the cost of the utterance on the other.
 
 In defining the informativity of an utterance, we follow previous RSA models of uncertainty expressions (\cite{Lassiter2013,Herbstritt2019}) 
 and assume that uncertainty expressions have a threshold semantics, 
@@ -414,12 +416,12 @@ Formally, we base the computation of informativity on a probability distribution
 which is usually referred to as the \textit{literal listener} $L_0$ in the RSA framework. 
 
 $$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi > \theta_u \right] \qquad \mbox{(for positive utterances)}$$
-$$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi < \theta_u \right] \qquad \mbox{(for negated utterances)}$$
+$$L_0\left(\phi \mid u, \theta_u\right) \propto P(\phi) 1\left[\phi < \theta_u \right] \qquad \mbox{(for negated utterances)}$$ \jd{wait is this really what you're assuming for negated utterances? this isn't right, is it?}
 
 $P(\phi)$ is a prior distribution over event probabilities, which is independent of the utterance by the speaker.
 
 
-A \textit{pragmatic speaker} $S_1$ who wants to communicate an event probability $\phi$ then chooses her utterance $u$ from a set of utterances $U$ according to a soft-max choice rule \cite{Luce1959,SuttonBarto} such that she chooses $u$ with a probability proportional to her speaker utility. 
+A \textit{pragmatic speaker} $S_1$ who wants to communicate an event probability $\phi$ then chooses her utterance $u$ \jd{notation issue: here you use u to refer to the whole uttearnce; above you specifically say u corresonds to an uncertainty expression} from a set of utterances $U$ according to a soft-max choice rule \cite{Luce1959,SuttonBarto} such that she chooses $u$ with a probability proportional to her speaker utility. 
 $$S_1\left(u \mid \phi, \theta, c\right) \propto \exp \left( \lambda \left( \log L_0\left(\phi \mid u, \theta_u\right)  - c(u)\right)\right)$$
 $\lambda$ is a rationality parameter which governs how likely a speaker is to choose the utterance that maximizes her utility; as $\lambda$ approaches infinity, a speaker is more likely to always choose the optimal utterance.  
 
@@ -435,8 +437,8 @@ $\lambda$ is a rationality parameter which governs how likely a speaker is to ch
 
 
 $S_1$ crucially depends on a vector of thresholds $\theta$ which contains a threshold for each utterance in $U$, 
-as well as  a cost function $c(u)$, and it is still largely an open question what values speakers and listeners assign 
-to these variables. In our norming studies, we found that both at the population-level and at the individual-level, 
+as well as  a cost function $c(u)$. The values that speakers and listeners \jd{why speakers AND listeners?} assign 
+to these variables are unknown a priori; we infer these values from the data collected in the previously above reported experiment. In our norming studies, we found that both at the population-level and at the individual-level, 
 participants' ratings of the different expressions gradually increased and decreased with changing event probabilities 
 (as, for example, shown in Figure~\ref{fig:norming-results-indiv}). This is expected if we assume that participants
 have probabilistic beliefs about thresholds $\theta$ (as illustrated in the right panels of Figure~\ref{fig:model-visualization}) but not so if we assume that
@@ -450,7 +452,7 @@ Using these two distributions, we can define the \textit{expected pragmatic spea
 
 $$ES_1\left(u \mid \phi \right) = \int P(c) \int_0^1 P(\theta) S_1\left(u \mid \phi, \theta, c\right) d\theta \  d c$$
 
-This model predicts what a listener having uncertainty about a speaker's thresholds (or threshold distributions) and cost function would expect that speaker to say in different situations.
+This model predicts which utterance a listener who has uncertainty about a speaker's thresholds (or threshold distributions) \jd{needs to be unpacked, can't be casually thrown into parens :)} and cost function would expect that speaker to use to describe different event probabilities.
 Intuitively, this model is a weighted average of different speaker models with differing thresholds and cost functions where the weights are determined by the listener's belief distributions over thresholds
 and costs. 
 
@@ -463,17 +465,16 @@ and costs.
 
 \subsection{Linking function}
 
-Overall, we assume that participants' reason about what they believe a speaker would say 
-in different situations when asked to provide ratings for utterances. 
+We assume that in Exp.~1 participants, when asked to provide ratings for utterances, reasoned about what a speaker would say in different situations. 
 We assume that these beliefs are guided by participants' beliefs about the speaker's thresholds and costs, and 
 that participants are averaging over their uncertainty. For this reason, we assume that the population-level 
 average ratings of what participants expect the speaker to say in different situations 
 correspond to the probabilities predicted by the \textit{expected pragmatic speaker} model.
 However, given the forced choice nature of the experiment and that we are estimating model 
-parameters from limited and potentially noisy data, we make the following additional linking assumptions.
+parameters from limited and potentially noisy data, we make the following additional linking assumptions. \jd{this last sentenec ,especially the "however", is weird. what makes the following linking assumptions different from the first? why not say at the beginning that you make n linking assumptions, and then spell out each?}
 
 \begin{itemize}
-\item \textbf{Set of utterances}: Across all conditions, we assume that the set of utterances that participants are considering is the set of all utterances that we used in the norming study, i.e., $U= \{$ \textsc{bare}, \textsc{might}, \textsc{probably}, \textsc{think}, \textsc{looks like}, \textsc{could}, \textsc{bare not}$\}$. We include all utterances instead of only the utterances that are presented in a given condition since we assume that participants' general knowledge about English uncertainty expressions also influences their ratings. Ideally, we would include even more utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for which we collected ratings, we are limited to the expressions in $U$.
+\item \textbf{Set of utterances}: Across all conditions, we assume that the set of utterances that participants are considering is the set of all utterances that we used in the norming study, i.e., $U= \{$ \textsc{bare}, \textsc{might}, \textsc{probably}, \textsc{think}, \textsc{looks like}, \textsc{could}, \textsc{bare not}$\}$. We include all utterances instead of only the utterances that are presented in a given condition since we assume that participants' general knowledge of English uncertainty expressions also influences their ratings. Ideally, we would include even more utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for which we collected ratings, we are limited to the expressions in $U$.
 
 \item \textbf{\textit{something else} option}: Participants in condition $\mathscr{C} = \{u_a, u_b\}$ 
 could only choose between the three utterances $U' = \{u_a, u_b,$ \textit{something else}$\}$.
@@ -549,7 +550,7 @@ Beta distribution, most probability mass is assigned to values of $\theta$ close
 a traditional semantics.\footnote{Alternatively, one can also see the threshold distribution for the bare form as a distribution over a verification parameter $\eta$ that governs 
 how certain a speaker has to be to utter a bare assertion \cite{TODO ask Dan}. Mathematically, our assumption of bare forms having a threshold
 semantics is equivalent to assuming that there is a verification threshold $\eta$. \todo{Should we provide a proof in the SI?}}
-Therefore, by using Beta distributions for the threshold distributions, we argue that we can treat all expressions in the model the same.
+Therefore, by using Beta distributions for the threshold distributions, we argue that we can treat all expressions in the model the same. \jd{for the naive reader, it will be hard to evaluate how reasonable or unreasonable these different assumptions are. can you include a sentence either at the beginning or the end of this subsection saying which assumptions (and its alternatives) the model is robust to? or flag the assumptions you think are more problematic than others?}
 
 
 \subsection{Parameter estimation}
@@ -594,7 +595,7 @@ we decided against revising the assumption that all utterances in the model have
 
 
 One potential concern given the flexibility of the model is that it could be overfitting the data. 
-This seems unlikely considering that we are estimating only 18 parameters to predict in total 567 data points 
+This is unlikely considering that we are estimating only 18 parameters to predict in total 567 data points 
 (27 data points for each one of the 21 conditions) but to nevertheless rule out this possibility, we performed a leave-one-out cross-validation of
 our model. For each condition $x$, we estimated a distribution over parameters $\Theta_x$ using the data from all conditions but $x$. We then
 compared the model predictions of the model parametrized by $\Theta_x$ to participants' ratings in condition $x$. This way, the model has to predict
@@ -648,7 +649,7 @@ maximum likelihood estimates of the inferred threshold distributions $P(\theta)$
 As we discussed above, for the bare form and its negation, we expected the model to infer threshold distributions whose probability mass is concentrated 
 around $\theta=1$ and $\theta=0$, respectively.\footnote{Note that since the negation of the bare form is a negative form, $\theta$ is an upper threshold. For the bare form as well as
 all the other utterances that we are are considering in this paper, $\theta$ is a lower threshold.} As  Figure~\ref{fig:threshold-distributions} shows, this is indeed what
-the inferred threshold distributions look like. 
+the inferred threshold distributions look like. \jd{would be helpful to say here what the result should have been under a categorical semantic view -- ie distributions peaked on a particular value. highlight that this is NOT what is observed}
 
 The threshold distribution for \textit{might} has most of its probability mass concentrated at values slightly above 0. This 
 is in line with non-probabilistic accounts of the interpretation of epistemic modals. These accounts generally assume that \textit{might} $p$ is true 
@@ -675,12 +676,12 @@ that speakers use \textit{think} when they strongly belief in the embedded propo
  \subsection{Interim summary}
  
  In this section, we described a computational model of production expectations of uncertainty expressions. This model
- is based on the RSA framework and assumes that listeners hold beliefs about speaker thresholds (in the form
+ is couched within the RSA framework and assumes that listeners hold beliefs about speaker thresholds (in the form
  of threshold distributions) and about speaker preferences (in the form of cost functions). We estimated 
  the free parameters of this model from the norming data, which resulted in a model that is able to accurately predict
- participant's utterance ratings in our norming study across all conditions with a shared set of parameters.
+ participant's utterance ratings -- i.e., their expectations of use --  in our norming study across all conditions with a shared set of parameters.
  
- In the following sections of this paper, we will use this model as the basis for our adaptation model. Since this model
+ In the following sections of this paper, we will use this model as the basis for modeling adaptation. Since this model
  is able to capture different beliefs about thresholds and preferences, it provides us with the opportunity to simulate 
  the adaptation process as a result of updating beliefs about these model parameters. Further, in order to answer
  our primary research question of whether listeners update their beliefs about lexica or preferences, we can compare
@@ -690,7 +691,7 @@ that speakers use \textit{think} when they strongly belief in the embedded propo
 
 
 
-\section{Experiment 1: Adaptation of Speaker Expectations}
+\section{Experiment 1: Adaptation of speaker expectations}
 \label{sec:exp-prod-adaptation}
 
 
