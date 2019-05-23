@@ -42,3 +42,8 @@ We predict that
 
 See [analysis/analysis.Rmd](analysis/analysis.Rmd) for the exact analysis procedures.
 
+## Previous experiments
+
+This experiment is a modified version of two previous experiments. This experiment differs in how participants provide ratings. In previous versions, participants used sliders to rate likely interpretations; in this version, participants rate different intepretations by distributing 10 coins.
+
+See [../2_comprehension](2_comprehension) and [../6_comprehension_balanced](6_comprehension_balanced) in this repositiory for more information about the previous experiments.
