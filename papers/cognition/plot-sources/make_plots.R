@@ -1,12 +1,15 @@
 setwd("~/Dropbox/Uni/RA/adaptation/adaptation/papers/cognition/plot-sources/")
 
+library(data.table)
 library(tidyverse)
 library(ggplot2)
 library(grid)
 library(gridExtra)
 
+
 source("../../../shared-analysis/data_helpers.R")
 
+theme_set(theme_bw())
 
 ###################################
 # Population-level pre-test plots
@@ -187,12 +190,14 @@ ggsave(plot, filename = "../plots/exp-1-ratings.pdf", width = 30, height = 12, u
 
 
 compute_correlation_for_model = function(model_type, exp_data, model_path_suffix="") {
-  hdi_data.cautious= read.csv(paste("../../../models/2_adaptation_model/runs/might-biased", model_path_suffix, "/", model_type, "/hdi_samples.csv", sep=""))
-  hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/runs/probably-biased", model_path_suffix, "/", model_type, "/hdi_samples.csv", sep=""))
+  hdi_data.cautious = read.csv(paste("../../../models/2_adaptation_model/bayesian-runs", model_path_suffix, "/", model_type, "/cautious/hdi_samples.csv", sep="")) %>% mutate(condition = "cautious speaker")
+  hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/bayesian-runs", model_path_suffix, "/", model_type, "/confident/hdi_samples.csv", sep=""))  %>% mutate(condition = "confident speaker")
+  
   r2_cautious = post_adaptation_correlation(hdi_data.cautious, exp_data %>% filter(condition =="cautious speaker"))
   r2_confident = post_adaptation_correlation(hdi_data.confident, exp_data %>% filter(condition =="confident speaker"))
   
-  cor_row = data.frame(model=model_type, r2_cautious = r2_cautious, r2_confident=r2_confident)
+  r2_all = post_adaptation_correlation(rbind(hdi_data.cautious, hdi_data.confident), exp_data)
+  cor_row = data.frame(model=model_type, r2_cautious = r2_cautious, r2_confident=r2_confident, r2_all=r2_all)
   return(cor_row)
 }
 
@@ -241,9 +246,9 @@ mle_params = jsonlite::fromJSON(mle_params_json, flatten=TRUE)
 
 beta_density = data.table()
 
-beta_modals = c("bare", "might", "probably", "bare_not")
+beta_modals_sim = c("bare", "might", "probably", "bare_not")
 
-for (modal in beta_modals) {
+for (modal in beta_modals_sim) {
   alpha_param_name = paste("alpha", modal, sep="_")
   beta_param_name = paste("beta", modal, sep="_")
   
@@ -296,7 +301,7 @@ ggsave(threshold_distrs, filename = "../plots/model-visualization-distributions.
 # Speaker adaptation model results
 ##########
 
-mle_params = read.csv("../../../models/2_adaptation_model/runs/might-biased/theta-cost/mle_params.csv")
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs/mu-0.175_nu-2.5_cost-1.3/cautious/mle_params.csv")
 
 beta_density = data.table()
 
@@ -318,7 +323,7 @@ for (modal in beta_modals) {
 }
 
 
-mle_params = read.csv("../../../models/2_adaptation_model/runs/probably-biased/theta-cost/mle_params.csv")
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs/mu-0.175_nu-2.5_cost-1.3/confident/mle_params.csv")
 
 
 for (modal in beta_modals) {
@@ -370,32 +375,33 @@ threshold_distrs = ggplot(beta_density, aes(x=x, y=y, col=condition)) +
 ggsave(threshold_distrs, filename = "../plots/adaptation-posterior-thresholds.pdf", width = 30, height = 12, units = "cm")
 
 
-mle_params = read.csv("../../../models/2_adaptation_model/runs/might-biased/theta-cost/mle_params.csv") 
-mle_params = rbind(mle_params, read.csv("../../../models/2_adaptation_model/runs/probably-biased/theta-cost/mle_params.csv"))
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs/mu-0.175_nu-2.5_cost-1.3/cautious/mle_params.csv") 
+mle_params = rbind(mle_params, read.csv("../../../models/2_adaptation_model//bayesian-runs/mu-0.175_nu-2.5_cost-1.3/confident/mle_params.csv"))
 mle_params = rbind(mle_params, read.csv("../../../models/1_threshold_modals/runs/threshold-model-expected/mle_params.csv") )
 
-mle_params[1:3,"cost_might"] = 1.0
-mle_params[1:3,"cost_probably"] = 1.0
+mle_params[3,"cost_might"] = 1.0
+mle_params[3,"cost_probably"] = 1.0
 
 
-mle_params$condition = c("cautious speaker", "confident speaker", "prior")
+mle_params$condition = c("cautious speaker", "confident speaker", "norming data")
 mle_params = mle_params %>% gather(key="Parameter", value="value", -condition)
 
 cost_plot = mle_params %>% 
   filter(grepl("cost_", Parameter)) %>%
   mutate(Parameter = factor(gsub("cost_", "", Parameter), levels=modals, labels= modals_labels, ordered=TRUE)) %>%
-  ggplot(aes(fill=condition, y=value, x=Parameter)) +
+  ggplot(aes(fill=condition, color=condition, y=log(value), x=Parameter)) +
     geom_bar(stat="identity", position = "dodge") +
+    geom_point(aes(fill=condition), position = position_dodge(width = 0.9), size=4, pch=23, color="#666666") + 
     xlab("") + 
-    ylab("cost") +
+    ylab("log cost") +
    theme(legend.position = "bottom") +
-   guides(col=guide_legend(title="Condition", nrow = 1)) 
+   guides(fill=guide_legend(title="Condition", nrow = 1, override.aes = list(col="white", size=0.1)), col= "none", pch="none") 
 
 ggsave(cost_plot, filename = "../plots/adaptation-posterior-costs.pdf", width = 15, height = 12, units = "cm")
 
 
-hdi_data.cautious= read.csv(paste("../../../models/2_adaptation_model/runs/might-biased/theta-cost/hdi_samples.csv", sep=""))
-hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/runs/probably-biased/theta-cost/hdi_samples.csv", sep=""))
+hdi_data.cautious= read.csv(paste("../../../models/2_adaptation_model/bayesian-runs/mu-0.175_nu-2.5_cost-1.3/cautious/hdi_samples.csv", sep=""))
+hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/bayesian-runs/mu-0.175_nu-2.5_cost-1.3/confident/hdi_samples.csv", sep=""))
 hdi_data.prior = read.csv(paste("../../../models/1_threshold_modals/runs/threshold-model-expected//hdi_samples.csv", sep=""))
 hdi_data.prior = hdi_data.prior %>% filter(cond == "might-probably") %>% filter(run < 1000)
 
@@ -468,8 +474,8 @@ c4 = compute_correlation_for_model("prior", d.rep, model_path_suffix = "-balance
 
 rbind(c1,c2,c3,c4)
 
-hdi_data.cautious= read.csv(paste("../../../models/2_adaptation_model/runs/might-biased-balanced/prior/hdi_samples.csv", sep=""))
-hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/runs/probably-biased-balanced/prior/hdi_samples.csv", sep=""))
+hdi_data.cautious= read.csv(paste("../../../models/2_adaptation_model/bayesian-runs-balanced/theta-cost/cautious/hdi_samples.csv", sep=""))
+hdi_data.confident = read.csv(paste("../../../models/2_adaptation_model/bayesian-runs-balanced/theta-cost/confident/hdi_samples.csv", sep=""))
 #hdi_data.prior = read.csv(paste("../../../models/1_threshold_modals/runs/threshold-model-expected//hdi_samples.csv", sep=""))
 #hdi_data.prior = hdi_data.prior %>% filter(cond == "might-probably") %>% filter(run < 1000)
 
@@ -497,14 +503,40 @@ posterior_plot = hdi_data.all %>%
   geom_line(aes(x=percentage_blue, y=rating_m, group=modal), data=plot_data %>% rename(condition = pair) %>% mutate(src="experimental result")) +
   scale_linetype_manual(values=c("solid", "dashed"), labels=c("model prediction", "experimental result"), drop=F)
 
+ggsave(posterior_plot, filename = "../plots/adaptation-posterior-predictions-replication.pdf", width = 30, height = 12, units = "cm")
+
+
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/cautious/mle_params.csv") 
+mle_params = rbind(mle_params, read.csv("../../../models/2_adaptation_model//bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/confident/mle_params.csv"))
+mle_params = rbind(mle_params, read.csv("../../../models/1_threshold_modals/runs/threshold-model-expected/mle_params.csv") )
+
+mle_params[3,"cost_might"] = 1.0
+mle_params[3,"cost_probably"] = 1.0
+
+
+mle_params$condition = c("cautious speaker", "confident speaker", "prior")
+mle_params = mle_params %>% gather(key="Parameter", value="value", -condition)
+
+cost_plot = mle_params %>% 
+  filter(grepl("cost_", Parameter)) %>%
+  mutate(Parameter = factor(gsub("cost_", "", Parameter), levels=modals, labels= modals_labels, ordered=TRUE)) %>%
+  ggplot(aes(fill=condition, y=log(value), x=Parameter)) +
+  geom_bar(stat="identity", position = "dodge") +
+  xlab("") + 
+  ylab("log cost") +
+  theme(legend.position = "bottom") +
+  guides(col=guide_legend(title="Condition", nrow = 1)) 
+
+ggsave(cost_plot, filename = "../plots/adaptation-posterior-costs-replication.pdf", width = 15, height = 12, units = "cm")
+
 
 
 #### 
 # Experiment 2
 ####
 
-d.cautious = read.csv("../../../experiments/2_comprehension/data/2_comprehension-might-trials.csv")
-d.confident = read.csv("../../../experiments/2_comprehension/data/2_comprehension-probably-trials.csv")
+d.cautious = read.csv("../../../experiments/12_comprehension_coins_balanced/data/12_comprehension_coins_balanced-might-trials.csv")
+d.confident = read.csv("../../../experiments/12_comprehension_coins_balanced/data/12_comprehension_coins_balanced-probably-trials.csv")
 # re-number participants in confident speaker condition
 d.confident$workerid = d.confident$workerid + max(d.cautious$workerid) + 1
 d.cautious$condition = "cautious speaker"
@@ -513,14 +545,14 @@ d.confident$condition = "confident speaker"
 d.comp = rbind(d.cautious, d.confident)
 d.comp = remove_quotes(d.comp)
 
-d.exp_trials.cautious = read.csv("../../../experiments/2_comprehension/data/2_comprehension-might-exp_trials.csv")
-d.exp_trials.confident = read.csv("../../../experiments/2_comprehension/data/2_comprehension-probably-exp_trials.csv")
+d.exp_trials.cautious = read.csv("../../../experiments/12_comprehension_coins_balanced/data/12_comprehension_coins_balanced-might-exp_trials.csv")
+d.exp_trials.confident = read.csv("../../../experiments/12_comprehension_coins_balanced/data/12_comprehension_coins_balanced-probably-exp_trials.csv")
 
 d.exp_trials.confident$workerid = d.exp_trials.confident$workerid + max(d.exp_trials.cautious$workerid) + 1
 
 exp_trials = rbind(d.exp_trials.cautious, d.exp_trials.confident)
 
-d.comp = exclude_participants(trials = (d.comp %>% mutate(catch_trial = 0)), exp_trials = exp_trials, cutoff = 3)
+d.comp = exclude_participants(trials = (d.comp %>% mutate(catch_trial = 0)), exp_trials = exp_trials, cutoff = 4)
 d.comp[d.comp$color=="orange", ]$percentage_blue = 100 - d.comp[d.comp$color=="orange", ]$percentage_blue
 
 d.comp = d.comp %>% group_by(workerid, modal, color) %>% mutate(rating_norm = rating / sum(rating)) %>% ungroup()
@@ -548,8 +580,30 @@ ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, un
 # comprehension model
 #####
 
-hdi_data.cautious= read.csv(paste("../../../models/3_comprehension_model/runs/might-biased/theta/hdi_samples.csv", sep=""))
-hdi_data.confident = read.csv(paste("../../../models/3_comprehension_model/runs/probably-biased/theta/hdi_samples.csv", sep=""))
+compute_correlation_for_comp_model = function(model_type, exp_data, model_path_suffix="") {
+  
+  exp_data = exp_data %>% mutate(rating = rating_norm)
+  
+  hdi_data.cautious = read.csv(paste("../../../models/3_comprehension_model/runs", model_path_suffix, "/", model_type, "/cautious/hdi_samples.csv", sep="")) %>% mutate(condition = "cautious speaker")
+  hdi_data.confident = read.csv(paste("../../../models/3_comprehension_model/runs", model_path_suffix, "/", model_type, "/confident/hdi_samples.csv", sep=""))  %>% mutate(condition = "confident speaker")
+  
+  r2_cautious = post_adaptation_correlation(hdi_data.cautious, exp_data %>% filter(condition =="cautious speaker"))
+  r2_confident = post_adaptation_correlation(hdi_data.confident, exp_data %>% filter(condition =="confident speaker"))
+  
+  r2_all = post_adaptation_correlation(rbind(hdi_data.cautious, hdi_data.confident), exp_data)
+  cor_row = data.frame(model=model_type, r2_cautious = r2_cautious, r2_confident=r2_confident, r2_all=r2_all)
+  return(cor_row)
+}
+
+c1 = compute_correlation_for_comp_model("theta-cost", d.comp, model_path_suffix = "-balanced")
+c2 = compute_correlation_for_comp_model("cost", d.comp, model_path_suffix = "-balanced")
+c3 = compute_correlation_for_comp_model("theta", d.comp, model_path_suffix = "-balanced")
+c4 = compute_correlation_for_comp_model("prior", d.comp, model_path_suffix = "-balanced")
+
+rbind(c1,c2,c3, c4)
+
+hdi_data.cautious= read.csv(paste("../../../models/3_comprehension_model/runs-balanced//mu-0.175_nu-2.5_cost-1.3/cautious/hdi_samples.csv", sep=""))
+hdi_data.confident = read.csv(paste("../../../models/3_comprehension_model/runs-balanced/mu-0.175_nu-2.5_cost-1.3/confident/hdi_samples.csv", sep=""))
 
 hdi_data.cautious$condition = "cautious speaker"
 hdi_data.confident$condition = "confident speaker"
@@ -568,7 +622,9 @@ posterior_plot = hdi_data.all %>%
                      ) +
     ylab("predicted rating") +
     xlab("event probability") + 
-    geom_line(aes(x=percentage_blue, y=rating_norm_mu, group=interaction(src,modal,condition)), data= comp.plot_data %>% mutate(src="experimental result")) 
+    geom_line(aes(x=percentage_blue, y=rating_norm_mu, group=interaction(src,modal,condition)), data= comp.plot_data %>% mutate(src="experimental result")) +
+    scale_linetype_manual(values=c("solid", "dashed"), labels=c("model prediction", "experimental result"), drop=F)
+
   
 
 ggsave(posterior_plot, file="../plots/adaptation-posterior-comp.pdf", width = 30, height = 12, units = "cm")
