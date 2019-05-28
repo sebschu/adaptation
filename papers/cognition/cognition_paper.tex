@@ -910,7 +910,7 @@ cost & 0.770 &  $10^{-448}$    \\
 threshold distributions & 0.874 &  $10^{-284}$   \\
 cost \& threshold distributions & 0.815 & 1 \\
 \end{tabular}
-\caption{Model evaluation results on Experiment~1a. $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model. \label{tbl:model-comparison}}
+\caption{Model evaluation results on data from Experiment~1a. $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model. \label{tbl:model-comparison}}
 \end{table}
 
 \begin{table}
@@ -922,7 +922,7 @@ cost & 0.802 &  $10^{-458}$  \\
 threshold distributions & 0.877 & $10^{-212}$  \\
 cost \& threshold distributions & 0.875 & 1 \\
 \end{tabular}
-\caption{Model evaluation results on Experiment~1b.  $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model.  \label{tbl:model-comparison-replication}}
+\caption{Model evaluation results on data from Experiment~1b.  $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model.  \label{tbl:model-comparison-replication}}
 \end{table}
 
 Table~\ref{tbl:model-comparison} shows the $R^2$ values between the four models and the experimental data from Experiment 1a 
@@ -937,8 +937,9 @@ as well as the posterior likelihood odds. As the values in this table show, the 
  
  To assess the stability of these results, we conducted another series of simulations to predict the post-adaptation
  ratings from Experiment~1b. For these simulations, we used identical prior structures and parameterizations as in
- the previous simulations but since participants saw additional 5 filler utterances during the exposure phase,
- we also exposed the model to 5 additional utterances. The model 
+ the previous simulations, i.e., we did not optimize any hyperparameters of the model. However, 
+ since participants saw additional 5 filler utterances during the exposure phase, we also exposed the model to 5 additional utterances. 
+ The model 
 evaluation results for these simulations are shown in Table~\ref{tbl:model-comparison-replication}. As the likelihood odds
 in this table show, the model in which both the costs and the threshold distributions can be updated is again much more
 likely to generate the experimental data than the other two models. This replicates the findings from the previous simulations.
@@ -965,8 +966,8 @@ Second, since the ratings and the model predictions are probability distribution
 the empirical and predicted ratings for one utterance for a specific event probability are not independent 
 of the ratings for other utterances and therefore not all assumptions for using $R^2$ are met. Considering these
 factors, one should trust the posterior odds more than the $R^2$ values, which suggests that there is strong evidence that listeners 
-are updating expectations about {threshold distributions} as well as {preferences}. We nevertheless, still consider and discuss both possibilities in
-the remainder of this paper.
+are updating expectations about {threshold distributions} as well as {preferences}. We nevertheless, still consider and discuss both possibilities
+again in \sectionref{sec:exp-model-interpretation}.
 
 
 
@@ -1049,28 +1050,38 @@ with \textsc{might}; in \textit{confident speaker} condition more trials with \t
 persisted in the simulations for Experiment~1b in which the exposures of these two utterances were balanced across conditions 
 (\todo{See SI for cost plot for balanced simulations}).
 These persistent differences suggest that the post-adaptation expectations 
-are in part also a result of updated costs of \textsc{might} and \textsc{probably}.
+are in part also a result of updated beliefs about preferences of \textsc{might} and \textsc{probably}. 
 
-\todo{write a sentence about how preference/costs don't solely seem to be determined by frequency...}
-
-
+%Further, the observation that this difference persisted even if the frequency of exposure utterances
+%was matched across conditions, provides some evidence that uncertainty expression preferences
+%are not only determined by observed utterance frequencies but instead are also influenced 
+%by the contexts in which the the expressions are used. 
+%
 
 \subsection{Interim summary}
 
-\todo{Write me!}
+In the previous two sections, we presented the results from two experiments, which provide strong evidence for
+listeners updating expectations about a speaker's use of uncertainty expressions after brief
+exposure to that speaker. 
 
+We further presented a computational adaptation model which models the adaptation
+process as an instance of Bayesian belief updating. We used different implementations
+of that model to investigate which kind of expectations listeners are updating during adaptation.
+We found strong evidence that listeners are updating beliefs about the lexicon and 
+we found some evidence that
+listeners are also updating beliefs about speaker preferences.
 
-\section{Adaptation of interpretations}
+\section{Experiment 2: Effect of adaptation of interpretaion}
 \label{sec:exp-model-interpretation}
 
 \begin{figure}
   \includegraphics[width=\textwidth]{plots/adaptation-posterior-comp.pdf}
-  \caption{Post-adaptation interpretation distribution. \label{fig:post-exposure-comp}}
+  \caption{Post-adaptation interpretation distributions for the utterances  \textsc{bare}, \textsc{might}, and \textsc{probably} as predicted by the pragmatic listener $L$\textsubscript{$1$}. \label{fig:post-exposure-comp}}
 \end{figure}
 
-
-Up to this point, we have made the implicit assumption that listeners' expectations about a speaker's language use guide their interpretations. This behavior is
-predicted by RSA models, which assume that a pragmatic listener $L_1$ tries to infer the state of the world (in our case, the event probability $\phi$) by reasoning
+Up to this point, we focused on listeners' expectations about a speaker's use of uncertainty expressions. As we discussed
+in the introduction, we expect updated expectations to have an effect on the interpretation of uncertainty expressions. This
+effect is also predicted by RSA models,  which assume that a pragmatic listener $L_1$ tries to infer the state of the world (in our case, the event probability $\phi$) by reasoning
 about their prior beliefs about the world state and their expectations about a speaker's language use (in our case, the expected pragmatic speaker $ES_{1}$).
 
 $$ L_1(\phi \mid u) \propto P(\phi) ES_1(u \mid \phi)$$
@@ -1082,48 +1093,65 @@ shows the distribution over event probabilities after hearing three different ut
 adaptation simulations in the previous section. As these plots show, in the \textit{cautious speaker} condition, the distribution over event probabilities after hearing \textit{might} 
 and \textit{probably} is shifted towards higher values as compared to the distributions in the \textit{confident speaker} condition. 
 
-In our second experiment, we tested whether this prediction is correct and whether listeners' change in expectations transfers to a change in interpretations. 
-The procedure, materials and analyses were pre-registered at \url{http://bitly.com/2SpMPaZ}.
+In this experiment, we tested whether this prediction is correct and whether listeners' change in expectations transfers to a change in interpretations. 
+The procedure, materials and analyses were pre-registered at \url{https://osf.io/ghnc3}.
 
 \subsection{Participants}
 
-We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. We required participants to have a US-based IP address and a minimal approval rating of 95\%. Participants were paid \$2 which amounted to an hourly wage of approximately \$10--\$12. None of the participants had participated in any of the previous experiments. 
+We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. We required participants to have a US-based IP address and a minimal approval rating of 95\%. Participants were paid \$1.5 which amounted to an hourly wage of approximately \$15. None of the participants had participated in any of the previous experiments. 
 
 \subsection{Materials and Procedure}
 
-Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. In each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by adjusting a slider. All 9 gumball machines were presented at the same time but to avoid visual clutter, all gumball machines except the one whose slider participants were adjusting had an opacity of 0.1 and the animation was disabled. Participants provided 9 ratings per trial and completed in total 6 trials -- one for each expression-color pair. The exposure phase contained again 6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiment, we modified one aspect about the attention checks: We always displayed the grey X on the first trial with an attention check so that participants would see the gray X before being presented with the attention check. We discarded answers to the first attention check and computed the attention check performance on the remaining 5 attention checks.
+Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1b. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. On each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by distributing coins.  Participants 10 coins per trial and completed in total 6 trials -- one for each expression-color pair. The exposure phase contained again 6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiments, we modified the attention checks. Instead of asking participants whether they saw an X on the previous trial, we asked participants to choose the gumball machine that they had seen on the previous trial among two machines displayed in random order.
 
 \subsection{Exclusions}
 
-We excluded participants who failed more than 2 attention checks, which led to 2 exclusions in the \emph{cautious speaker} condition and 1 exclusion in the \emph{confident speaker} condition.
+We excluded participants who failed more than 2 attention checks, which led to 1 exclusion in the \emph{cautious speaker} condition and 1 exclusion in the \emph{confident speaker} condition.
 
 
 \subsection{Analysis and Predictions}
 
-If participants reason about the speaker and update their expectations of a specific speaker, we also expect that participants interpretations 
-vary depending on which speaker they were exposed to. Concretely, we expect that listeners interpret a more confident speaker's utterance 
-to communicate a lower event probability than a more cautious speaker's utterance. We tested this prediction by treating participant's ratings 
+If participants update their expectations of a specific speaker's use of uncertainty expressions,  we expect that listeners interpret a more confident speaker's utterance 
+to communicate a lower event probability than a more cautious speaker's utterance. We tested this prediction by treating participant's distributions of coins 
 of gumball machines as a probability distribution over gumball proportions (and consequently event probabilities).  For each utterance, we 
-normalized participants ratings of the different gumball machines so that they summed up to 1, so that we could interpret the normalized scores 
-as a categorical probability distribution over gumball machines given an utterance. We computed the expected value of blue gumballs from these probability distributions and compared these expected values across the two conditions. We predicted that the expected values of {\sc might} and {\sc probably} were going to be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
+normalized participants' coin distributions such that they summed up to 1, so that we could interpret the normalized scores 
+as a categorical probability distribution over gumball machines given an utterance. We computed the expected value of target color gumballs 
+from these probability distributions and compared these expected values across the two conditions. We predicted that the expected values of {\sc might} and {\sc probably} would be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
 
-\subsubsection{Results and Discussion}
+\subsection{Results and Discussion}
 
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/exp-2-ratings.pdf}
 \caption{Aggregated post-exposure ratings from Experiment~2.  \label{fig:adaptation-results-comp}}
 \end{figure}
 
-\begin{figure}
-\includegraphics[width=.75\textwidth]{plots/adaptation-diff-comprehension.png}
-\caption{Expected values for {\sc probably} and {\sc might} from Experiment~2.  \label{fig:adaptation-exp-comp}}
-\end{figure}
-
-
-Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$, see also Figure~\ref{fig:adaptation-exp-comp}) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(76)=5.84$, $p<0.001$) and {\sc probably} ($t(76)=3.92$, $p<0.001$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
 These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
 
+\subsection{Model comparison}
+
+\begin{table}
+\center
+\begin{tabular}{r | c | c }
+Model & $R^2$ &   odds  \\ \midrule
+fixed & 0.662 & $10^{-442}$    \\
+cost & 0.885 &  $10^{-217}$  \\
+threshold distributions & 0.888 & $10^{-116}$  \\
+cost \& threshold distributions & 0.927 & 1 \\
+\end{tabular}
+\caption{Model evaluation results on data from Experiment~2.  $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model.  \label{tbl:model-comparison-comp}}
+\end{table}
+
+We now return again to our main research question regarding the type of updated expectations. The production expectation experiments and model simulations provided strong evidence for listeners updating 
+their beliefs about the threshold distributions. On the other hand, the two evaluation metrics provided conflicting results regarding the questions whether beliefs about speaker preferences are also updated.
+We therefore also compared the pragmatic listener $L_1$ predictions from the simulations with different prior structures to the post-exposure ratings in Experiment~2. To this end, we took the
+posterior distributions over model parameters that we obtained through the simulations in the previous section and computed the predictions of the $L_1$ model. \tableref{tbl:model-comparison-comp} shows the model fit
+for the different types of simulations. As this table shows, the model according to which both threshold distributions and costs are being updated provides the best fit according to both metrics. 
+Considering that the posterior likelihood odds consistently favored this model in all three model comparisons, we take these results together as strong evidence that listeners are updating their expectations about threshold distributions
+and costs. 
+
+\todo{discuss deviations between model predictions and exp results, include plot}
 
 \section{General Discussion}
 
@@ -1251,6 +1279,51 @@ As mentioned in a footnote, we ran the norming studies in three batches using th
 \caption{Model predictions and results from norming study -- Part 2. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-2}}
 
 \end{figure}
+
+\subsection*{Original interpretation experiment}
+
+\todo{Revise this section}
+
+\subsection{Participants}
+
+We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. We required participants to have a US-based IP address and a minimal approval rating of 95\%. Participants were paid \$2 which amounted to an hourly wage of approximately \$10--\$12. None of the participants had participated in any of the previous experiments. 
+
+\subsection{Materials and Procedure}
+
+Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. In each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by adjusting a slider. All 9 gumball machines were presented at the same time but to avoid visual clutter, all gumball machines except the one whose slider participants were adjusting had an opacity of 0.1 and the animation was disabled. Participants provided 9 ratings per trial and completed in total 6 trials -- one for each expression-color pair. The exposure phase contained again 6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiment, we modified one aspect about the attention checks: We always displayed the grey X on the first trial with an attention check so that participants would see the gray X before being presented with the attention check. We discarded answers to the first attention check and computed the attention check performance on the remaining 5 attention checks.
+
+\subsection{Exclusions}
+
+We excluded participants who failed more than 2 attention checks, which led to 2 exclusions in the \emph{cautious speaker} condition and 1 exclusion in the \emph{confident speaker} condition.
+
+
+\subsection{Analysis and Predictions}
+
+If participants reason about the speaker and update their expectations of a specific speaker, we also expect that participants interpretations 
+vary depending on which speaker they were exposed to. Concretely, we expect that listeners interpret a more confident speaker's utterance 
+to communicate a lower event probability than a more cautious speaker's utterance. We tested this prediction by treating participant's ratings 
+of gumball machines as a probability distribution over gumball proportions (and consequently event probabilities).  For each utterance, we 
+normalized participants ratings of the different gumball machines so that they summed up to 1, so that we could interpret the normalized scores 
+as a categorical probability distribution over gumball machines given an utterance. We computed the expected value of blue gumballs from these probability distributions and compared these expected values across the two conditions. We predicted that the expected values of {\sc might} and {\sc probably} were going to be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
+
+\subsubsection{Results and Discussion}
+
+\begin{figure}
+\includegraphics[width=\textwidth]{plots/exp-2-ratings.pdf}
+\caption{Aggregated post-exposure ratings from Experiment~2.  \label{fig:adaptation-results-comp}}
+\end{figure}
+
+\begin{figure}
+\includegraphics[width=.75\textwidth]{plots/adaptation-diff-comprehension.png}
+\caption{Expected values for {\sc probably} and {\sc might} from Experiment~2.  \label{fig:adaptation-exp-comp}}
+\end{figure}
+
+
+Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$, see also Figure~\ref{fig:adaptation-exp-comp}) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+
+These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
+
+
 
 %\section{Models}
 %

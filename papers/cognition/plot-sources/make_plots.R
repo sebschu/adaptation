@@ -391,7 +391,7 @@ cost_plot = mle_params %>%
   mutate(Parameter = factor(gsub("cost_", "", Parameter), levels=modals, labels= modals_labels, ordered=TRUE)) %>%
   ggplot(aes(fill=condition, color=condition, y=log(value), x=Parameter)) +
     geom_bar(stat="identity", position = "dodge") +
-    geom_point(aes(fill=condition), position = position_dodge(width = 0.9), size=4, pch=23, color="#666666") + 
+    geom_point(aes(fill=condition), position = position_dodge(width = 0.9), size=4, pch=21, color="#666666") + 
     xlab("") + 
     ylab("log cost") +
    theme(legend.position = "bottom") +
@@ -563,13 +563,12 @@ comp.plot_data = d.comp %>% group_by(percentage_blue, modal, condition) %>%
             rating_norm_ci_high=ci.high(rating_norm)) 
 
 comp.plot = comp.plot_data %>% 
-  ggplot(aes(x=percentage_blue, y=rating_norm_mu, col=modal)) + 
+  ggplot(aes(x=percentage_blue, y=rating_norm_mu, col=condition)) + 
   geom_line(size=1) + 
-  facet_wrap(~condition) +
-  colscale(unique(comp.plot_data$modal)) +
+  facet_wrap(~modal) +
   xlab("event probabilty") +
   ylab("mean normalized rating") +
-  guides(col=guide_legend(title="Expression", nrow = 1)) + 
+  guides(col=guide_legend(title="", nrow = 1)) + 
   theme(legend.position="bottom", legend.text=element_text(size=14)) + 
   geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
   geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
@@ -612,20 +611,32 @@ hdi_data.all$condition = factor(hdi_data.all$condition, levels=c("cautious speak
 hdi_data.all$modal = factor(hdi_data.all$modal, levels = modals, labels = modals_labels, ordered=T)
 hdi_data.all$src = factor("model prediction", levels=c("model prediction", "experimental result"), ordered=T)
 posterior_plot = hdi_data.all %>% 
-    ggplot(aes(x=percentage_blue, col=condition, y=rating_pred, lty=src, group=interaction(src,run,modal,condition))) +
+    ggplot(aes(x=percentage_blue, col=condition, y=rating_pred, group=interaction(src,run,modal,condition))) +
     geom_line(aes(x=percentage_blue, y=rating_pred_m, group=condition), size=1, data = hdi_data.all %>% 
                                group_by(condition, modal, percentage_blue, src) %>%
                                summarize(rating_pred_m = mean(rating_pred))) + 
     facet_wrap(~modal) +
     theme(legend.position = "bottom", legend.box = "vertical") +
-    guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1))
+    guides(col=guide_legend(title="", nrow = 1, override.aes = list(alpha = 1))
                      ) +
     ylab("predicted rating") +
-    xlab("event probability") + 
-    geom_line(aes(x=percentage_blue, y=rating_norm_mu, group=interaction(src,modal,condition)), data= comp.plot_data %>% mutate(src="experimental result")) +
-    scale_linetype_manual(values=c("solid", "dashed"), labels=c("model prediction", "experimental result"), drop=F)
+    xlab("event probability")
 
-  
+
+posterior_plot_combined = hdi_data.all %>% 
+  ggplot(aes(x=percentage_blue, col=condition, y=rating_pred, lty=src, group=interaction(src,run,modal,condition))) +
+  geom_line(aes(x=percentage_blue, y=rating_pred_m, group=condition), size=1, data = hdi_data.all %>% 
+              group_by(condition, modal, percentage_blue, src) %>%
+              summarize(rating_pred_m = mean(rating_pred))) + 
+  facet_wrap(~modal) +
+  theme(legend.position = "bottom", legend.box = "vertical") +
+  guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1))
+  ) +
+  ylab("predicted rating") +
+  xlab("event probability") + 
+  geom_line(aes(x=percentage_blue, y=rating_norm_mu, group=interaction(src,modal,condition)), data= comp.plot_data %>% mutate(src="experimental result")) +
+  scale_linetype_manual(values=c("solid", "dashed"), labels=c("model prediction", "experimental result"), drop=F)
+
 
 ggsave(posterior_plot, file="../plots/adaptation-posterior-comp.pdf", width = 30, height = 12, units = "cm")
 
