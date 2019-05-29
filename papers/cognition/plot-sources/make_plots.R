@@ -570,7 +570,6 @@ comp.plot = comp.plot_data %>%
   ylab("mean normalized rating") +
   guides(col=guide_legend(title="", nrow = 1)) + 
   theme(legend.position="bottom", legend.text=element_text(size=14)) + 
-  geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
   geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
 
 ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, units = "cm")
@@ -625,13 +624,15 @@ posterior_plot = hdi_data.all %>%
 
 posterior_plot_combined = hdi_data.all %>% 
   ggplot(aes(x=percentage_blue, col=condition, y=rating_pred, lty=src, group=interaction(src,run,modal,condition))) +
+  geom_line(alpha=.01) + 
   geom_line(aes(x=percentage_blue, y=rating_pred_m, group=condition), size=1, data = hdi_data.all %>% 
               group_by(condition, modal, percentage_blue, src) %>%
               summarize(rating_pred_m = mean(rating_pred))) + 
   facet_wrap(~modal) +
   theme(legend.position = "bottom", legend.box = "vertical") +
-  guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1))
-  ) +
+  
+  guides(col=guide_legend(title="Condition", nrow = 1, override.aes = list(alpha = 1)),
+         lty=guide_legend(title="", nrow = 1, override.aes = list(size = 0.5))) +
   ylab("predicted rating") +
   xlab("event probability") + 
   geom_line(aes(x=percentage_blue, y=rating_norm_mu, group=interaction(src,modal,condition)), data= comp.plot_data %>% mutate(src="experimental result")) +
@@ -639,5 +640,6 @@ posterior_plot_combined = hdi_data.all %>%
 
 
 ggsave(posterior_plot, file="../plots/adaptation-posterior-comp.pdf", width = 30, height = 12, units = "cm")
+ggsave(posterior_plot_combined, file="../plots/adaptation-posterior-comp-data.pdf", width = 30, height = 12, units = "cm")
 
 
