@@ -119,7 +119,7 @@ According to Gricean pragmatic theories, listeners assume that a speaker is coop
 
 An implicit assumption in such an account of pragmatic reasoning is that listeners have precise expectations about the speaker's language use in different situations -- listeners will only be able to draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems (\todo{Cite something??}) and different speakers  often agree on descriptions for different world states. However, for more abstract function words such as quantifiers like \textit{some} and \textit{many} or uncertainty expressions like \textit{might} and \textit{probably}, there exists more variability across speakers. For example, in a norming study, \citet{Yildirim2016} found that participants varied considerably in their expectations about the use of different quantifiers. Similarly, \citet{Wallsten1986} found considerable inter-subject variability in the interpretation of uncertainty expressions. 
 
-Recent work suggests that listeners deal with this kind of variability by adapting to it and updating their expectations about a speaker's language use, a process known as semantic/pragmatic adaptation. In a series of experiments, \citet{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied. After exposure, they probed participants' expectations about the speakers' language use and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners are updating \textit{some} type of expectations, the nature of the expectations that listeners are updating is unknown. 
+Recent work suggests that listeners deal with this kind of variability by adapting to it and updating their expectations about a speaker's language use, a process known as semantic/pragmatic adaptation. In a series of experiments, \citet{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied. After exposure, they probed participants' expectations about the speakers' language use and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners update \textit{some} type of expectations, the nature of the expectations that listeners update is unknown. 
 In particular, it is still an open question whether this kind of semantic/pragmatic adaptation is a result of listeners learning speaker-specific utterance preferences or whether listeners form speaker-specific semantic representations. 
 \jd{and why do we care about the nature of the expectation? be clearer already here about what the implications are for theories that assume static meanings}Answering this question is the focus of the work reported here.
 
@@ -189,7 +189,7 @@ In order to establish the nature of the representations that are updated during 
 %In section~4, we present an experiment that provides evidence for listener's updating their expectations after brief exposure to different speakers.
 %In section~5, we present our adaptation model and argue based on model simulations that listeners are updating their expectations about preferences and
 %lexica.
-%In section~6, we discuss how our model also predicts updated interpretations of uncertainty expressions after a brief exposure to a different speaker and 
+%In section~6, we discuss how the model also predicts updated interpretations of uncertainty expressions after a brief exposure to a different speaker and 
 %we present an experiment whose results confirm this prediction. 
 
 We find that listeners indeed update their beliefs about different  speakers' use of uncertainty expressions, and that this adaptation is reflected both in post-exposure measures of production expectations and interpretation. The data are best captured by the adaptation model in which both the lexicon and the speaker's production preferences are updated. We conclude with a discussion of remaining open questions and the implications of our findings. \jd{implications for what? maybe at least mention here the theories of adaptation that already exist? also mention somewhere that the computational model is formulated within ``the Rational Speech Act framework, a state-of-the-art probabilistic formalization of the Gricean program'' and that this is one of the first extensions of the model to model learning}
@@ -517,7 +517,7 @@ Theoretically, we could have also used a different constant $\gamma_u$ for each 
 the norming experiments, However, suggests that participants generally did not prefer one utterance over 
 the other. To limit the number of free model parameters and to prevent overfitting, we therefore use a single
 constant $\gamma$ for all utterances. We will, However, relax this assumption in our adaptation model in \sectionref{sec:model-adapt}, which
-we use to investigate whether listeners are updating their beliefs about preferences during adaptation.
+we use to investigate whether listeners update their beliefs about preferences during adaptation.
 
 \item \textbf{Noise}: Finally, to account for participants not paying attention or making mistakes, 
 we also include a noise term that models participants providing random ratings.
@@ -557,7 +557,7 @@ Therefore, by using Beta distributions for the threshold distributions, we argue
 
 \subsection{Parameter estimation}
 
-Given all the assumptions outlined above, our model has in total $18$ parameters: A cost parameter $\gamma$, a rationality parameter $\lambda$, a noise strength parameter $\gamma$, a constant corresponding to other utterances $O$, and for each utterance, Beta distribution parameters $\alpha_u$ and $\beta_u$. We estimated these parameters jointly from all 21 conditions of the norming study using Bayesian data analysis (see e.g., \cite{Kruschke2014}). To construct the dataset, we treated the ratings by each participant as a probability distribution from which we sampled 10 utterances. We used highly uninformative
+Given all the assumptions outlined above, the model has in total $18$ parameters: A cost parameter $\gamma$, a rationality parameter $\lambda$, a noise strength parameter $\gamma$, a constant corresponding to other utterances $O$, and for each utterance, Beta distribution parameters $\alpha_u$ and $\beta_u$. We estimated these parameters jointly from all 21 conditions of the norming study using Bayesian data analysis (see e.g., \cite{Kruschke2014}). To construct the dataset, we treated the ratings by each participant as a probability distribution from which we sampled 10 utterances. We used highly uninformative
 uniform priors over the interval $[0,15]$ for all parameters. We estimated the vector of parameters $\Theta$ using MCMC with a Metropolis Hastings sampler. To decrease autocorrelation of the chain, we collected a sample only at every 10th iteration (i.e., we use thinning of 10). We discarded the first 10,000 burn-in samples and then collected 50,000 samples.  We ran four MCMC chains and confirmed convergence by computing the $\hat{R}$-statistic \citep{Gelman1992}. More details on the implementation of the model can be found in the Supplementary Material.
 
 \subsection{Model evaluation}
@@ -599,7 +599,7 @@ we decided against revising the assumption that all utterances in the model have
 One potential concern given the flexibility of the model is that it could be overfitting the data. 
 This is unlikely considering that we are estimating only 18 parameters to predict in total 567 data points 
 (27 data points for each one of the 21 conditions) but to nevertheless rule out this possibility, we performed a leave-one-out cross-validation of
-our model. For each condition $x$, we estimated a distribution over parameters $\Theta_x$ using the data from all conditions but $x$. We then
+the model. For each condition $x$, we estimated a distribution over parameters $\Theta_x$ using the data from all conditions but $x$. We then
 compared the model predictions of the model parametrized by $\Theta_x$ to participants' ratings in condition $x$. This way, the model has to predict
 participant behavior which it has not observed during parameter estimation. Table~\ref{tbl:correlations} shows the $R^2$ values for participants's
 ratings and model predictions for the model estimated from all conditions and the leave-one-out models.
@@ -660,7 +660,7 @@ if there exists \textit{some} world $w$ in a set of (contextually restricted) ep
 in our gumball machine context, there exists an epistemically accessible world $w$ for each gumball $g$ and that in world $w$, one gets gumball $g$. 
 Under this assumption, \textit{``You might get a blue gumball''} is true if there exists an epistemically accessible world $w$  in which one gets a
 gumball $g$ that is blue. At the same time, if such a world exists, then $P(\mbox{blue gumball})$ is greater than 0, which approximately corresponds
-to the threshold semantics with the inferred threshold distribution of our model. The inferred threshold distribution for \textit{could} is similar to the one of \textit{might}, 
+to the threshold semantics with the inferred threshold distribution of the model. The inferred threshold distribution for \textit{could} is similar to the one of \textit{might}, 
 which is again in line with non-probabilistic accounts, which assume that epistemic \textit{might} and epistemic \textit{could} are semantically equivalent \citep{Kratzer1991,Hacquard2012}.
 
 The threshold distribution for \textit{probably} has most of its probability mass concentrated at thresholds above .5. This is again compatible with existing accounts that assume 
@@ -923,7 +923,7 @@ cost \& threshold distributions & 0.875 & 1 \\
 \caption{Model evaluation results on data from Experiment~1b.  $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model.  \label{tbl:model-comparison-replication}}
 \end{table}
 
-Table~\ref{tbl:model-comparison} shows the $R^2$ values between the four models and the experimental data from Experiment 1a 
+Table~\ref{tbl:model-comparison} shows the $R^2$ values between the fthe models and the experimental data from Experiment 1a 
 as well as the posterior likelihood odds. As the values in this table show, the model in which the cost as well as the threshold 
  distributions are updated during adaptation is much more likely to generate the experimental data than the other 
  two less complex models. However, this is not entirely reflected in the $R^2$ values between the mean model predictions
@@ -1069,24 +1069,25 @@ listeners also update beliefs about speaker preferences.
 \section{Experiment 2: Effect of adaptation of interpretation}
 \label{sec:exp-model-interpretation}
 
-\begin{figure}
-  \includegraphics[width=\textwidth]{plots/adaptation-posterior-comp.pdf}
-  \caption{Post-adaptation interpretation distributions for the utterances  \textsc{bare}, \textsc{might}, and \textsc{probably} as predicted by the pragmatic listener $L$\textsubscript{$1$}. \label{fig:post-exposure-comp}}
-\end{figure}
 
 Up to this point, we focused on listeners' expectations about a speaker's use of uncertainty expressions. As we discussed
-in the introduction, we expect updated expectations to also have an effect on the interpretation of uncertainty expressions. This
+in the introduction, we expect updated expectations to also have an effect on the \emph{interpretation} of uncertainty expressions. This
 effect is also predicted by RSA models,  which assume that a pragmatic listener $L_1$ tries to infer the state of the world (in our case, the event probability $\phi$) by reasoning
 about their prior beliefs about the world state and their expectations about a speaker's language use (in our case, the expected pragmatic speaker $ES_{1}$).
 
 $$ L_1(\phi \mid u) \propto P(\phi) ES_1(u \mid \phi)$$
 
-According to such a model of interpretation, the shifts in expectations that we observed in the previous experiment, should also lead to a shift in interpretations. 
-If we again assume a uniform prior over event probabilities, then our model predicts that listeners who were exposed to a \textit{cautious} speaker should infer 
+According to such a model of interpretation, the shifts in expectations that we observed in the previous experiment should also lead to a shift in interpretations. 
+If we assume a uniform prior over event probabilities,\footnote{To reiterate, this assumption was motivated by the study reported in Footnote 8, which suggested that participants on average assign equal probability to each gumball machine a priori.} then the model predicts that listeners who were exposed to a \textit{cautious} speaker should infer 
 higher event probabilities when hearing {\sc might} or {\sc probably} than listeners who were exposed to a \textit{confident} speaker. Figure~\ref{fig:post-exposure-comp}
 shows the distribution over event probabilities after hearing three different utterances as predicted by $L_1$ parameterized by the inferred parameters from our
 adaptation simulations in the previous section. As these plots show, in the \textit{cautious speaker} condition, the distribution over event probabilities after hearing \textit{might} 
 and \textit{probably} is shifted towards higher values as compared to the distributions in the \textit{confident speaker} condition. 
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{plots/adaptation-posterior-comp.pdf}
+  \caption{Post-adaptation interpretation distributions for the utterances  \textsc{bare}, \textsc{might}, and \textsc{probably} as predicted by the pragmatic listener $L$\textsubscript{$1$}. \label{fig:post-exposure-comp}}
+\end{figure}
 
 In this experiment, we tested whether this prediction is correct and whether listeners' change in expectations transfers to a change in interpretations. 
 The procedure, materials and analyses were pre-registered at \url{https://osf.io/ghnc3}.
@@ -1097,7 +1098,7 @@ We recruited a total of 80 participants (40 per condition) on Amazon Mechanical 
 
 \subsection{Materials and Procedure}
 
-Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1b. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. On each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by distributing coins.  Participants 10 coins per trial and completed in total 6 trials -- one for each expression-color pair. The exposure phase contained again 6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiments, we modified the attention checks. Instead of asking participants whether they saw an X on the previous trial, we asked participants to choose the gumball machine that they had seen on the previous trial among two machines displayed in random order.
+Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1b. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. On each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by distributing coins.  Participants distributed 10 coins per trial and completed 6 trials in total  -- one for each expression-color pair. The exposure phase again contained  6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiments, we modified the attention checks. Instead of asking participants whether they saw an X on the previous trial, we asked participants to choose the gumball machine that they had seen on the previous trial among two machines displayed in random order.
 
 \subsection{Exclusions}
 
@@ -1111,7 +1112,7 @@ to communicate a lower event probability than a more cautious speaker's utteranc
 of gumball machines as a probability distribution over gumball proportions (and consequently event probabilities).  For each utterance, we 
 normalized participants' coin distributions such that they summed up to 1, so that we could interpret the normalized scores 
 as a categorical probability distribution over gumball machines given an utterance. We computed the expected value of target color gumballs 
-from these probability distributions and compared these expected values across the two conditions. We predicted that the expected values of 
+from these probability distributions and compared these expected values across the two conditions \jd{say how}. We predicted that the expected values of 
 {\sc might} and {\sc probably} would be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
 
 \subsection{Results and Discussion}
@@ -1123,7 +1124,7 @@ from these probability distributions and compared these expected values across t
 
 Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(76)=5.84$, $p<0.001$) and {\sc probably} ($t(76)=3.92$, $p<0.001$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
-These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
+These results suggest that listeners not only update their expectations about a speaker's use of uncertainty expressions, but also use those updated expectations in interpretation.
 
 \subsection{Model comparison}
 
@@ -1141,33 +1142,44 @@ cost \& threshold distributions & 0.927 & 1 \\
 
 
 
-We now return again to our main research question regarding the type of updated expectations. The production expectation experiments and model simulations provided strong evidence for listeners updating 
-their beliefs about the threshold distributions. On the other hand, the two evaluation metrics provided conflicting results regarding the questions whether beliefs about speaker preferences are also updated.
-We therefore also compared the pragmatic listener $L_1$ predictions from the simulations with different prior structures to the post-exposure ratings in Experiment~2. To this end, we took the
-posterior distributions over model parameters that we obtained through the simulations in the previous section and computed the predictions of the $L_1$ model. \tableref{tbl:model-comparison-comp} shows the model fit
-for the different types of simulations. As this table shows, the model according to which both threshold distributions and costs are being updated provides the best fit according to both metrics. 
-Considering that the posterior likelihood odds consistently favored this model in all three model comparisons, we take these results together as strong evidence that listeners are updating their expectations about threshold distributions
+We return again to our main research question regarding which expectations are updated during adaptation. The production expectation experiments and model simulations provided strong evidence for listeners updating 
+their beliefs about the threshold distributions. On the other hand, the two evaluation metrics provided conflicting results regarding whether or not beliefs about speaker preferences are also updated.
+We therefore also compared the pragmatic listener $L_1$ predictions from the simulations with different prior structures to the post-exposure ratings in Experiment~2. To this end, we computed the predictions of the $L_1$ model from the
+posterior distributions over model parameters that we obtained through the simulations in the previous section. \tableref{tbl:model-comparison-comp} shows the model fit
+for the different types of simulations. As this table shows, the model according to which both threshold distributions and costs are updated provides the best fit according to both metrics. 
+Considering that the posterior likelihood odds consistently favored this model in all three model comparisons, we take these results together as strong evidence that listeners update their expectations about threshold distributions
 and costs. 
 
-\subsection{Model evaluation}
+\figref{fig:post-exposure-comp-data} superimposes the model predictions and the experimental data. As these plots show, the model makes both qualitatively and quantitatively accurate predictions for the interpretation of the \textsc{bare} utterance. The model further correctly predicts that participants expect the speaker to talk about relatively low event probabilities when hearing \textsc{might} in the \textit{confident speaker} condition, and it correctly predicts ratings of \textsc{probably} in the \textit{cautious speaker} condition. However, for the interpretation of \textsc{might} in the \textit{cautious speaker} condition, the model predicts a less peaked distribution than the empirical distribution and, to a lesser extent, the same is true for the interpretation of \textsc{probably} in the \textit{confident speaker} condition. We can only speculate about the reasons for this deviation but it could be that in these two cases, participants are considering alternative uncertainty expressions (e.g., \textit{very unlikely}) which we did not include in the model to be better descriptions for low event probabilities. If we added additional utterances to describe low probabilities to the model, it would correctly predict interpretation distributions that are more peaked at higher event probabilities. We leave a more detailed exploration of this issue to future work. \jd{nice section, but i feel like it ends on a bit of an anticlimactic approach. ideally, this would be framed as focusing on how you get the qualitative and some of the quantitative interpretation results right without any further meddling with the model!}
+
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/adaptation-posterior-comp-data.pdf}
-\caption{Predictions of \textit{threshold distributions and costs} model and data from Experiment~2. The shades around the mean indicate the distribution of model predictions.  \label{fig:post-exposure-comp-data}}
+\caption{Predictions of \textit{threshold distributions and costs} model and data from Experiment~2. The shades around the mean indicate the distribution of model predictions.\jd{what does it mean to 'indicate the distribution'? labels too small to read.}  \label{fig:post-exposure-comp-data}}
 \end{figure}
 
-\figref{fig:post-exposure-comp-data} superimposes the model predictions and the experimental data. As these plots show, the model makes both qualitatively and quantitatively accurate predictions for the interpretation of the \textsc{bare} utterance. The model further correctly predicts that participants expect the speaker to talk about relatively low event probabilities when hearing \textsc{might} in the \textit{confident speaker} condition, and it correctly predicts ratings of \textsc{probably} in the \textit{cautious speaker} condition. However, for the interpretation of \textsc{might} in the \textit{cautious speaker} condition, the model predicts a less peaked distribution than the empirical distribution and, to a lesser extent, the same is true for the interpretation of \textsc{probably} in the \textit{confident speaker} condition. We can only speculate about the reasons for this deviation but it could be that in these two cases, participants are considering alternative uncertainty expressions (e.g., \textit{very unlikely}) which we did not include in our model to be better descriptions for low event probabilities. If we added additional utterances to describe low probabilities to our model, it would correctly predict interpretation distributions that are more peaked at higher event probabilities. We leave a more detailed exploration of this issue to future work.
+\subsection{Model evaluation}
+
+\jd{?? what goes here that hasn't already been said?}
 
 \section{General Discussion}
 
-In two production expectation experiments (Experiments~1a and 1b), we found that listeners adapt to speakers who vary in their use of uncertainty expressions. This result confirms that 
-the findings by \citet{Yildirim2016} also extent to the class of uncertainty expressions. In Experiment~2, we further found that adaptation has effects on the interpretation
-of utterances, which had not been investigated before.
+While adaptation in language is a widely attested phenomenon, the exact nature of the representations that are updated during semantic/pragmatic adaptation has remained largely a mystery. In this paper we attempted to rectify this situation and set out to do three things: first, to investigate whether semantic/pragmatic adaptation occurs at all in a novel domain, that of uncertainty expressions;  second, to investigate the nature of the representations that are updated during adaptation via the comparison of computational models of adaptation formulated within a Bayesian pragmatic modeling framework; and third, to test a novel prediction resulting from the application of this model to interpretation behavior.  
 
-In a series of model comparisons, we found strong evidence for listeners updating their beliefs about the speaker's lexicon as well as the speaker's preferences, which suggests
+In two production expectation experiments (Experiments~1a and 1b), we found that listeners adapt to speakers who vary in their use of uncertainty expressions. This result confirms that 
+the findings by \citet{Yildirim2016} also extend to the class of uncertainty expressions. In Experiment~2, we further found a novel effect of adaptation on utterance interpretation.
+
+In a series of model comparisons, we found strong evidence for listeners updating their beliefs about both the speaker's lexicon as well as the speaker's preferences, which suggests
 that semantic/pragmatic adaptation is a result of updating both of these types of expectations. We further found that modeling the adaptation process as an instance of Bayesian
-belief updating explains participants post-adaptation behavior well. Considering that belief updating models also explain adaptation results from other linguistic domains 
-\citep[e.g.,][]{Kleinschmidt2012,Kleimschmidt2015,Roettger2019}, this potentially suggests that semantic/pragmatic adaptation is a result of cognitive processes that operate at all
-linguistic levels.
+belief updating explains participants' post-adaptation behavior in both the production (Exps.~1a and 1b) and comprehension (Exp.~2) experiments. 
+
+
+We next discuss the implications of these results for other accounts of adaptation and for semantic theories of uncertainty expressions. We then turn to limitations of the current results and account, as well as to fruitful future research avenues this work opens. 
+
+\jd{that's just a suggestion for how to structure. the next two paragraphs are things you already wrote that should probably be distributed across different subsections}
+
+Considering that belief updating models also explain adaptation results in other linguistic domains 
+\citep[e.g.,][]{Kleinschmidt2012,Kleimschmidt2015,Roettger2019}, this suggests that semantic/pragmatic adaptation is the result of cognitive processes that operate in a similar fashion at all
+linguistic levels of representation.
 
 More generally, our results also have important implications for theories about the lexicon. For content words such as nouns and verbs, it is generally assumed that 
 the lexicon is highly dynamic and that listeners and speakers are able to compute novel senses on the fly \cite[e.g.,][]{Clark1983,ClarkGerrig1983,Griffiths2007?}. 
@@ -1176,7 +1188,13 @@ Recent theoretical accounts of probability operators (a subset of uncertainty ex
 these expressions are highly dynamic and largely determined by the context. We provide a first \todo{is this true?} empirical validation of this hypothesis.
 
 
+\subsection{Implications for and relation to other accounts of adaptation}
 
+\subsection{Implications for the semantics of uncertainty expressions}
+
+\subsection{Limitations and future directions}
+
+\subsection{Conclusion}
 
 
 \begin{itemize}
@@ -1186,14 +1204,14 @@ these expressions are highly dynamic and largely determined by the context. We p
 
 
 \item Consequences for mechanistic accounts: seems compatible with horton \& gerrig; associative vs. error correction (still unclear from these results)
-\item Ecological validity? not fully interactive, and listeners observe world states. but presumably still ok
+\item Ecological validity? not fully interactive, and listeners observe world states. but presumably still ok \jd{yeah, can put in limitations bit and say a little about how to test in additional or ecologically more valid settings?}
 \item Open questions:
 \begin{itemize}
-\item Adapting to multiple speakers: preliminary results in Schuster and Degen, 2019
-\item More exposure should lead to more adaptation: also preliminary evidence in Schuster and Degen, 2019
+\item Adapting to multiple speakers: preliminary results in Schuster and Degen, 2019 \jd{nice}
+\item More exposure should lead to more adaptation: also preliminary evidence in Schuster and Degen, 2019 \jd{nice}
 \item current experiments suggest rather dumb mechanism: listeners are tracking co-ocurrence statistics and 
 are making inferences about the lexicon and preferences based on that -- seems unlikely that this is the full picture and
-presumably listeners are also able to make more complex inferences; explaining away!
+presumably listeners are also able to make more complex inferences; explaining away! \jd{nice}
 \end{itemize}
 \end{itemize}
 
@@ -1214,7 +1232,7 @@ priors are important
 	
 	 * paradigm for studying uncertainty expressions
 	
-	 * latent semantics approach
+	 * latent semantics approach \jd{yup, nice methodological point that can go in the semantic theory subsection}
 
  	 * dealing with uncertainty doesn't only seem to be true for lower-level processing but also higher-level processing
 	 
@@ -1483,7 +1501,7 @@ These results suggest that listeners not only update their expectations of what 
 %
 %\subsubsection{Parameter estimation}
 %
-%Our model has 14 parameters, namely 6 prior distributions over thresholds $P(\theta_u)$, 7 cost terms $c_u$, and the rationality parameter $\alpha$, which we all estimate from the experimental data. For the prior distributions $P(\theta_u)$, we assume that these follow a beta distribution parametrized by $\alpha_u$ and $\beta_u$ (Qing (2014) made similar assumptions for modeling the use of \textit{some} and \textit{many}). There are two main reasons for choosing a beta distribution: First, its range is from 0 to 1, and given that $\theta$ defines a threshold parameter for a probability, this matches exactly the reasonable interval for the thresholds. Second, the beta distribution can take very different shapes and therefore we are not making the assumption that all of the prior distributions over thresholds have a similar shape.
+%the model has 14 parameters, namely 6 prior distributions over thresholds $P(\theta_u)$, 7 cost terms $c_u$, and the rationality parameter $\alpha$, which we all estimate from the experimental data. For the prior distributions $P(\theta_u)$, we assume that these follow a beta distribution parametrized by $\alpha_u$ and $\beta_u$ (Qing (2014) made similar assumptions for modeling the use of \textit{some} and \textit{many}). There are two main reasons for choosing a beta distribution: First, its range is from 0 to 1, and given that $\theta$ defines a threshold parameter for a probability, this matches exactly the reasonable interval for the thresholds. Second, the beta distribution can take very different shapes and therefore we are not making the assumption that all of the prior distributions over thresholds have a similar shape.
 %
 %To facilitate computations, we discretize our speaker and listener model as well as the priors over thresholds and infer these distributions by enumerating all possibilities. To estimate the model parameters, we run MCMC with 8,000 burn-in samples and 12,000 samples.\footnote{Note that this does not seem to be enough samples yet as 3 different runs still lead to varying results and don't pass the criterion by Gelman and Rubin (1992). I'm currently running the model again with 100,000 samples, which will hopefully be enough for stable parameter estimates.} 
 %
@@ -1500,7 +1518,7 @@ These results suggest that listeners not only update their expectations of what 
 %&= P(\alpha, \beta, c, \lambda) \prod_{d \in \mathscr{D}} P_S(u_d \mid \phi_d, condition_d; \alpha, \beta, c, \lambda)
 %\end{align*}
 %
-%Note that for each probability $\phi$, participants provided a distribution over utterances and not actual samples of utterances given $\phi$. For each trial in which a participant provided a distribution over utterances, we therefore sampled 10 utterances from this distribution and combined all of these samples to form the data $\mathscr{D}$ from which we estimated the parameters of our model.
+%Note that for each probability $\phi$, participants provided a distribution over utterances and not actual samples of utterances given $\phi$. For each trial in which a participant provided a distribution over utterances, we therefore sampled 10 utterances from this distribution and combined all of these samples to form the data $\mathscr{D}$ from which we estimated the parameters of the model.
 %
 %For each parameter, we take the median of the 12,000 MCMC samples and use these parameter estimates for making model predictions.
 %
@@ -1546,7 +1564,7 @@ These results suggest that listeners not only update their expectations of what 
 %
 %In general, the model predicts the average participant responses very well -- in particular in cases in which there are clear contrasts between the utterances (e.g., here in the bare-might, bare-probably, and might-probably conditions). When the two utterances can be used for similar probability ranges (e.g., in the probably-think and the might-could condition), the model deviates a bit more from the experimental data (presumably because there are no clear differences between these two utterances in this context). A second issue with the model seems to be that in some conditions, participants seem to be more rational than the model estimates would suggest. For example, in the might-probably condition, the empirical ratings for \textit{probably} are higher than the predicted ratings.
 %
-%We also validated our model through cross-validation. In the above figures, the right-most plot shows the model predictions if we estimate model parameters on all conditions except for the one that we are predicting. For example, the right plot for the bare-might condition shows the predictions for this condition if we estimate the parameters using the experimental data from the 14 other conditions. Overall, the predictions with the held-out training data are almost as good as the predictions of the model trained on all the data, which suggests that this is reasonable model for predicting participant's behavior.
+%We also validated the model through cross-validation. In the above figures, the right-most plot shows the model predictions if we estimate model parameters on all conditions except for the one that we are predicting. For example, the right plot for the bare-might condition shows the predictions for this condition if we estimate the parameters using the experimental data from the 14 other conditions. Overall, the predictions with the held-out training data are almost as good as the predictions of the model trained on all the data, which suggests that this is reasonable model for predicting participant's behavior.
 %
 %One of the advantages of explicitly modeling participants' behavior as a Bayesian model is that we can also inspect the individual parameters, such as the distributions over thresholds $P(\theta_u)$. The following six plots show the estimated $P(\theta_u)$ for the six utterances that we included in our experiments.
 %
