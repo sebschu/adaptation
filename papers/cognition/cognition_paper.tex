@@ -829,7 +829,7 @@ This experiment provides evidence against an account according to which particip
 Since the frequency of both expressions was the same in this experiment, participants could not have inferred a preference for one of these two utterances. That we nevertheless observed different ratings in the two speaker conditions suggests that participants updated their beliefs about the mapping between expression and event probabilities.
 
 In summary, the results from Exps.~1a and 1b provide evidence for listener adaptation to a specific speaker's use of uncertainty expressions after a brief exposure phase. Further, taken together, these experiments
-suggest that listeners' expectations about a speaker's language use are at least not exclusively driven by tracking speakers' preferences for different utterances. We investigate the nature of speaker-specific expectations
+suggest that listeners' expectations about a speaker's language use are at least not exclusively driven by tracking speakers' preferences for different utterances. We investigate the nature of the updated expectations
 in the next section.
 
 
@@ -852,13 +852,13 @@ that beliefs about preferences and beliefs about the lexicon can interact in com
 
 The production expectation model in \sectionref{sec:model-baseline} provides us with the opportunity to formally evaluate these three hypotheses.
 Through a series of simulations of the adaptation process, we can compare models in which different types of parameters are
-being updated during adaptation. Following work in modeling adaptation in other linguistic domains \citep[e.g.,][]{Kleinschmidt2012,Kleinschmidt2015}, 
-we assume that in interaction, listeners form beliefs about a set of speaker-specific parameters $\Theta_S$. 
+ updated during adaptation. Following work in modeling adaptation in other linguistic domains \citep[e.g.,][]{Kleinschmidt2012,Kleinschmidt2015}, 
+we assume that in interaction, listeners form beliefs about a set of speaker-specific parameters $\Theta_S$.\footnote{\jd{say sth here about how the current experiments are consistent with but do noit provide. direct support for sp-specific adaptation? or wait to discuss in gd?}}
 We further assume that the formation of these beliefs is an instance of Bayesian belief updating:
 listeners start off with prior beliefs about $\Theta_S$ based on their general knowledge about 
 language and subsequently update their beliefs about $\Theta_S$ with every utterance they hear. 
 That is, after observing a series of productions $D={d_1, ..., d_n}$ where each $d_i$ is an 
-utterance-event probability pair $d_i = (u_i, \phi_i)$, listeners beliefs about $\Theta_S$ are the result
+utterance-event probability pair $d_i = (u_i, \phi_i)$, listeners' beliefs about $\Theta_S$ are the result
 of performing Bayesian inference:
 $$P(\Theta_S \mid D) \propto P(\Theta_S) P(D \mid \Theta_S) = P(\Theta_S) \prod_{i=1}^nP(d_i \mid \Theta_S) $$
 
@@ -870,34 +870,34 @@ $$P(\Theta_S \mid D) \propto P(\Theta_S)  \prod_{i=1}^n ES_1(u_i \mid \phi_i, \T
 
 \subsection{Simulations}
 
-Our adaptation model crucially relies on a prior over speaker-specific parameters $P(\Theta_S)$
-which reflects listeners prior beliefs about the use of uncertainty expressions. For our simulations,
-we assume that the means of this prior are given by the estimates of the model parameters that 
-we obtained from fitting the model to the norming data.
-In order to investigate which kind of parameters are updated during adaptation, we run simulations
-with different prior structures, which lead to different parameters being updated during adaptation.
+In order to investigate which parameters are updated during adaptation, we ran simulations
+with varying prior structures, which correspond to different assumptions about which parameters may be updated.
+The adaptation model crucially relies on a prior over speaker-specific parameters $P(\Theta_S)$
+which reflects listeners' prior beliefs about the use of uncertainty expressions. For our simulations,
+we assumed that the means of this prior are given by the estimates of the model parameters that 
+we obtained from fitting the model to the norming data. The variances reflect whether or not the parameter can be updated in response to exposure. In particular, we used delta distributions, i.e., a distribution with zero variance, to model a parameter that cannot be updated. We ran simulations on models with the following three prior structures:
+
 
 \begin{itemize}
 \item \textbf{\textit{Costs}}: The first prior structure corresponds to an adaptation process according to which participants only learn speaker preferences during adaptation. 
-We use a log-normal distribution centered at the mean value that we inferred from the norming data for the prior over cost parameters. Since we are interested in whether listeners are updating their beliefs about speaker preferences, we relax the assumption from the norming study that all utterances have the same cost and assume that each expression has its own cost parameter indicating beliefs about the speaker's preferences. We model the prior as a log-normal distribution for two reasons: First, the cost has to be greater than zero and the support of log-normal distributions is limited to numbers greater than 0. Second, since the cost term is part of an exponent in the expected pragmatic speaker model, differences on a logarithmic scale correspond to linear differences in the model's utterance probabilities. For the priors over all other parameters, we use a delta distribution, i.e., a distribution with zero variance, which means that all the other parameters cannot be updated in the model simulations.
-\item \textbf{\textit{Threshold distributions}}:  This prior structure corresponds to an adaptation process according to which participants only learn speaker-specific threshold distributions during adaptation. We parameterize the Beta distributions $P(\theta_u)$ with their mean $\mu_u$ and population parameter $\nu_u$ \citep{Kruschke2014}. Since the threshold and therefore also the mean of the threshold distribution have to lie within the interval [0,1], we use a truncated normal distribution $\mathscr{N}_{[0,1]}$, which we center at the mean value from the norming data. For the population parameters $\nu_u$, which indicates how peaked a threshold distribution is, we assume that distributions can only become more peaked when they are exposed to a speaker with very consistent language use and therefore model the prior as an exponential distribution shifted to the mean population parameter that we estimated from the norming data. We use a delta distribution for the priors over all other parameters.
-\item  \textbf{\textit{Threshold distributions and costs}}:   This prior structure corresponds to an adaptation process according to which participants learn both speaker-specific threshold distributions and speaker preferences during adaptation.  We use the log-normal distributions as priors over the cost parameters and the truncated normal and exponential distributions as priors over the threshold distribution parameters. This means that both the threshold distributions and the cost parameters can be updated during the adaptation simulations.
+We modeled the prior over cost parameters  as a log-normal distribution centered at the mean value inferred from the norming data. Because we were interested in whether listeners update their beliefs about speaker preferences, we relaxed the assumption from the norming study that all utterances have the same cost and assumed that each expression has its own cost parameter indicating beliefs about the speaker's preferences. Use of the log-normal distribution was motivated by two reasons: First, cost must be greater than zero, and the support of log-normal distributions is limited to numbers greater than 0. Second, since the cost term is part of an exponent in the expected pragmatic speaker model, differences on a logarithmic scale correspond to linear differences in the model's utterance probabilities. For the priors over all other parameters, we used a delta distribution.
+\item \textbf{\textit{Threshold distributions}}:  This prior structure corresponds to an adaptation process according to which participants only learn speaker-specific threshold distributions during adaptation. We parameterized threshold Beta distributions $P(\theta_u)$ with their mean $\mu_u$ and population parameter $\nu_u$ \citep{Kruschke2014}. Since the threshold and therefore also the mean of the threshold distribution have to lie within the interval [0,1], we used a truncated normal distribution $\mathscr{N}_{[0,1]}$, which we centered at the mean value from the norming data. For the population parameters $\nu_u$, which indicate how peaked a threshold distribution is, we assumed that distributions can only become more peaked when they are exposed to a speaker with very consistent language use and therefore modeled the prior as an exponential distribution shifted to the mean population parameter that we estimated from the norming data. We used a delta distribution for the priors over all other parameters.
+\item  \textbf{\textit{Threshold distributions and costs}}:   This prior structure corresponds to an adaptation process according to which participants learn both speaker-specific threshold distributions and speaker preferences during adaptation.  We used the log-normal distributions as priors over the cost parameters and the truncated normal and exponential distributions as priors over the threshold distribution parameters, as described above. This means that both the threshold distributions and the cost parameters could be updated during the adaptation simulations.
 \end{itemize}
 
-Each of these prior structures corresponds to a different hypothesis about what kind of expectations listeners are updating during adaptation. For comparison, we also consider a baseline in which none of the parameters are updated during adaptation (the {\it fixed} prior structure). To adjudicate between these three hypotheses, we ran simulations of the adaptation process for both conditions with different prior structures and compared the models in terms of their likelihood of generating the experimental data.
-We ran a separate simulation for each of the two experimental conditions (\textit{cautious speaker} and \textit{confident speaker})  but crucially always used the same priors for the two simulations. During each simulation, we performed Bayesian inference to infer the posterior distribution after observing the 20 utterances that participants had seen in the exposure phase (see Table~\ref{tbl:materials} for an overview of the 20 utterances in the two conditions). We performed inference using MCMC with a Metropolis-Hastings sampler. We used thinning of 10, discarded the first 2,000 burn-in samples and collected 10,000 samples from each of the two chains.
+Each of these prior structures corresponds to a different hypothesis about which expectations listeners update during adaptation. For comparison, we also considered a baseline in which none of the parameters are updated during adaptation (the {\it fixed} prior structure). To adjudicate between these three hypotheses, we ran simulations of the adaptation process for both the (\textit{cautious speaker} and \textit{confident speaker}) conditions with different prior structures and compared the models in terms of their likelihood of generating the experimental data. During each simulation, we performed Bayesian inference to infer the posterior parameter distribution after observing the 20 data points that participants observed in the exposure phase (see Table~\ref{tbl:materials} for an overview of the 20 utterances in the two conditions). We performed inference using MCMC with a Metropolis-Hastings sampler. We used thinning of 10, discarded the first 2,000 burn-in samples and collected 10,000 samples from each of the two chains.
 
-The prior distributions over the different parameters that may be updated during the adaptation simulations are all parameterized by two constants which govern their mean and their variance. The first set of parameters (the mean of the log-normal and truncated normal distributions; the location parameter of the exponential distributions) was given by the estimates from fitting the model to the norming data. The second set of parameters (the variance of the log-normal and truncated normal distributions; the scale parameter of the exponential distributions) was treated as hyperparameters of the simulations. To keep the model as simple as possible, we only used three hyperparameters in total: a variance parameter for the cost for all expressions; a variance parameter for the mean of the threshold distributions for all utterances; and a scale parameter for the prior over population parameters for all utterances. We optimized these three parameters through a Bayesian hyperparameter search on the adaptation data, which provided us with a distribution over hyperparameter values. Considering that each simulation is computationally expensive, we could only test a few hundred hyperparameter combinations, which are listed in \todo{Table~XXX}. We found that the resulting distributions were highly peaked and therefore, we used only the maximum a posteriori estimates of the hyperparameters (also shown in \todo{Table~XXX}) for the model comparisons below.
+The prior distributions over the different parameters that may be updated during the adaptation simulations are all parameterized by two constants which govern their mean and their variance. The first set of parameters (the mean of the log-normal and truncated normal distributions; the location parameter of the exponential distributions) was given by the estimates from fitting the model to the norming data. The second set of parameters (the variance of the log-normal and truncated normal distributions; the scale parameter of the exponential distributions) was treated as hyperparameters of the simulations. To keep the model as simple as possible, we only used three hyperparameters in total: a variance parameter for the cost for all expressions; a variance parameter for the mean of the threshold distributions for all utterances; and a scale parameter for the prior over population parameters for all utterances. We optimized these three parameters through a Bayesian hyperparameter search on the adaptation data, which provided us with a distribution over hyperparameter values. Considering that each simulation is computationally expensive, we could only test a few hundred hyperparameter combinations, which are listed in \todo{Table~XXX}.\jd{i think this table could just go in supp materials, no?} We found that the resulting distributions were highly peaked and therefore, we used only the maximum a posteriori estimates of the hyperparameters (also shown in \todo{Table~XXX}) for the model comparisons below.
 
 
 \subsection{Model comparisons}
 
-We compare the models fits according two metrics. First, we consider the $R^2$ value between participants' average post-exposure ratings and the maximum a posteriori predictions of the post-exposure model. Second, we compute the likelihood of the model generating the post-exposure data. For the latter, we constructed a dataset $D_{obs}$ of utterance-event probability pairs by treating each post-exposure rating as a probability distribution and sampling 10 utterances from it. We then computed the posterior likelihood odds between Model 1 with posterior distribution over parameters $P(\Theta_{S}^{(1)})$ and Model 2 with posterior distribution $P(\Theta_{S}^{(2)})$.
+We compared model fits according two metrics. First, we considered the $R^2$ value between participants' average post-exposure ratings and the maximum a posteriori predictions of the post-exposure model. Second, we computed the likelihood of the model generating the post-exposure data. For the latter, we constructed a dataset $D_{obs}$ of utterance-event probability pairs by treating each post-exposure rating as a probability distribution and sampling 10 utterances from it. We then computed the posterior likelihood odds between Model 1 with posterior distribution over parameters $P(\Theta_{S}^{(1)})$ and Model 2 with posterior distribution $P(\Theta_{S}^{(2)})$.
 
 $$\mbox{posterior likelihood odds} = \frac{\mathlarger{\int_0^1} {P\left(\Theta_{S}^{(1)}\right) P\left(D_{obs} \mid \Theta_{S}^{(1)} \right) d   \Theta_{S}^{(1)}}}{\mathlarger{\int_0^1} P\left(\Theta_{S}^{(2)}\right) P\left(D_{obs} \mid \Theta_{S}^{(2)}\right)d   \Theta_{S}^{(2)} }$$
  
 \noindent The posterior likelihood odds indicate how much more likely it is that the data was generated by Model 1 than by Model 2. Since we are marginalizing over a distribution over parameter values, this comparison of models will naturally
-favor simpler models. For a more complex model with more parameters, the distribution over different parameter values will be more disperse and can contain more parameter configurations that lead to a low likelihood of the data.
+favor simpler models. For a more complex model with more parameters, the distribution over different parameter values will be more dispersed and can contain more parameter configurations that lead to a low likelihood of the data.
 
 \begin{table}
 \center
@@ -927,7 +927,7 @@ Table~\ref{tbl:model-comparison} shows the $R^2$ values between the four models 
 as well as the posterior likelihood odds. As the values in this table show, the model in which the cost as well as the threshold 
  distributions are updated during adaptation is much more likely to generate the experimental data than the other 
  two less complex models. However, this is not entirely reflected in the $R^2$ values between the mean model predictions
- and the mean model predictions. Similarly to the posterior odds, the $R^2$ values suggest that the \textit{fixed} model
+ and the empirical means. Similarly to the posterior odds, the $R^2$ values suggest that the \textit{fixed} model
  and the \textit{cost} model make worse predictions than the other two models. At the same time, the two metrics disagree on the 
  ranking of the \textit{threshold distributions} and \textit{cost and threshold distributions} models -- the $R^2$ values suggest
  that the model according to which only the threshold distributions are updated during adaptation predicts 
@@ -946,16 +946,15 @@ the data approximately equally well.
 
 What do these modeling results tell us about the semantic/pragmatic adaptation process? 
 We assumed that each of these simulations
-correspond to an adaptation process in which different types of expectations are being updated.
-The modeling results strongly corroborate the experimental results from Experiments~1a and 1b since
-the models according to which no expectations are being updated during adaptation (the \textit{fixed} model) 
-or according to which only preferences are being updated (the \textit{cost} model) provide poor predictions of the post-adaptation
-ratings. The results also clearly indicate that listeners are updating expectations about the threshold distributions. Independent of
-the metric, the models according to which listeners are updating threshold distributions were best at predicting post-adaptation
+correspond to an adaptation process in which different types of expectations are  updated.
+The modeling results strongly corroborate the experimental results from Experiments~1a and 1b:
+the models according to which no expectations are updated during adaptation (the \textit{fixed} model) 
+or according to which only preferences are updated (the \textit{cost} model) provide poor predictions for the post-adaptation
+ratings. The results also clearly indicate that listeners update expectations about the threshold distributions. Independent of
+the metric, the models according to which listeners update threshold distributions were best at predicting post-adaptation
 behavior in all simulations. 
 
-However, in terms of the $R^2$ metric, it remains unclear whether adaptation is a result of 
-participants updating expectations about threshold distributions or threshold distributions and preferences. 
+However, the conflict between the $R^2$ metric and the log odds ratio leaves unclear whether adaptation is a result of \emph{only} updating expectations about threshold distributions, or whether update on preferences is also necessary. 
 In part, this inconsistency can most likely be explained by the properties of the $R^2$ metric. For one, unlike the posterior odds, 
 it does not take uncertainty of the model predictions into account but rather compares the mean participant behavior to the mean 
 model predictions. Considering that the model does exhibit considerable uncertainty in its post-exposure rating predictions, it is not
@@ -963,9 +962,8 @@ particularly surprising that the two metrics suggest different conclusions.\foot
 Second, since the ratings and the model predictions are probability distributions, 
 the empirical and predicted ratings for one utterance for a specific event probability are not independent 
 of the ratings for other utterances and therefore not all assumptions for using $R^2$ are met. Considering these
-factors, one should trust the posterior odds more than the $R^2$ values, which suggests that there is strong evidence that listeners 
-are updating expectations about {threshold distributions} as well as {preferences}. We nevertheless, still consider and discuss both possibilities
-again in \sectionref{sec:exp-model-interpretation}.
+factors, the posterior odds are to be trusted more than the $R^2$ values. This suggests that there is strong evidence that listeners 
+update expectations about both {threshold distributions} and {preferences}. We return to this issue in \sectionref{sec:exp-model-interpretation}.\jd{is this necessary?}
 
 
 
@@ -974,10 +972,10 @@ again in \sectionref{sec:exp-model-interpretation}.
 \begin{figure}
   \includegraphics[width=\textwidth]{plots/adaptation-posterior-predictions.pdf}
   \caption{Post-adaptation model predictions and experimental results. 
-  The solid lines shows the mean model predictions and the shades around the mean indicate the distribution of model predictions. \label{fig:post-exposure-model}}
+  The solid lines shows the mean model predictions and the shades around the mean indicate the distribution of model predictions. \label{fig:post-exposure-model} \jd{labels too small to read. also: is this exp 1a or 1b? perhaps show both?}}
 \end{figure}
 
-Apart from quantitatively assessing the fit of the model, we can also visually inspect the predictions of the model. 
+Apart from quantitatively assessing the fit of the model, it is informative to visually inspect the predictions of the model \jd{for what purpose? be explicit}. 
 Figure~\ref{fig:post-exposure-model} shows the post-exposure predictions of the \textit{cost \& threshold distributions} model compared to the average participant ratings for the two conditions. Qualitatively, 
 the model captures several important patterns in the post-adaptation behavior. The model correctly predicts that in the \textit{cautious speaker} condition, ratings for \textsc{might} are 
 higher than ratings for \textsc{probably} when there is an objective probability of 0.6. For the \textit{confident speaker} condition, the model correctly predicts the
@@ -989,13 +987,13 @@ the model predicts high rating of \textsc{probably} for high event probabilities
 of this condition.
 
 Quantitatively, there are some differences between the model predictions and participant behavior. This is not surprising considering that the model predictions are a result of simulations
-and, with the exception of the three variance parameters of the prior distributions, we did not fit the model parameters to the behavioral data. One difference is that the model underpredicts 
+and, with the exception of the three variance parameters of the prior distributions, we did not fit any model parameters to the behavioral data. One difference is that the model underpredicts 
 the ratings of one of the filler utterances in both conditions: in the \textit{cautious speaker} condition, the model underpredicts ratings of \textsc{probably}; in the \textit{confident speaker} condition, it underpredicts
 ratings of \textsc{might}. One reason for this deviation could be the relatively simple prior structure. For the priors, we made the assumption that all model parameters are independent of each other and 
 that the variance for the different parameter types is the same for all utterances. However, it could be that listeners have more structured prior beliefs such that priors over different parameters are correlated or
 variances of prior distributions differ. For example, it could be that listeners expect the thresholds for \textit{might} and \textit{probably} to be correlated such that higher thresholds for \textit{might} are correlated 
-with higher thresholds for \textit{probably}. Or it could be that listeners expect more between-speaker variation for some expressions than for others. Considering that we have only data from two experiments to test
-our model predictions and therefore we would likely overfit to our data if we tried to fit more complex prior structures with more parameters, we leave  the investigation of the exact structure of listeners prior beliefs to future work.
+with higher thresholds for \textit{probably}. Or it could be that listeners expect more between-speaker variation for some expressions than for others. Considering that we only have data from two experiments to test
+model predictions and therefore would likely overfit to the data if we tried to fit more complex prior structures with more parameters, we leave  the investigation of the exact structure of listeners' prior beliefs to future work.
 
 \begin{figure}
   \includegraphics[width=\textwidth]{plots/adaptation-posterior-thresholds.pdf}
@@ -1005,20 +1003,19 @@ our model predictions and therefore we would likely overfit to our data if we tr
 
 
 
-The second noticeable deviation is that the model overpredicts the ratings of the \textsc{other} utterance for event probabilities of 1. This prediction is primarily driven by high values for the predicted ratings of \textsc{bare}. In
-this case, However, it appears that the model is making correct predictions and that the lower ratings by participants are an artifact of the experimental task. After completing the experiment, 
+The second noticeable deviation is that the model overpredicts the ratings of the \textsc{other} utterance for event probabilities of 1. This prediction is primarily driven by high values for the predicted ratings of \textsc{bare}. However, we argue that the model predictions in this case are reasonable, and that the lower participant ratings are likely an artifact of the experimental task. After completing the experiment, 
 several participants indicated in a feedback form that they were confused by the lack of an option to rate the \textsc{bare} utterance, 
 which they had heard during the exposure phase. In light of this confusion, almost all individual participants chose among two strategies when there was an event probability of 1: they either provided a rating of 100 for \textsc{other} 
 or they provided a rating of 100 for \textsc{probably}, which on average leads to the ratings shown in \figref{fig:post-exposure-model}.
 
-Except for these two deviations, the model also makes accurate quantitative predictions of the post-exposure ratings.
+With the exception of these two deviations, the model makes not only correct qualitative, but also accurate quantitative predictions for the post-exposure ratings.
 
 Lastly, we can also inspect how the model arrived at its predictions by looking at the inferred model parameters.  
 Figures~\ref{fig:post-exposure-thresholds} and \ref{fig:post-exposure-costs} show the inferred
 post-exposure threshold distributions and costs for the two conditions as well as the distributions inferred from the norming data.
 Figure~\ref{fig:post-exposure-thresholds} shows that the threshold distribution for \textit{probably}
 changed considerably depending on the exposure phase: in the \textit{cautious speaker} condition,
-its mean shifted to a higher value than we inferred from the norming data; in the \textit{confident speaker} condition the mean 
+its mean shifted to a higher value than  inferred from the norming data; in the \textit{confident speaker} condition the mean 
 shifted to a lower value. To a lesser extent, we observe similar shifts in the mean of the threshold
 distributions for \textit{might}. We further observe that for all expressions, the variance of the threshold
 distributions decreased as a result of adaptation. In the case of the expressions that were part of the exposure
@@ -1035,7 +1032,7 @@ are in part a result of updated threshold distributions for \textit{might} and \
 \center
   \includegraphics[width=0.5\textwidth]{plots/adaptation-posterior-costs.pdf}
   \caption{Inferred post-adaptation $log$ cost values. Note that the cost of \textsc{might} and \textsc{probably} 
-  in the norming data model was 1 and therefore the $log$ cost for these utterances is 0.  \label{fig:post-exposure-costs}}
+  in the norming data model was 1 and therefore the $log$ cost for these utterances is 0. \jd{make labels legible. also: is this for exp 1a or 1b? again, ideally the results for the two datasets would be shown side by side.} \label{fig:post-exposure-costs}}
 \end{figure}
 
 Figure~\ref{fig:post-exposure-costs} shows that the costs of the \textsc{might}, \textsc{probably} and
@@ -1046,7 +1043,7 @@ and the opposite relation between these costs holds in the \textit{confident spe
 are expected considering that the number of exposure trials across the two conditions differed (in the \textit{cautious speaker} condition in Experiment~1a there were more trials
 with \textsc{might}; in \textit{confident speaker} condition more trials with \textsc{probably}). More surprisingly, this pattern
 persisted in the simulations for Experiment~1b in which the exposures of these two utterances were balanced across conditions 
-(\todo{See SI for cost plot for balanced simulations}).
+(\todo{See SI for cost plot for balanced simulations}\jd{ok but then be much more specific that we're only looking at the exp 1a results in this whole modeling section}).
 These persistent differences suggest that the post-adaptation expectations 
 are in part also a result of updated beliefs about preferences of \textsc{might} and \textsc{probably}. 
 
@@ -1064,10 +1061,10 @@ exposure to that speaker.
 
 We further presented a computational adaptation model which models the adaptation
 process as an instance of Bayesian belief updating. We used different implementations
-of that model to investigate which kind of expectations listeners are updating during adaptation.
-We found strong evidence that listeners are updating beliefs about the lexicon and 
+of that model to investigate which kind of expectations listeners update during adaptation.
+We found strong evidence that listeners update beliefs about the lexicon and 
 we found some evidence that
-listeners are also updating beliefs about speaker preferences.
+listeners also update beliefs about speaker preferences.
 
 \section{Experiment 2: Effect of adaptation of interpretation}
 \label{sec:exp-model-interpretation}
@@ -1078,7 +1075,7 @@ listeners are also updating beliefs about speaker preferences.
 \end{figure}
 
 Up to this point, we focused on listeners' expectations about a speaker's use of uncertainty expressions. As we discussed
-in the introduction, we expect updated expectations to have an effect on the interpretation of uncertainty expressions. This
+in the introduction, we expect updated expectations to also have an effect on the interpretation of uncertainty expressions. This
 effect is also predicted by RSA models,  which assume that a pragmatic listener $L_1$ tries to infer the state of the world (in our case, the event probability $\phi$) by reasoning
 about their prior beliefs about the world state and their expectations about a speaker's language use (in our case, the expected pragmatic speaker $ES_{1}$).
 
