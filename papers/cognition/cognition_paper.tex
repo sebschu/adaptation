@@ -39,6 +39,7 @@
 \renewcommand{\exp}{\text{exp }}
 
 
+
 \definecolor{PinkyPurple}{RGB}{178,0,178}
 \newcommand{\jd}[1]{\textcolor{PinkyPurple}{\textbf{[jd: #1]}}}
 
@@ -79,6 +80,7 @@
 \authornote{TODO}
 \abstract{WRITE ME}
 
+% people to thank: dan lassiter, ALPS lab, chris potts, eve clark, herb clark, noah goodman, AMLaP, compprag, CMCL, semfest, CAMP audiences, ...
 
 
 %=====================================================================
@@ -86,6 +88,9 @@
 \begin{document}
 
 \maketitle
+
+\setcounter{secnumdepth}{3}
+
 
 \section{Introduction}
 
@@ -111,11 +116,15 @@ One of the key assumptions in Gricean pragmatic reasoning \parencite{Grice1975} 
 \end{exe}
 According to Gricean pragmatic theories, listeners assume that a speaker is cooperative and arrive at the inference in (\ref{ex:cookie-inf}) through a counterfactual reasoning process: they reason that if Alex had wanted to communicate that Bill ate all of the cookies, Alex would have uttered the more informative statement \textit{Bill ate all of the cookies}. Assuming that Alex knew the truth regarding the more informative sentence, it must be that the more informative statement is not true, which leads the listener to conclude (\ref{ex:cookie-inf}). Analogous reasoning leads to the inferences in (\ref{ex:movie-inf})  and (\ref{ex:snow-inf}) .
 
-An implicit assumption in such an account of pragmatic reasoning is that listeners have precise expectations about the speaker's language use in different situations -- listeners will only be able to draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems (\todo{Cite something??}) and different speakers  often agree on descriptions for different world states. However, for more abstract function words such as quantifiers like \textit{some} and \textit{many} or uncertainty expressions like \textit{might} and \textit{probably}, there exists more variability across speakers. For example, in a norming study, \textcite{Yildirim2016} found that participants varied considerably in their expectations about the use of different quantifiers. Similarly, \textcite{Wallsten1986} found considerable inter-subject variability in the interpretation of uncertainty expressions. 
+An implicit assumption in such an account of pragmatic reasoning is that listeners have precise expectations about the speaker's language use in different situations -- listeners will only be able to draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems \parencite{Lewis1969} and different speakers  often agree on descriptions for different world states. However, for more abstract function words such as quantifiers like \textit{some} and \textit{many} or uncertainty expressions like \textit{might} and \textit{probably}, there exists more variability across speakers. For example, in a norming study, \textcite{Yildirim2016} found that participants varied considerably in their expectations about the use of different quantifiers. Similarly, \textcite{Wallsten1986} found considerable inter-subject variability in the interpretation of uncertainty expressions. 
 
 Recent work suggests that listeners deal with this kind of variability by adapting to it and updating their expectations about a speaker's language use, a process known as semantic/pragmatic adaptation. In a series of experiments, \textcite{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied. After exposure, they probed participants' expectations about the speakers' language use and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners update \textit{some} type of expectations, the nature of the expectations that listeners update is unknown. 
 In particular, it is still an open question whether this kind of semantic/pragmatic adaptation is a result of listeners learning speaker-specific utterance preferences or whether listeners form speaker-specific semantic representations. 
-\jd{and why do we care about the nature of the expectation? be clearer already here about what the implications are for theories that assume static meanings}Answering this question is the focus of the work reported here.
+Answering this question can provide important insights not only into the processes leading to semantic/pragmatic adaptation but also into the properties of the lexicon. If listeners only learn different utterance preferences for different speakers, then this would be compatible with highly static semantic representations of uncertainty expressions. On the other hand, if listeners
+ form speaker-specific semantic representations, then this would provide evidence for highly dynamic semantic representations of function words. 
+Answering this question about the nature of adaptation is therefore the focus of the work reported here.
+
+%TODO?: revisit this again once i've finished the GD about the implications for the lexicon.
 
 As a starting point for this investigation, we consider adaptation in other linguistic domains. Apart from the work on quantifiers, linguistic adaptation has been observed in  phonetics \parencite[e.g.,][]{Goldinger1998,Norris2003,Kraljic2005,Kraljic2007,Babel2012,Kleinschmidt2015}, 
 syntax \parencite{Kamide2012,Fine2013,Fine2016,Myslin2016,Kroczek2017},\footnote{Note, 
@@ -123,10 +132,13 @@ however, that some of these studies failed to replicate and it is still unclear 
 circumstances syntactic adaptation can be observed \parencite[see][]{Liu2017,HarringtonStack2018}.} intonation and prosody \parencite{Kurumada2012,Roettger2019}, and with phenomena such as referring expressions
 \parencite{Clark1986,Brennan1996,Metzing2003,Horton2005,Brennan2009} and lexical associations \parencite{DelaneyBusch2019}. 
 
-For most of these phenomena, there . \jd{this may be a little too strong?} At the phonetic level, 
+For most of these phenomena, there is converging evidence regarding the representations that listeners update during adaptation. At the phonetic level, 
 listeners update their expectations about speakers' \textbf{mapping} between acoustic cues and phonemes \parencite[e.g.,][]{Kleinschmidt2015}.
 At the syntactic level, listeners update their expectations about speakers' \textbf{preferences} 
-for different syntactic structures. In contrast, at the semantic/pragmatic level the adaptation process and the nature of the updated representations is still poorly understood. \jd{is semprag adaptation inherently a more difficult problem than phonetic and syntactic adaptation? if so, it's worth emphasizing here}
+for different syntactic structures. In contrast, at the semantic/pragmatic level the adaptation process and the 
+nature of the updated representations is still poorly understood. This is not surprising considering that it is challenging
+to directly probe beliefs about semantic representations or beliefs about speaker preferences without 
+a model that can quantitatively link behavioral data to these beliefs. 
 
 We investigate two likely candidates for representations that are updated during semantic/pragmatic adaptation, motivated by recent advances in probabilistic modeling of pragmatic language understanding \parencite{Frank2012,Goodman2016,Franke2016}. First -- analogous to phonetic adaptation -- listeners might update their beliefs about speakers' mappings between 
 words and world states, i.e., speakers' lexica. Alternatively -- analogous to syntactic adaptation -- 
@@ -141,12 +153,12 @@ A listener's beliefs about the three speakers' lexica and preferences are schema
 \begin{figure}
 \center
 \includegraphics[width=\textwidth]{plots/implicatures.pdf}
-\caption{Lexica, utterance preferences and likely interpretation of \textit{probably} for three different speakers. The region of the probability scale covered by each line in the Lexicon panel indicates the corresponding expression's literal semantics. Height of bars in the Preferences panel indicates the speaker's preference for each expression.    \jd{make sure that bar height here and bar height in the cost plots further into the paper mean the same thing. ie, if you're plotting cost later on, plot cost (dispreference) here as well}}
+\caption{Lexica, utterance preferences and likely interpretation of \textit{probably} for three different hypothetical speakers. The region of the probability scale covered by each line in the Lexicon panel indicates the corresponding expression's literal semantics. Height of bars in the Cost panel indicates the speaker's cost (dispreference) for each expression. }
 \label{fig:inference-example}
 \end{figure}
 
 First, consider speaker {\bf A}, for whom \textit{might} is semantically felicitous if the described event probability (e.g., of snowing) exceeds 10\%, 
-\textit{probably} if the event probability exceeds 60\% and \textit{almost certainly}  if the event probability exceeds 90\%.  If a listener has accurate beliefs about {\bf A}'s mapping between expressions and event probabilities and observes {\bf A}  produce the sentence \emph{It will probably snow}, they will be likely to infer a probability of snowing between 60 and 90\%. As illustrated above, the reasoning follows the schema of a standard scalar implicature \parencite{Grice1975, Horn1984}: if  {\bf A} had intended to communicate a probability above 90\%, they could have said \emph{It will almost certainly snow}, which would have been more informative and equally relevant. Assuming the speaker knows the actual event probability and is cooperative, it is therefore likely that the intended probability is not above 90\%.\footnote{Under a standard Gricean view, the negation of the stronger alternative is inferred categorically. However, we adopt probabilistic language here in keeping with recent results that scalar inferences are more aptly viewed as probabilistic inference under uncertainty.\jd{cite}} 
+\textit{probably} if the event probability exceeds 60\% and \textit{almost certainly}  if the event probability exceeds 90\%.  If a listener has accurate beliefs about {\bf A}'s mapping between expressions and event probabilities and observes {\bf A}  produce the sentence \emph{It will probably snow}, they will be likely to infer a probability of snowing between 60 and 90\%. As illustrated above, the reasoning follows the schema of a standard scalar implicature \parencite{Grice1975, Horn1984}: if  {\bf A} had intended to communicate a probability above 90\%, they could have said \emph{It will almost certainly snow}, which would have been more informative and equally relevant. Assuming the speaker knows the actual event probability and is cooperative, it is therefore likely that the intended probability is not above 90\%.\footnote{Under a standard Gricean view, the negation of the stronger alternative is inferred categorically. However, we adopt probabilistic language here in keeping with recent results that scalar inferences are more aptly viewed as probabilistic inference under uncertainty \parencite{Goodman2013}.} 
 
 Now, consider speaker {\bf B}, for whom \textit{might} is semantically felicitous if the event probability exceeds 30\%, 
 \textit{probably} if the event probability exceeds 75\% and \textit{almost certainly}  if the event probability exceeds 95\%. If a listener has
@@ -161,11 +173,12 @@ Thus, a listener who tracks the variability in these hypothetical speakers' lexi
 \textit{probably}, and \textit{could} \parencite[see, for example,][]{Kratzer1991,Hacquard2011} but also phrases such as \textit{it looks like}, which have been primarily investigated in the experimental pragmatics literature (e.g., \cite{Kurumada2014,Pogue2018}).
 
 Uncertainty expressions have several properties that make them a good testing ground for studying semantic and pragmatic
-adaptation. First, there is no consistent mapping between uncertainty expressions and event probabilities
-\parencite[e.g.,][]{Clark1990,Pepper1974}. \jd{is it worth problematizing more clearly the semantic assumption of invariance of meaning for these uncertainty expressions? take inspiration from dan's book?} Second, there is considerable inter-speaker variability 
+adaptation. First, there is no consistent mapping between uncertainty expressions and event probabilities.
+\parencite[e.g.,][]{Clark1990,Pepper1974}, which implies that listeners have to rely on additional contextual information (such as the speaker identity)
+when they want to infer an event probability that a speaker intended to communicate using an uncertainty expression. Second, there is considerable inter-speaker variability 
 in the use of these expressions \parencite{Wallsten1986} and therefore it is likely that listeners expect different speakers to use these expressions
 differently. Lastly, interpreting uncertainty expressions plays an important role in many everyday situations from the banal -- such as talking about the weather -- to the serious -- such as communicating about health risks \parencite{Berry2004, Lipkus2007, Politi2007} or making financial decisions \parencite{Doupnik2003}. 
-Thus, listeners would benefit from tracking  how a given speaker uses these expressions. %and are therefore  potentially more attuned to subtle differences across speakers than in cases where variation may have a smaller effect on decision-making.
+Thus, listeners would benefit from tracking  how a given speaker uses these expressions. 
 
 In order to establish the nature of the representations that are updated during adaptation to variable use of uncertainty expressions we proceed through the following steps:
 \begin{enumerate}
@@ -258,7 +271,7 @@ First, the ratings for individual utterances are influenced by the utterance cho
 If we compare the ratings for \textsc{might} in the \textit{bare-might} and the \textit{might-probably} condition, we see that \textsc{might} received high ratings for a larger
 range of event probabilities when it is paired with \textsc{bare} than when it is paired with \textsc{probably}. We observe similar effects for the other two utterances.
 This suggests that participants are primed to use the utterances provided in the experiment and that their ratings depend on the presented alternatives -- an effect that
-has also been observed for quantifiers \parencite{Degen2015}.
+has also been observed for quantifiers \parencite{Degen2016}.
 
 Second, the results suggest that participants are sensitive to the different event probabilities and that this paradigm is well suited to study 
 the mapping between event probabilities and uncertainty expressions. For example, in the \textit{might-probably} condition, participants
