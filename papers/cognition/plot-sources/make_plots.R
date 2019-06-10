@@ -31,6 +31,9 @@ get_pre_test_grid_plot = function(condition) {
 plots = lapply(0:20, get_pre_test_grid_plot)
 btm_legend = extract_legend(plots[[1]] + theme(legend.position = "bottom"))
 
+btm_legend_partial = extract_legend(plots[[1]] + colscale(c("might", "probably", "bare", "other")) + theme(legend.position = "bottom"))
+
+
 # Conditions 1-12 (first figure for SI)
 g1 = do.call("arrangeGrob", c(plots[1:12], ncol=3, left="mean rating", bottom="event probability"))
 pre_test_s1 = grid.arrange(g1, btm_legend, heights=c(32, 2))
@@ -41,7 +44,7 @@ pre_test_s2 = grid.arrange(g2, btm_legend, heights=c(24, 2))
 
 # Conditions 1 (bare-might), 2 (bare-probably), and 6 (might-probably) for figure in main paper
 g_main = do.call("arrangeGrob", c(plots[c(1,2,6)], ncol=3, left="mean rating", bottom="event probability"))
-pre_test_main = grid.arrange(g_main, btm_legend, heights=c(8, 2))
+pre_test_main = grid.arrange(g_main, btm_legend_partial, heights=c(8, 2))
 
 ggsave(pre_test_main, filename = "../plots/pre_test_main.pdf", width = 30, height = 12, units = "cm")
 ggsave(pre_test_s1,   filename = "../plots/pre_test_s1.pdf",   width = 30, height = 36, units = "cm")
@@ -66,13 +69,15 @@ get_pre_test_grid_plot_indiv = function(worker_id, condition) {
     facet_wrap(~workerid, 
                labeller=labeller(.default=function(value) {
                  return(paste("Participant", value))
-                 }))
+                 })) +
+    colscale(unique(d$modal))
   
   return(p)
 }
 
 
 plots = lapply(c(8,12,15), get_pre_test_grid_plot_indiv, condition=5)
+btm_legend = extract_legend(plots[[1]] + theme(legend.position = "bottom"))
 g_indiv = do.call("arrangeGrob", c(plots, ncol=3, left="mean rating", bottom="event probability"))
 pre_test_main_indiv = grid.arrange(g_indiv, btm_legend, heights=c(8, 2))
 ggsave(pre_test_main_indiv, filename = "../plots/pre_test_main_indiv.pdf", width = 30, height = 12, units = "cm")
@@ -98,9 +103,11 @@ get_pre_test_model_plot = function(condition) {
 
 plots = lapply(0:20, get_pre_test_model_plot)
 btm_legend = extract_legend(plots[[1]] + theme(legend.position = "bottom"))
+btm_legend_main = extract_legend(plots[[1]] + colscale(c("might", "probably", "bare", "other")) +  theme(legend.position = "bottom"))
+
 
 g_main = do.call("arrangeGrob", c(plots[c(1,2,6)], ncol=3, left="mean rating", bottom="event probability"))
-pre_test_main = grid.arrange(g_main, btm_legend, heights=c(8, 2))
+pre_test_main = grid.arrange(g_main, btm_legend_main, heights=c(8, 2))
 
 # Conditions 1-12 (first figure for SI)
 g1 = do.call("arrangeGrob", c(plots[1:12], ncol=3, left="mean rating", bottom="event probability"))
@@ -137,7 +144,7 @@ for (modal in beta_modals) {
   
   x = seq(0.001,0.999,.001)
   y = dbeta(x, alpha_param, beta_param)
-  y = y / (max(y))
+  #y = y / (max(y))
   
   beta_density = rbind(beta_density, data.frame(x = x, y = y, modal = gsub("_", " ", modal)))
   
@@ -149,9 +156,13 @@ beta_density$modal = factor(beta_density$modal, levels = modals_labels, ordered=
 
 threshold_distrs = ggplot(beta_density, aes(x=x, y=y)) + 
   geom_line() + 
-  facet_wrap(~modal, ncol = 4) + 
-  xlab(expression(theta)) +
-  ylab(expression(paste("P(", theta, ")", sep=""))) 
+  facet_wrap(~modal, ncol = 4, scales = "free_y") + 
+  xlab("threshold") +
+  ylab("density") +
+  theme(legend.text = element_text(size=14),
+        strip.text.x = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12))
 
 
 
@@ -185,7 +196,18 @@ d = spread_data(d)
 d$pair = d$condition
 
 plot_data = get_data_for_plotting(d)
-plot = plot_condition(plot_data) + geom_vline(xintercept = 60, lty=2, col="grey", size=1)
+plot = plot_condition(plot_data) + 
+  geom_vline(xintercept = .60, lty=2, col="grey", size=1) +  
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")) +
+  colscale(unique(plot_data$modal))
+ 
+ggsave(plot, filename = "../plots/exp-1-ratings.png", width = 15, height = 12, units = "cm", bg="transparent")
 ggsave(plot, filename = "../plots/exp-1-ratings.pdf", width = 30, height = 12, units = "cm")
 
 
@@ -227,7 +249,7 @@ hdi_data.all = rbind(hdi_data.distr, hdi_data.point)
 hdi_data.all$condition = factor(hdi_data.all$condition, levels=c("point estimate thresholds", "distributional thresholds"), ordered = T)
 hdi_data.all$rating_pred = hdi_data.all$rating_pred * 100
 hdi_data.all$modal = factor(hdi_data.all$modal, levels = modals[modals %in% unique(hdi_data.all$modal)], labels = modals_labels[modals %in% unique(hdi_data.all$modal)], ordered=T)
-viz_plot =hdi_data.all %>% 
+viz_plot = hdi_data.all %>%  
   group_by(condition, modal, percentage_blue) %>%
   summarize(rating_pred_m = mean(rating_pred))  %>%
   ggplot(aes(x=percentage_blue/100, col=modal, y=rating_pred_m, group=interaction(modal,condition))) +
@@ -235,10 +257,19 @@ viz_plot =hdi_data.all %>%
   colscale(unique(hdi_data.all$modal)) + 
   facet_wrap(~condition) +
   theme(legend.position = "bottom", legend.box = "vertical") +
-  guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1))) + 
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")
+       ) +
+  guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1, fill="transparent"))) + 
   ylab("predicted rating") +
   xlab("event probability")
 
+ggsave(viz_plot, filename = "../plots/model-visualization-predictions.png", width=10, height=7.2,  units="cm", bg = "transparent")
 ggsave(viz_plot, filename = "../plots/model-visualization-predictions.pdf", width = 30, height = 12, units = "cm")
 
 mle_params_json = read_lines("../../../models/1_threshold_modals/visualizations/distribution-thresholds/samples.json")
@@ -266,7 +297,7 @@ for (modal in beta_modals_sim) {
 mle_params_json = read_lines("../../../models/1_threshold_modals/visualizations/pointwise-thresholds/samples.json")
 mle_params = jsonlite::fromJSON(mle_params_json, flatten=TRUE)
 
-for (modal in beta_modals) {
+for (modal in beta_modals_sim) {
   alpha_param_name = paste("alpha", modal, sep="_")
   beta_param_name = paste("beta", modal, sep="_")
   
@@ -286,14 +317,24 @@ for (modal in beta_modals) {
 beta_density$modal = factor(beta_density$modal, levels = modals_labels, ordered=T)
 beta_density$condition = factor(beta_density$condition, levels=c("point estimate thresholds", "distributional thresholds"), ordered = T)
 
-threshold_distrs = ggplot(beta_density, aes(x=x, y=y, col=modal)) + 
+threshold_distrs = beta_density %>% 
+  ggplot(aes(x=x, y=y, col=modal)) + 
   geom_line() + 
   facet_wrap(~condition) +
-  xlab(expression(theta)) +
-  ylab("normalized density") +
+  xlab("threshold") +
+  ylab("density") +
   colscale(unique(beta_density$modal)) +
-  theme(legend.position = "none") 
-  
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")
+  ) +
+    theme(legend.position = "none") 
+
+ggsave(threshold_distrs, filename = "../plots/model-visualization-distributions.png", width = 10, height = 5.7, units = "cm", bg="transparent")
 ggsave(threshold_distrs, filename = "../plots/model-visualization-distributions.pdf", width = 30, height = 10, units = "cm")
 
 
@@ -367,8 +408,8 @@ for (modal in beta_modals) {
 threshold_distrs = ggplot(beta_density, aes(x=x, y=y, col=condition)) + 
   geom_line() + 
   facet_wrap(~modal, ncol = 4, scales = "free_y") + 
-  xlab(expression(theta)) +
-  ylab(expression(paste("P(", theta, ")", sep=""))) +
+  xlab("threshold") +
+  ylab("density") +
   theme(legend.position = "bottom") +
   guides(col=guide_legend(title="Condition", nrow = 1)) 
   
@@ -422,13 +463,21 @@ posterior_plot = hdi_data.all %>%
   colscale(unique(hdi_data.all$modal)) + facet_wrap(~condition) +
   geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
   theme(legend.position = "bottom", legend.box = "vertical") +
+  theme(strip.text.x = element_text(size = 8), 
+        legend.text=element_text(size=8), 
+        legend.title = element_text(size=9),
+        axis.title = element_text(size=8),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")
+  ) +
   guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1)), 
   lty=guide_legend(title="", nrow = 1, override.aes = list(alpha = 1, size=0.5), order = 2)) +
   ylab("predicted rating") +
   xlab("event probability") +
   geom_line(aes(x=percentage_blue, y=rating_m, group=modal), data=plot_data %>% rename(condition = pair) %>% mutate(src="experimental result")) +
   scale_linetype_manual(values=c("solid", "dashed"), labels=c("model prediction", "experimental result"), drop=F)
-  
+
+ggsave(posterior_plot, filename = "../plots/adaptation-posterior-predictions.png", width = 15, height = 12, units = "cm", bg="transparent")
 ggsave(posterior_plot, filename = "../plots/adaptation-posterior-predictions.pdf", width = 30, height = 12, units = "cm")
 
 
@@ -460,7 +509,17 @@ d.rep = spread_data(d.rep)
 d.rep$pair = d.rep$condition
 
 plot_data = get_data_for_plotting(d.rep)
-plot = plot_condition(plot_data) + geom_vline(xintercept = 60, lty=2, col="grey", size=1)
+plot = plot_condition(plot_data) + 
+  geom_vline(xintercept = .60, lty=2, col="grey", size=1) +
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")) +
+  colscale(unique(plot_data$modal))
+
 ggsave(plot, filename = "../plots/exp-1-replication-ratings.pdf", width = 30, height = 12, units = "cm")
 
 #c1 = compute_correlation_for_model("theta-cost-rat", d.rep, model_path_suffix = "-balanced")
@@ -574,6 +633,27 @@ comp.plot = comp.plot_data %>%
 
 ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, units = "cm")
 
+comp.plot_condition = comp.plot_data %>% 
+  ggplot(aes(x=percentage_blue, y=rating_norm_mu, col=modal)) + 
+  geom_line(size=1) + 
+  facet_wrap(~condition) +
+  xlab("event probabilty") +
+  ylab("mean normalized rating") +
+  guides(col=guide_legend(title="Expression", nrow = 1)) + 
+  geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
+  theme(legend.position = "bottom", legend.box = "vertical") +
+  theme(strip.text.x = element_text(size = 8), 
+        legend.text=element_text(size=8), 
+        legend.title = element_text(size=9),
+        axis.title = element_text(size=8),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")
+  ) +
+  colscale(unique(comp.plot_data$modal)) +
+  geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
+
+ggsave(comp.plot_condition, file="../plots/exp-2-condition-ratings.png", width = 15, height = 12, units = "cm", bg="transparent")
+
 #####
 # comprehension model
 #####
@@ -623,15 +703,22 @@ posterior_plot = hdi_data.all %>%
 
 
 posterior_plot_combined = hdi_data.all %>% 
-  ggplot(aes(x=percentage_blue, col=condition, y=rating_pred, lty=src, group=interaction(src,run,modal,condition))) +
+  ggplot(aes(x=percentage_blue, col=modal, y=rating_pred, lty=src, group=interaction(src,run,modal,condition))) +
   geom_line(alpha=.01) + 
-  geom_line(aes(x=percentage_blue, y=rating_pred_m, group=condition), size=1, data = hdi_data.all %>% 
+  geom_line(aes(x=percentage_blue, y=rating_pred_m, group=modal), size=1, data = hdi_data.all %>% 
               group_by(condition, modal, percentage_blue, src) %>%
               summarize(rating_pred_m = mean(rating_pred))) + 
-  facet_wrap(~modal) +
+  facet_wrap(~condition) +
   theme(legend.position = "bottom", legend.box = "vertical") +
-  
-  guides(col=guide_legend(title="Condition", nrow = 1, override.aes = list(alpha = 1)),
+  theme(strip.text.x = element_text(size = 8), 
+        legend.text=element_text(size=8), 
+        legend.title = element_text(size=9),
+        axis.title = element_text(size=8),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background =  element_rect(fill = "transparent")
+  ) +
+  colscale(unique(hdi_data.all$modal)) + 
+  guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1)),
          lty=guide_legend(title="", nrow = 1, override.aes = list(size = 0.5))) +
   ylab("predicted rating") +
   xlab("event probability") + 
@@ -640,6 +727,7 @@ posterior_plot_combined = hdi_data.all %>%
 
 
 ggsave(posterior_plot, file="../plots/adaptation-posterior-comp.pdf", width = 30, height = 12, units = "cm")
+ggsave(posterior_plot_combined, file="../plots/adaptation-posterior-comp-data.png", width = 15, height = 12, units = "cm", bg="transparent")
 ggsave(posterior_plot_combined, file="../plots/adaptation-posterior-comp-data.pdf", width = 30, height = 12, units = "cm")
 
 

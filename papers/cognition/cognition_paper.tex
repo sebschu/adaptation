@@ -222,7 +222,8 @@ depending on the number of trials,
 which amounted to an hourly wage of approximately \$12--\$15. 
 
 \begin{figure}[th!]
-\includegraphics[width=\textwidth, trim={0 0 1.1cm 0},clip]{plots/pre-test-example-trial.png} 
+\center
+\includegraphics[width=0.7\textwidth, trim={0 0 1.1cm 0},clip]{plots/pre-test-example-trial.png} 
 \caption{Example trial from norming study. \label{fig:norming-trial} }
 \end{figure}
 
@@ -253,8 +254,7 @@ and to make sure that participants did not consider it more likely to get one of
 
 \noindent Within each condition, we manipulated the percentage of target color gumballs across trials, which we take as proxy for the objective probability of receiving a gumball of the target color. 
 Each participant saw 3 trials\footnote{In condition 1 (\textit{bare-might}), participants saw each gumball machine 6 times -- 3 times when being asked to produce a statement about orange gumballs and 3 times when being asked to produce a statement about blue gumballs. In conditions 15-20 (all conditions with \textit{bare not}), participants saw each machine 4 times: 2 times for each color.} 
-for each of the following percentages: 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\%, 90\%, 100\%. We randomized the order of expressions across participants and trials were presented in pseudo-randomized order. \jd{pseudo-randomized how?}
-
+for each of the following percentages: 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\%, 90\%, 100\%. We randomized the order of expressions across participants and trials were presented in randomized order.
 
 \subsubsection{Results and Discussion}
 
@@ -348,7 +348,7 @@ $$S_1\left(u \mid \phi, \theta, c\right) \propto exp \left( \lambda \left( \log 
 $\lambda$ is a rationality parameter which governs how likely a speaker is to choose the utterance that maximizes her utility; as $\lambda$ approaches infinity, a speaker is more likely to always choose the optimal utterance.  
 
 
-\begin{figure}
+\begin{figure}[th!]
 \includegraphics[width=\textwidth]{plots/model-visualization-distributions.pdf}
 
 \includegraphics[width=\textwidth]{plots/model-visualization-predictions.pdf}
@@ -484,7 +484,7 @@ uniform priors over the interval $[0,15]$ for all parameters. We estimated the v
 
 
 
-\begin{figure}
+\begin{figure}[th!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_model\string_main.pdf}
 \caption{Model predictions and results from norming study. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-main}}
 
@@ -524,7 +524,7 @@ compared the model predictions of the model parametrized by $\Theta_x$ to partic
 participant behavior which it has not observed during parameter estimation. Table~\ref{tbl:correlations} shows the $R^2$ values for participants's
 ratings and model predictions for the model estimated from all conditions and the leave-one-out models.
 
-\begin{table}
+\begin{table}[ht!]
 \center
 \begin{tabular}{l | c | c}
       Condition & $R^2$ (all data) & $R^2$ (leave-one-out) \\
@@ -551,7 +551,7 @@ ratings and model predictions for the model estimated from all conditions and th
  bare not-looks like  &  0.927  & 0.903 \\
       bare not-think  &  0.933  & 0.920 \\
 \end{tabular}
-\caption{$R2$ values for experimental data and model predictions for model estimated from all data and for models estimated from all conditions except the predicted condition. \label{tbl:correlations}}
+\caption{$R^2$ values for experimental data and model predictions for model estimated from all data and for models estimated from all conditions except the predicted condition. \label{tbl:correlations}}
 \end{table}
 
 
@@ -560,7 +560,7 @@ which suggests that our proposed model indeed explains
 participants' expectations of a generic speaker's uncertainty expressions.
 
 
-\begin{figure}
+\begin{figure}[th!]
 \includegraphics[width=\textwidth]{plots/threshold-distributions-prior.pdf}
 \caption{Inferred threshold distributions. For the negative bare utterance (\textsc{bare not}) the distribution corresponds to an upper threshold, i.e., a bare statement embedded under negation is true if the probability of the event is lower than the threshold. For all other utterances, the distributions correspond to a lower threshold.
 \label{fig:threshold-distributions}}
@@ -701,7 +701,7 @@ We therefore tested whether listeners updated their expectations according to th
 \begin{figure}
 \center
 \includegraphics[width=.5\textwidth]{plots/adaptation-auc-production.png}
-\caption{Area under the curve (AUC) differences from Experiment 1.\jd{1a?} Error bars correspond to bootstrapped 95\%-confidence intervals.  \label{fig:adaptation-auc-prod}}
+\caption{Area under the curve (AUC) differences from Experiment 1.\jd{1a} Error bars correspond to bootstrapped 95\%-confidence intervals.  \label{fig:adaptation-auc-prod}}
 \end{figure}
 
 Figure~\ref{fig:adaptation-results-prod} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use and therefore made different predictions about how the speaker would use uncertainty expressions. In the \emph{cautious speaker} condition, participants gave high ratings for {\sc might} for a larger range of event probabilities than in the \emph{confident speaker} condition. On the other hand, participants gave high ratings for {\sc probably} for a larger range of gumball proportions in the \emph{confident speaker} condition than in the \emph{cautious speaker} condition. These differences result in a significantly bigger AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(59) = 4.98$, $p < 0.001$, see also Figure~\ref{fig:adaptation-auc-prod}).
@@ -739,7 +739,7 @@ The analysis was identical as in Eperiment~1a. We again predicted that the mean 
 
 \begin{figure}
 \includegraphics[width=\textwidth]{plots/exp-1-replication-ratings.pdf}
-\caption{Mean post-exposure ratings from Experiment 1b. Error bars correspond to bootstrapped 95\%-confidence intervals.  The grey dotted line highlights the ratings for the 60\% event probability ratings. \jd{facet labels and axis labels too small to read} \label{fig:adaptation-results-prod2}}
+\caption{Mean post-exposure ratings from Experiment 1b. Error bars correspond to bootstrapped 95\%-confidence intervals.  The grey dotted line highlights the ratings for the 60\% event probability ratings. \label{fig:adaptation-results-prod2}}
 \end{figure}
 
 Figure~\ref{fig:adaptation-results-prod2} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use. As in Exp.~1a, the
