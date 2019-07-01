@@ -1,5 +1,6 @@
 setwd("~/Dropbox/Uni/RA/adaptation/adaptation/papers/cognition/plot-sources/")
 
+library(DescTools)
 library(data.table)
 library(tidyverse)
 library(ggplot2)
@@ -210,6 +211,95 @@ plot = plot_condition(plot_data) +
 ggsave(plot, filename = "../plots/exp-1-ratings.png", width = 15, height = 12, units = "cm", bg="transparent")
 ggsave(plot, filename = "../plots/exp-1-ratings.pdf", width = 30, height = 12, units = "cm")
 
+### AUC plots
+
+auc_method = function(d) {
+  model = lm(formula = rating_m ~ ns(percentage_blue, df = 4), data = d)
+  
+  pred = data.frame(0:1000)
+  pred$percentage_blue = (0:1000)/10
+  pred$rating = predict(model, pred)
+  
+  auc = AUC(x = pred$percentage_blue, y=pred$rating)
+  return(auc)
+}
+
+
+auc_for_participants = function(d, method) {
+  
+  aucs = data.frame(list("workerid" = unique(d$workerid)))
+  aucs$auc_might = 0
+  aucs$auc_probably = 0
+  
+  
+  i = 1
+  
+  for (wid in unique(d$workerid)) {
+    d.might_ratings = d %>% 
+      filter (workerid == wid) %>%
+      filter (modal == "might") %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating))
+    
+    aucs$auc_might[i] = method(d.might_ratings)
+    
+    d.probably_ratings = d %>% 
+      filter (workerid == wid) %>%
+      filter (modal == "probably") %>%
+      group_by(workerid, percentage_blue) %>%
+      summarise(rating_m = mean(rating))
+    
+    aucs$auc_probably[i] = method(d.probably_ratings)
+    
+    i = i + 1
+  }
+  
+  aucs$auc_diff = aucs$auc_might - aucs$auc_probably
+  
+  return(aucs)
+}
+
+#AUCs for cuatious speaker condition
+aucs.cautious = auc_for_participants(d %>% filter(condition == "cautious speaker"), method=auc_method)
+#AUCs for confident speaker condition
+aucs.confident = auc_for_participants(d %>% filter(condition == "confident speaker"), method=auc_method)
+
+aucs.cautious$cond = "cautious speaker"
+aucs.confident$cond = "confident speaker"
+
+aucs.all = rbind(aucs.cautious, aucs.confident)
+aucs.all = aucs.all %>% 
+  group_by(cond) %>% 
+  summarise(auc_diff_m = mean(auc_diff), 
+            ci_high = ci.high(auc_diff), 
+            ci_low = ci.low(auc_diff))
+
+auc_plot.1 =  aucs.all %>%
+  ggplot(aes(x=0, y=auc_diff_m, color=cond)) +
+  geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+  geom_point() +
+  xlab("") +
+  ylab("") +
+  ggtitle("Experiment 2a") +
+  theme(text = element_text(size=12),
+        axis.ticks.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        panel.grid.minor=element_blank(), 
+        plot.background=element_blank(),
+        legend.position = "bottom",
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=16)) +
+  guides(col=guide_legend(title="Condition")) +
+  xlim(-.2, .2) +
+  ylim(-8,28)
+
+auc_legend = extract_legend(auc_plot.1)
+
+
+
+### correlations
+
 
 compute_correlation_for_model = function(model_type, exp_data, model_path_suffix="") {
   hdi_data.cautious = read.csv(paste("../../../models/2_adaptation_model/bayesian-runs", model_path_suffix, "/", model_type, "/cautious/hdi_samples.csv", sep="")) %>% mutate(condition = "cautious speaker")
@@ -410,8 +500,14 @@ threshold_distrs = ggplot(beta_density, aes(x=x, y=y, col=condition)) +
   facet_wrap(~modal, ncol = 4, scales = "free_y") + 
   xlab("threshold") +
   ylab("density") +
-  theme(legend.position = "bottom") +
-  guides(col=guide_legend(title="Condition", nrow = 1)) 
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        legend.position = "bottom") +
+  guides(col=guide_legend(title="Condition", nrow = 1)) +
+  cond_colscale
   
 ggsave(threshold_distrs, filename = "../plots/adaptation-posterior-thresholds.pdf", width = 30, height = 12, units = "cm")
 
@@ -424,7 +520,7 @@ mle_params[3,"cost_might"] = 1.0
 mle_params[3,"cost_probably"] = 1.0
 
 
-mle_params$condition = c("cautious speaker", "confident speaker", "norming data")
+mle_params$condition = c("cautious speaker", "confident speaker", "prior")
 mle_params = mle_params %>% gather(key="Parameter", value="value", -condition)
 
 cost_plot = mle_params %>% 
@@ -435,8 +531,15 @@ cost_plot = mle_params %>%
     geom_point(aes(fill=condition), position = position_dodge(width = 0.9), size=4, pch=21, color="#666666") + 
     xlab("") + 
     ylab("log cost") +
-   theme(legend.position = "bottom") +
-   guides(fill=guide_legend(title="Condition", nrow = 1, override.aes = list(col="white", size=0.1)), col= "none", pch="none") 
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        legend.position = "bottom") +
+  guides(fill=guide_legend(title="Condition", nrow = 1, override.aes = list(col="#999999", size=0.1)), col= "none", pch="none") +
+  cond_colscale +
+  cond_colscale_fill
 
 ggsave(cost_plot, filename = "../plots/adaptation-posterior-costs.pdf", width = 15, height = 12, units = "cm")
 
@@ -461,12 +564,13 @@ posterior_plot = hdi_data.all %>%
               group_by(condition, modal, percentage_blue, src) %>%
               summarize(rating_pred_m = mean(rating_pred))) + 
   colscale(unique(hdi_data.all$modal)) + facet_wrap(~condition) +
-  geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
+  geom_vline(xintercept = 60, lty=2, col="", size=1) +
   theme(legend.position = "bottom", legend.box = "vertical") +
-  theme(strip.text.x = element_text(size = 8), 
-        legend.text=element_text(size=8), 
-        legend.title = element_text(size=9),
-        axis.title = element_text(size=8),
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
         plot.background = element_rect(fill = "transparent", color = NA),
         legend.background =  element_rect(fill = "transparent")
   ) +
@@ -497,7 +601,7 @@ d.rep = rbind(d.cautious, d.confident)
 d.rep = remove_quotes(d.rep)
 
 d.exp_trials.cautious = read.csv("../../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-might-exp_trials.csv")
-d.exp_trials.confident = read.csv("../../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-might-exp_trials.csv")
+d.exp_trials.confident = read.csv("../../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-probably-exp_trials.csv")
 
 d.exp_trials.confident$workerid = d.exp_trials.confident$workerid + max(d.exp_trials.cautious$workerid) + 1
 
@@ -521,6 +625,47 @@ plot = plot_condition(plot_data) +
   colscale(unique(plot_data$modal))
 
 ggsave(plot, filename = "../plots/exp-1-replication-ratings.pdf", width = 30, height = 12, units = "cm")
+
+#AUCs for cuatious speaker condition
+aucs.cautious = auc_for_participants(d.rep %>% filter(condition == "cautious speaker"), method=auc_method)
+#AUCs for confident speaker condition
+aucs.confident = auc_for_participants(d.rep %>% filter(condition == "confident speaker"), method=auc_method)
+
+aucs.cautious$cond = "cautious speaker"
+aucs.confident$cond = "confident speaker"
+
+aucs.all = rbind(aucs.cautious, aucs.confident)
+aucs.all = aucs.all %>% 
+  group_by(cond) %>% 
+  summarise(auc_diff_m = mean(auc_diff), 
+            ci_high = ci.high(auc_diff), 
+            ci_low = ci.low(auc_diff))
+
+auc_plot.2 =  aucs.all %>%
+  ggplot(aes(x=0, y=auc_diff_m, color=cond)) +
+  geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
+  geom_point() +
+  xlab("") +
+  ylab("") +
+  ggtitle("Experiment 2b") +
+  theme(text = element_text(size=12),
+        axis.ticks.x=element_blank(), 
+        axis.text.x=element_blank(),
+        axis.title.y=element_blank(),
+        panel.grid.minor=element_blank(), 
+        plot.background=element_blank(),
+        legend.position = "bottom") +
+  guides(col=guide_legend(title="Condition")) +
+  xlim(-.2, .2) +
+  ylim(-8,28)
+
+
+g = arrangeGrob(auc_plot.1 + theme(legend.position = "none"), auc_plot.2 + theme(legend.position = "none"), ncol=2, left="AUC difference (might ratings - probably ratings)")
+auc_plots = grid.arrange(g, auc_legend, heights=c(12,2))
+
+ggsave(auc_plots, filename = "../plots/exp-1-aucs.pdf",  width=20, height=12, units = "cm")
+
+
 
 #c1 = compute_correlation_for_model("theta-cost-rat", d.rep, model_path_suffix = "-balanced")
 c1 = compute_correlation_for_model("theta-cost", d.rep, model_path_suffix = "-balanced")
@@ -628,7 +773,12 @@ comp.plot = comp.plot_data %>%
   xlab("event probabilty") +
   ylab("mean normalized rating") +
   guides(col=guide_legend(title="", nrow = 1)) + 
-  theme(legend.position="bottom", legend.text=element_text(size=14)) + 
+  theme(legend.position="bottom", 
+        strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12)) + 
   geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
 
 ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, units = "cm")
@@ -641,14 +791,13 @@ comp.plot_condition = comp.plot_data %>%
   ylab("mean normalized rating") +
   guides(col=guide_legend(title="Expression", nrow = 1)) + 
   geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
-  theme(legend.position = "bottom", legend.box = "vertical") +
-  theme(strip.text.x = element_text(size = 8), 
-        legend.text=element_text(size=8), 
-        legend.title = element_text(size=9),
-        axis.title = element_text(size=8),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background =  element_rect(fill = "transparent")
-  ) +
+  theme(legend.position="bottom", 
+        legend.box = "vertical",
+        trip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12)) + 
   colscale(unique(comp.plot_data$modal)) +
   geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
 
@@ -696,6 +845,11 @@ posterior_plot = hdi_data.all %>%
                                summarize(rating_pred_m = mean(rating_pred))) + 
     facet_wrap(~modal) +
     theme(legend.position = "bottom", legend.box = "vertical") +
+    theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12)) + 
     guides(col=guide_legend(title="", nrow = 1, override.aes = list(alpha = 1))
                      ) +
     ylab("predicted rating") +
@@ -710,13 +864,11 @@ posterior_plot_combined = hdi_data.all %>%
               summarize(rating_pred_m = mean(rating_pred))) + 
   facet_wrap(~condition) +
   theme(legend.position = "bottom", legend.box = "vertical") +
-  theme(strip.text.x = element_text(size = 8), 
-        legend.text=element_text(size=8), 
-        legend.title = element_text(size=9),
-        axis.title = element_text(size=8),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background =  element_rect(fill = "transparent")
-  ) +
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12)) + 
   colscale(unique(hdi_data.all$modal)) + 
   guides(col=guide_legend(title="Expression", nrow = 1, override.aes = list(alpha = 1)),
          lty=guide_legend(title="", nrow = 1, override.aes = list(size = 0.5))) +
