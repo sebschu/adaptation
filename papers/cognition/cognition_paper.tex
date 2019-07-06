@@ -1155,11 +1155,12 @@ The model in this paper is formulated at the computational level \parencite{Marr
 and is therefore directly only comparable to other computational models. However, we can still assess 
 the compatibility of our findings with mechanistic accounts. We first discuss the relation to existing computational 
 models of adaptation and then discuss what the results tell us about existing mechanistic accounts of
- interactive language processing. \jd{"adaptation" insntead of "interactive language processing"?}
+ adaptation.
 
 The model presented above follows several other computational models of linguistic adaptation that are based 
 on Bayesian belief updating, including models of phonetic adaptation \parencite{Kleinschmidt2015}, syntactic 
-adaptation \parencite{Kleinschmidt2012}, and adaptation in the interpretation of prosodic cues \parencite{Roettger2019}.  \jd{this would be a good place to mention ciyang and robert's workj (can just add citations to the sentence) -- oh now i see that robert is in there later. but definitely also include ciyang, given that his is the model that's closest to yours.}
+adaptation \parencite{Kleinschmidt2012}, adaptation in the interpretation of prosodic cues \parencite{Roettger2019},
+and adaptation to variable use of the quantifiers \textit{some} and \textit{many} \parencite{Qing2014}.
 Considering that these models that are all based on the same belief updating procedures can explain adaptation behavior 
 from a range of linguistic domains, it is possible that linguistic adaptation is a result of cognitive processes that operate in 
 a similar fashion at all levels of linguistic representation. 
@@ -1205,14 +1206,15 @@ pragmatic behavior that we observed in our experiments.
 
 Our results also have implications for semantic theories of uncertainty expressions.
 The finding that listeners rapidly update their beliefs about semantic thresholds of uncertainty expressions
-suggests that the semantics of these expressions is highly dynamic and context-sensitive. This is, to some extent, predicted by recent 
+suggests that the semantics of these expressions is highly dynamic and context-sensitive. This is, to a large extent, predicted by recent 
 theoretical accounts of probability operators \parencite[a subset of uncertainty expressions, e.g.,][]{Yalcin2010,Lassiter2015,Lassiter2016}, which 
-state that the meanings of probability operators are highly dynamic and largely determined by the context. However, these accounts
-generally limit this dynamicity to the meaning of probability operators and exclude other uncertainty expressions such as \textit{might}. Moreover,  according to these accounts the main source of variability is the prior probability of the event embedded under a probability operator. 
-However, in the above reported experiments we did not observe a difference between the probability operator \emph{probably} and other types of uncertainty expressions like \emph{might}; listeners readily updated their expectations about the use of both expressions. \jd{i'm not sure we should be arguing against these kinds of accounts (which is what it currently sounds like), given that this is a development in semantics that we should be supporting -- our findings just say that this dynamic approach should be extended further beyond probability operators and beyond the single source of variability being prior event probability; ie verbiage like ``even more dynamic than proposed by these approaches'' may be appropriate}
-This suggests that different types of uncertainty expressions have a dynamic meaning whose interpretation depends on contextual factors.
-We further found that after being exposed to a specific speaker, listeners updated both their production expectations and their interpretations, which suggests
-that the prior probability of an event is not the only contextual factor that influences the interpretation of uncertainty expressions,
+state that the meanings of probability operators are highly dynamic and largely determined by the context. However, our results
+suggest that the meaning of uncertainty expressions is even more dynamic than predicted by these accounts. First, these accounts
+generally limit this dynamicity to the meaning of probability operators and exclude other uncertainty expressions such as \textit{might},
+whereas we found that listeners also readily updated their expectations about the use of \textit{might}, suggesting that the interpretation of different types of
+uncertainty expressions depends on contextual factors. Second, these accounts generally assume that the main source of variability is the probability of the event
+embedded under the uncertainty expressions, whereas we found that after being exposed to a specific speaker, listeners updated both their production expectations and their interpretations.
+This suggests that the prior probability of an event is not the only contextual factor that influences the interpretation of uncertainty expressions,
 but rather that other factors such as knowledge about the speaker also influence interpretations.
 
 Dynamic and context-sensitive semantics have also been proposed for many other types of expressions.
@@ -1227,7 +1229,7 @@ are able to compute novel senses of nouns and verbs on the fly. Similarly, in th
 Our results also have implications for conducting experiments. First,
 the finding that listeners adapt to the statistics of their environment within a short experiment
 suggests that experimenters should be cognizant of potential adaptation effects when probing
-production expectations or interpretations of uncertainty expressions (see also \textcite{Jaeger2010}). 
+production expectations or interpretations of uncertainty expressions \parencite[see also][]{Jaeger2010}. 
 
 Further, the results from Experiment~1, and in particular, the finding
 that participants' expectations about the use of utterances in the experiment strongly depended on
@@ -1236,7 +1238,7 @@ had we only considered the results from the \textit{bare-might} condition (see \
 we might have concluded that ``might'' is an expected expression to communicate an event probability of 75\%,
 whereas if we had only considered the results from the \textit{might-probably} condition we might have instead concluded that it is \emph{not} an expected expression to communicate an event probability of 75\%.
 This is where explicit modeling of the sort we have engaged in here is hugely helpful: formulating a concrete linking function which models the effects of 
-alternatives allows for inferring the latent meanings of utterances by combining data from different experiments (see also \textcite{Franke2014} and \textcite{Peloquin2016} for a similar approach).
+alternatives allows for inferring the latent meanings of utterances by combining data from different experiments \parencite[see also][for similar approaches]{Franke2014,Peloquin2016}.
 
 \subsection{Limitations and future directions}
 
@@ -1257,7 +1259,7 @@ quantifiers differed. Moreover,  \parencite{Schuster2019} have provided evidence
 uncertainty expressions. However, exactly which aspects of a situation (e.g., the speaker, the topic of conversation, the visual context, etc.)
 listeners adapt to is an issue that merits further investigation.
 
-\jd{i commented out the WEIRD and cross-linguistic issue because this doesn't seem sth that's specific enough to just this phenomenon}
+%\jd{i commented out the WEIRD and cross-linguistic issue because this doesn't seem sth that's specific enough to just this phenomenon}
 %Further, we investigated adaptation to uncertainty expressions only for English 
 %and all our participants were from the US. Our model does not make any
 %assumptions specific to English, so we expect that similar adaptation behavior could
@@ -1266,9 +1268,11 @@ listeners adapt to is an issue that merits further investigation.
 %particular in non-WEIRD societies.
 
 One advantage of formalizing a theory as a computational model is that the model 
-makes concrete predictions to test in future experiments. For example, one
-prediction of the proposed model is that the number of exposure trials should influence the size of the
-adaptation effect. Some evidence in support of this prediction is reported by \textcite{Schuster2019}, but a systematic investigation of  how the amount of exposure to a specific speaker affects adaptation remains to be conducted. \jd{i wonder whether this is a prediction that's specific enough to the model, given that most low-level priming effects would presumably make the same prediction?}
+makes concrete predictions to test in future experiments. For example, the proposed
+model is able to make quantitative predictions about the relation between the number of exposure
+trials and the size of the adaptation effect. Qualitatively, the model predicts that more exposure
+should lead to more adaptation, for which some evidence is reported by \textcite{Schuster2019}.
+However,  a systematic investigation of whether the model makes the correct quantitative predictions remains to be conducted. 
 
 %priors and acquisition
 
@@ -1276,7 +1280,7 @@ Further, the presented adaptation model is built around the assumption that the 
 by the informativeness and the cost of the utterance. However, it has been observed that other speaker goals such as being polite or
 convincing could also factor into the interpretation of uncertainty expressions \parencite[see e.g,][]{Pighin2011,Juanchich2013,Holtgraves2016}.
 It could therefore be that, for example, listeners ``explain away'' the behavior of a \textit{``confident''} speaker if the context suggests that the speaker
-has an incentive to be encouraging or has additional goals besides being informative (see also \textcite{Yoon2016,Yoon2017}). Investigating whether listeners draw such complex inferences
+has an incentive to be encouraging or has additional goals besides being informative \parencite[see also][]{Yoon2016,Yoon2017}. Investigating whether listeners draw such complex inferences
 could provide  insight about which kind of potential speaker goals enter into listeners' pragmatic reasoning process.
 
 
