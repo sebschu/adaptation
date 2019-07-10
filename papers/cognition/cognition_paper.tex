@@ -81,7 +81,19 @@
 Correspondence concerning this article should be addressed to Sebastian Schuster, Department of
 Linguistics, Stanford University, 450 Serra Mall, Stanford, CA 94305. E-mail:
 sebschu@stanford.edu.}
-\abstract{WRITE ME}
+\abstract{
+
+why adaptation
+
+what do we find experimentally
+
+main modeling question
+
+what do we find
+
+what do we conlcue
+
+}
 
 % people to thank: dan lassiter, ALPS lab, chris potts, eve clark, herb clark, noah goodman, AMLaP, compprag, CMCL, semfest, CAMP audiences, XPrag, robert hawkins, MH tessler, ...
 
@@ -1305,28 +1317,87 @@ preferences.
 
 \subsection*{Effect of color in norming study}
 
-As mentioned in a footnote, we ran the norming studies in three batches using three slightly different procedures across conditions. We originally ran condition 0 (\emph{bare-might}) as a pilot condition. In the results, we noted that participants did not differ in their ratings depending on whether the girl asked for a blue or an orange gumball ($R^2(27)=0.997$ between mean ratings for blue and orange trials). To lower the number of trials, we therefore asked each participant to provide ratings for only one of the two colors (randomized across participants) for the next batch of conditions (conditions 1-14). We found that in some conditions, this led to small differences in ratings between participants who always rated utterances with \emph{blue} and participants who always rated utterances with \textit{orange} ($R^2(27)$ between $0.864$ and $0.984$). We hypothesize that this is a result of participants paying less attention if they were asked to do exactly the same task over and over again (in condition 0, the color potentially changed across trials). In order to verify the stability of our results, we replicated one of the conditions, condition 5 (\emph{might-probably}), and had participants provide two ratings for each color and gumball proportion. We found that despite the lower correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} in the original run ($R^2(27)=0.929$), there was a very high correlation between the average ratings independent of the color of the original study and the average ratings of the replication ($R^2(27)=0.975$), which suggests that the average ratings largely do not depend on whether we ask participants to provide ratings for both colors or just one color. Nevertheless, we used the modified procedure in which we asked participants to provide 2 ratings for each color and gumball proportion for the last batch of conditions (conditions 15-20). In all conditions in which we asked people to provide ratings for utterances with both colors, the correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} was almost perfect ($R^2(27)>0.988$).
+As mentioned in a footnote, we ran the norming studies in three batches using three slightly different procedures across conditions. We originally ran condition 0 (\emph{bare-might}) as a pilot condition. In the results, we noted that participants did not differ in their ratings depending on whether the girl asked for a blue or an orange gumball ($R^2(27)=0.997$ between mean ratings for blue and orange trials). To lower the number of trials, we therefore asked each participant to provide ratings for only one of the two colors (randomized across participants) for the next batch of conditions (conditions 1-14). We found that in some conditions, this led to small differences in ratings between participants who always rated utterances with \emph{blue} and participants who always rated utterances with \textit{orange} ($R^2(27)$ between $0.864$ and $0.984$). We hypothesize that this is a result of participants paying less attention if they were asked to do exactly the same task over and over again (in condition 0, the color and the associated utterances could change across trials). In order to verify the stability of our results, we replicated one of the conditions, condition 5 (\emph{might-probably}), and had participants provide two ratings for each color and gumball proportion. We found that despite the lower correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} in the original run ($R^2(27)=0.929$), there was a very high correlation between the average ratings independent of the color of the original study and the average ratings of the replication ($R^2(27)=0.975$), which suggests that the average ratings largely do not depend on whether we ask participants to provide ratings for both colors or just one color. Nevertheless, we used the modified procedure in which we asked participants to provide 2 ratings for each color and gumball proportion for the last batch of conditions (conditions 15-20). In all conditions in which we asked people to provide ratings for utterances with both colors, the correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} was almost perfect ($R^2(27)>0.988$).
 
-\subsection*{Additional pre-exposure ratings}
+\subsection*{Additional results from Eperiment~1.}
 
-\begin{figure}
+\begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_s1.pdf}
-\caption{Results of norming study -- Part 1. Error bars correspond to bootstrapped 95\%-confidence intervals. \label{fig:norming-results-1}}
+\caption{Results from Experiment~1 -- Part 1. Error bars correspond to bootstrapped 95\%-confidence intervals. \label{fig:norming-results-1}}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_s2.pdf}
-\caption{Results of norming study -- Part 2. Error bars correspond to bootstrapped 95\%-confidence intervals. \label{fig:norming-results-2}}
+\caption{Resultsfrom Experiment~1  -- Part 2. Error bars correspond to bootstrapped 95\%-confidence intervals. \label{fig:norming-results-2}}
 
 \end{figure}
 
-\begin{figure}
+\pagebreak
+
+\subsection*{Model implementation details}
+
+The model presented above poses some challenges for performing Bayesian data analysis with considerable amounts of data. 
+Concretely, the integral over threshold distributions in the expected pragmatic speaker model $ES_1$ (repeated here) makes it hard to compute 
+the distribution $ES_1$ given a set of parameters $\Theta$.
+
+$$ES_1\left(u_e \mid \phi \right) = \int P(c) \int_0^1 P(\theta) S_1\left(u _e\mid \phi, \theta, c\right) d\theta \  d c$$
+
+The reason for this is two-fold: First, there is no analytical solution for this integral, and second, since $S_1$ depends on
+thresholds for all uncertainty expressions $P(\Theta)$ is a multidimensional distribution which cannot be easily approximated.
+
+We solve this issue by introducing two approximations. First, we discretize the threshold distributions by distributing the probability mass
+of the Beta distributions across 20 equally-wide bins, resulting in a discrete probability distribution $P_{d}(\theta)$ (see \cite{Tessler2019} for a similar approach). Since all event probabilities for which participants had to provide ratings in the
+experiments were multiples of 5\%, we do not lose any accuracy and gain the advantage that we can now sum over a discrete probability space:\footnote{In our data analysis procedure, we assumed that the 
+distribution over cost functions, $P(c)$, is a delta distribution which assigns all probability mass to the condition-specific cost function 
+$c(u, \mathscr{C})$ parameterized by the cost parameter $\gamma$. Since this implies that $P(c)$ is zero for all other cost functions, we can omit the integral and replace $c$ 
+with the condition-specific cost function, which we implicitly did here.}
+$$ES_1\left(u_e \mid \phi \right) = \sum_{\theta} P_{d}(\theta) S_1\left(u _e\mid \phi, \theta, c\right)$$
+
+While this approximation can in theory be computed exactly, its computation remains intractable even 
+for the small number of utterances that we included in our model. Note that the discrete version of the
+vector of thresholds $\theta$ has one dimension with 20 possible values for each utterance, which implies
+there are $20^{|U|}$ possible assignments of $\theta$. This means for estimating parameters for 
+a model with 7 utterances, we would have to sum over $20^{7}=1.28 \times 10^9$ 
+parameterizations of the pragmatic speaker model $S_1$ to compute the likelihood for one 
+sample of parameters in the BDA. 
+
+We solve this problem through another approximation, which exploits the fact that 
+$S_1(u _e \mid \phi, \theta, c)$ only depends on the thresholds for uncertainty
+expressions other than $e$ for the normalization term. We approximate the normalization term by 
+marginalizing over $\theta_e'$ and thus making $S_1'$ independent of all thresholds except $\theta_e$:
+$$\widetilde{S_1}(u_e \mid \phi, \theta_e, c) = \frac{exp \ \mathbb{U}(\phi, u_e, \theta_e, c) } { exp \ \mathbb{U}(\phi, u_e, \theta_e, c) + 
+\sum_{u_e' \ne u_e}{ \sum_{\theta_{e'}} P_d(\theta_{e'}) \  exp \ \mathbb{U}(\phi, u_{e'}, \theta_{e'}, c) } }, $$
+where $\mathbb{U}(\phi, u_e, \theta_e, c) = \log L_0(\phi \mid u_e, \theta_e) - c(u) $ is the speaker utility as defined in the main text.
+
+This approximation allows us to define the following approximation of $ES_1$, which is tractable since we only have to sum over
+all values of one threshold instead of all combinations of thresholds:
+$$\widetilde{ES_1}(u_e \mid \phi) \propto  \sum_{\theta_e} P_{d}(\theta_e) \widetilde{S_1}\left(u _e\mid \phi, \theta_e, c\right)$$
+
+This approximation leads to identical results as $ES_1$ if each of threshold distributions assigns all probability mass to one value, 
+i.e., if we have point estimates for thresholds. To assess how much $ES_1$ and its apprimation, $\widetilde{ES_1}$ deviate when 
+the threshold distributions have non-zero variance, we performed several simulations, with different threshold distributions. For these
+simulations, we assume that there are only two possible utterances, which makes the computation of $ES_1$ tractable.
+
+
+
+\begin{figure}[bh!]
+\includegraphics[width=\textwidth]{plots/approx-simulations.pdf}
+\caption{Predictions of exact and approximate expected pragmatic speaker model for different combinations of thresholds. The leftmost panels (uniform) shows predictions of both models if both utterances have uniform threshold distributions. The other panels show model predictions under the assumption that the utterances have the threshold distributions that we inferred in Section~3. \label{fig:approx-simulations}}
+\end{figure}
+
+Figure~\ref{fig:approx-simulations} shows the results of these simulations. As these plots show, the approximate model $\widetilde{ES_1}$ is a very close approximation of the expected
+pragmatic speaker model $ES_1$, which suggests that this approximation should only minimally affect our modeling results. 
+
+\subsection*{Additional model predictions}
+
+
+\begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_model\string_s1.pdf}
 \caption{Model predictions and results from norming study -- Part 1. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-1}}
 
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_model\string_s2.pdf}
 \caption{Model predictions and results from norming study -- Part 2. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-2}}
 
@@ -1360,331 +1431,23 @@ as a categorical probability distribution over gumball machines given an utteran
 
 \subsubsection{Results and Discussion}
 
-\begin{figure}
+\begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/exp-2-ratings.pdf}
-\caption{Aggregated post-exposure ratings from Experiment~3.  \label{fig:adaptation-results-comp}}
+\caption{Aggregated post-exposure ratings from Experiment~3.  \label{fig:adaptation-results-comp-orig}}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
 \includegraphics[width=.75\textwidth]{plots/adaptation-diff-comprehension.png}
 \caption{Expected values for {\sc probably} and {\sc might} from Experiment~3.  \label{fig:adaptation-exp-comp}}
 \end{figure}
 
 
-Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$, see also Figure~\ref{fig:adaptation-exp-comp}) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$, see also Figure~\ref{fig:adaptation-exp-comp}) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
 These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
 
 
 
-%\section{Models}
-%
-%While the results of the two experiments suggest that there is considerable variation in the use of uncertainty expressions and that listeners can adapt their speaker expectations after listening to a speaker several times, the experimental results do not explain the adaptation process. We therefore also attempt to model participant behavior using a Bayesian cognitive model. In particular, we are investigating whether adaptation is a result of participants learning the speaker's  utterance {\bf preferences}, learning the speaker's {\bf meanings} of uncertainty expressions (i.e., which range of probabilities does an uncertainty expression map to in this specific context) or a combination of learning speaker {\bf preferences} and {\bf meanings}.
-%
-%\subsection{Overview}
-%
-%We model adaptation as Bayesian belief updates about the {\bf meanings} of uncertainty expressions and utterance {\bf preferences}. Formally, let $\Theta_S$ be the set of parameters that governs the meaning of uncertainty expressions used by speaker $S$ as well as the utterance preferences by $S$. We assume that a listener updates their beliefs about $\Theta_S$ after hearing a specific speaker produce utterances with uncertainty expressions along with observations that allow the listener to infer the probability of an event happening, i.e., after experiencing set $\mathscr{D}$ of $(u, \phi)$ observations, a listener updates their beliefs about $\Theta_S$\footnote{Similar models have also been proposed by \cite{Qing2013} and \cite{Hawkins2017} for adaptation to different uses of quantifiers and convention formation, respectively.}:
-%
-%$$P(\Theta_S \mid \mathscr{D}) \propto P(\Theta_S) P(\mathscr{D} \mid \Theta_S) = P(\Theta_S) {\textstyle \prod_{(u, \phi) \in \mathscr{D}} } S_1(u \mid \phi; \Theta_S).$$
-%
-%\noindent Here, we assume that the likelihood of the set of observations $\mathscr{D}$ is the likelihood of producing utterances $u$ given an event probability $\phi$ according to a speaker model $S_1$ parametrized by $\Theta_S$. We now discuss both this speaker model $S_1$ as well as the prior distribution $P(\Theta_S)$ in turn.
-%
-%\subsection{Speaker-specific production and comprehension model}
-%
-%We model production and comprehension within the Rational Speech Act (RSA) framework \parencite{XXX}. We follow previous work on uncertainty expressions \parencite{Lassiter2013,Herbstritt2017} and assume that uncertainty expressions have a threshold semantics, i.e., an utterance with an uncertainty expression  $u$  is semantically felicitous if it denotes a proposition that has probability $\phi$, which exceeds a threshold $\theta_u$:
-%
-%$$L_0(\phi \mid u, \theta_u) \propto P(\phi) \times \mathbbm{1}\left[\phi > \theta_u\right]$$ 
-%
-%A pragmatic speaker $S_1$ (our production model) then chooses her utterance to communicate that an event will happen with probability $\phi$ by soft-maximizing her speaker utility 
-%$$EU_S(\phi, u) =  \int_0^1 {P_S\left(\theta_U\right) \log L_0(\phi \mid u, \theta_u) d\theta - c_S(u) },$$ which is the difference of the negative surprisal of the listener and the speaker-specific utterance cost $c_S(u)$.  Here, we also assume that in choosing an utterance, a speaker samples a threshold $\theta_u$ from probability distributions $P_S\left(\theta_u\right)$ which represent $S_1$'s beliefs about reasonable thresholds.
-%
-%
-%$$S_1(u \mid \phi) \propto   \exp \lambda U_S\left(\phi, u \right),$$
-%
-%\noindent where $P_S(\theta) = \prod_{u \in U}P_S(\theta_u)$ and $\lambda$ is a rationality parameter which governs the optimality of the speaker choice. A pragmatic listener $L_1$ (our comprehension model)  interprets these utterances by reasoning about the speaker:
-%
-%$$L_1(\phi \mid u) \propto P(\phi) S_1(u \mid \phi).$$
-%
-%\noindent Our speaker-specific model crucially depends on two speaker-specific functions, namely the distributions over thresholds $P_S(\theta_u)$ and the cost function $c_S(u)$. We assume that each $P_S(\theta_u)$ follows a Beta distribution with parameters $\alpha_{Su}$ and $\beta_{Su}$. Beta distributions seem well-suited for two reasons: First, $\theta_u$ always has to be within the interval $[0,1]$, which is identical to the support of a Beta distribution, and second, Beta distributions can take many different shapes and we expect that for some uncertainty expressions, most of the probability mass is concentrated at one of the endpoints. For the cost function, we assume that a speaker's utterance cost is a constant depending on the uncertainty expression $c_S(u)=\gamma_{Su}$. The utterances that we are considering are all of approximately equal length, so we assume that the cost term primarily captures speaker preferences rather than processing costs. 
-%
-%\subsection{Priors}
-%
-%Adult listeners are experts in language use in their native language and hence we expect them to have very strong prior expectations on how speakers use language. We encode this prior knowledge in the prior $P(\Theta_S)$. We assume that this prior is the joint probability of all parameters in $\Theta_u$, which we assume to be independent. Beta distributions can be parametrized in numerous ways (see e.g., \cite{Kruschke2015}) which can make inference easier or harder  and avoid potentially degenerate solutions. For adaptation, we reparameterize the Beta distributions over thresholds $\theta_{Su}$ using the distribution mean $\mu= \frac{\alpha}{\alpha + \beta}$ and the population size parameter $\nu=\alpha + \beta$. We assume that the prior parameters follow the following distributions:
-%
-%$$\mu_u \sim \mbox{TruncatedNorm}(\mu_{\mu_u}, \sigma_{\mu_u}, 0, 1) \qquad \nu_u \sim \mbox{Log-Norm}(\mu_{\nu_u}, \sigma_{\nu_u}) $$
-%$$ \gamma_u \sim \mbox{Log-Norm}(\mu_{\gamma_u}, \sigma_{\gamma_u})$$
-%
-%$\mu_u$ always has to be within the interval $[0,1]$ and within that it seems to roughly follow a Normal distribution, therefore we opted for a truncated normal as a prior for these parameters. $\nu_u$ and $\gamma_u$ on the other hand, always have to be greater than 0 and a log-normal distribution seems to describe the distribution of parameters very well.
-%
-%\subsubsection{Mean estimation}
-%
-%We estimated the parameters for the prior as well as the rationality parameter $\lambda$ from the norming study using Bayesian data analysis. We treated each participants rating over utterances in a trial as a probability distribution over utterances given an event probability $\phi$ and we sampled 10 utterances from each of these distributions, resulting in a set $\mathscr{E}$ of utterance/probability pairs $(u, \phi)$. We then estimated the means of the prior distributions over parameters $\theta_S$, i.e., $\mu_{\mu_u}$, $\mu_{\nu_u} $  and $\mu_{\gamma_u}$ for each utterance $u$ by estimating the MAP values of the posterior distribution 
-%
-%$$P(\theta_S, \lambda \mid \mathscr{E}) = P(\theta_S, \lambda) P(\mathscr{E} \mid \theta_S, \lambda) = P(\theta_S, \lambda) \prod_{(u,\phi) \in \mathscr{E}} S_1'(u \mid \phi, \theta_S, \lambda).$$ 
-%
-%$S_1'$ is a modified version of the speaker-specific production model $S_1$ which makes a few additional assumptions with respect to the data collection.
-%
-%\begin{enumerate}
-%\item Instead of $c(u)$, we use a special condition-specific cost function:
-%$$
-%c(u, condition) = 
-%     \begin{cases}
-%       0 &\quad\text{if } u  \text{ is one of the utterances in } condition\\
-%       \gamma &\quad\text{otherwise} \\
-%     \end{cases}
-%$$
-%\item We include a noise term and we assume that in 5\% of the cases participants chose a random utterance.
-%\item We assume the set of possible utterances is comprised of the seven utterances with uncertainty expressions that we mentioned above, i.e., $U = \{$ {\sc bare}, {\sc might}, {\sc probably}, {\sc could}, {\sc think}, {\sc looks like}, {\sc bare not}$\}$
-%\item We assume that $$S_1'(\mbox{\textit{``other''}} \mid \phi, \mbox{condition}) \propto O + \sum_{u \in U \land u \not \in \mbox{condition}} S_1(u \mid \phi)$$
-%\item Speaker-specific parameters $\Theta_S$ are shared across all participants.
-%\end{enumerate}
-%
-%The rationale behind assumption (i) is that we only provide participants with two utterance choices and the blanket \emph{other} response in the norming study and therefore we expect that participants will be heavily primed to use the two provided utterances whenever they are semantically felicitous, which we can model with our condition-specific cost function. Also note that we assume that all utterances have the same cost  $\gamma$ if they are not part of the current condition. We made this choice based on the finding that the model tended to overfit the data when we allowed each of these parameters to vary independently, and as mentioned earlier, given that all the utterances have approximately the same length, we don't expect that participants have strong expectations about the preferences of a speaker a priori to encountering the actual speaker. 
-%
-%The rationale behind assumption (ii) is that as in any web-based experiment, we will have participants who make random choices, do not pay attention, or make mistakes, and we do not want that noise to influence our actual parameter estimation. This is in particular important for expressions that tend to have very high thresholds $\theta_u$. For example, a rational participant who pays attention is highly unlikely to assign a rating above 0 to the utterance ``You'll get a blue one'' if the objective probability of getting a blue gumball is 0\% and we want this to be reflected in our distribution $P\left(\theta_{\mbox{bare}}\right)$. However, if a few participants who either did not pay attention or made mistakes provide non-zero ratings for this utterance/probability combination, this could skew the threshold distribution considerably towards 0, which is something we want to avoid.
-%
-%The reason for assumption (iii) is that we only collected data for this set of utterances and that the RSA model the way we specified here requires a fixed set of utterances.
-%
-%Finally, in our experiments, participants cannot freely choose among all utterances that they would be able to produce in a more naturalistic setting. We therefore assume that they reason about other utterances which include the 5 utterances that were not part of the respective condition as well as other utterances that we are not even considering here. This is captured by the fact that we are summing over all the other utterances and an inferred constant $O$, which is intended to capture the probability of all utterances that we didn't consider in any of the conditions.
-%
-%
-%
-%\subsubsection{Variance estimation}
-%
-%\subsubsection{Implementation details}
-%
-%We implemented the model in Python using {\tt numpy} and {\tt scikit-learn} libraries. We used MCMC with the  Metropolis-Hastings algorithm. For the MAP estimation, we collected 100,000 MCMC samples after discarding the first 20,000 burn-in samples. This samples were obtained by collecting  a sample at every 10th iteration (i.e., we used thinning of 10). For the bootstrapping procedure, we collected 20,000 MCMC samples of each run and discarded the first 10,000 burn-in samples. Again, we thinned the chain by collecting samples at every 10th iteration. 
-%
-%We used the following proposal distributions for the various parameters:
-%
-%$$\alpha_u^{(t)} \sim \mbox{Log-Norm}(\alpha_u^{(t-1)}, XXX) $$
-%$$\beta_u^{(t)} \sim \mbox{Log-Norm}(\beta_u^{(t-1)}, XXX)  $$
-%$$\gamma^{(t)} \sim \mbox{Log-Norm}(\gamma^{(t-1)}, XXX)$$
-%$$\lambda^{(t)} \sim \mbox{Uniform}(\lambda^{(t-1)}-XXX, (\lambda^{(t-1)}+XXX)$$
-%
-%
-%Uninformed priors. 
-%
-%\subsubsection{Inferred parameters}
-%
-%\subsubsection{Model predictions and criticism}
-%
-%
-%
-%\subsection{Pre-test experiment}
-%
-%\subsubsection{Model}
-%
-%We model the process that leads to the experimental results in the pre-test experiment as a speaker model ($S_1$) in the Rational Speech Acts framework \parencite{RSA}. We assume that participants take the role of a generic speaker but given that they reason about a non-specific speaker, participants have some uncertainty about the speaker's language use.
-%
-%Within the RSA framework, a pragmatic speaker reasons about a literal listener ($L_0$). In the context of our experiment, we define the following literal listener in a similar vain as Lassiter and Goodman (2015) and Herbstritt and Franke (2017). 
-%$$L_0(\phi \mid u; \theta) \propto P(\phi) \left( {0.95} \times \mathbbm{1}[\phi > \theta_{u}] + 0.05 * P_{uniform}(\phi; 0,1) \right)$$
-%
-%The literal listener tries to infer the probability $\phi$ of an event happening (in our case, the probability of getting a blue gumball) from an utterance with an uncertainty expression $u$. We assume that for each uncertainty expression, there is some threshold $\theta_u$ such that $u$ is semantically felicitous if  $\phi$ is above this threshold. We assume that the prior $P(\phi)$ is uniform. Given that we are dealing with noisy experimental data, we also include a noise term of the form $0.05 * P_{uniform}(\phi; 0,1)$, which allows for random inferences in 5\% of the cases. 
-%
-%\vspace{1em}
-%
-%\textbf{Q:} Is this a reasonable way to model noise?
-%
-%\vspace{1em}
-%
-%
-%We assume that each uncertainty expression has its own threshold, except for the negated version of the bare statement, which we assume to be true if $\phi$ is less than $1-\theta_{bare}$ (Herbstritt and Franke, 2017).
-%
-%Given this literal listener, a pragmatic speaker $S_1$, tries to maximize the listener's utility when choosing an utterance to communicate the probability $\phi$. We assume that a speaker chooses among the 6 utterances that were used across the 15 conditions and the the negated version of the bare statement, i.e., \textit{"You won't get a blue one"}.
-%$$S_1( u \mid \phi, condition; \theta ) \propto exp \left(\lambda \left( \log P_L(\phi \mid u; \theta) - c(u, condition) \right) \right) $$
-%
-%Following the vanilla RSA model, we define the utility as the negative surprisal subtracted by the cost of the utterance. Given our experimental setting in which we ask participants to choose between two given utterances and \textit{other}, we use the following cost function, which depends on the experimental condition.
-%$$
-%c(u, condition) = 
-%     \begin{cases}
-%       0 &\quad\text{if } u  \text{ is one of the utterances in } condition\\
-%       c_{u} &\quad\text{otherwise} \\
-%     \end{cases}
-%$$
-%
-%The motivation here is that participants will be primed to use the two given utterances, which is reflected in the lower cost.
-%
-%The $S_1$ model that we presented here is still parameterized by a set of thresholds $\theta$. Considering the variation in use of uncertainty expressions, participants seem to show uncertainty about how a generic speaker would set $\theta$ for the individual uncertainty expressions. We therefore assume that participants come with a prior over reasonable thresholds and given that they are asked to reason about an unknown speaker, they marginalize over this prior to derive the distribution over utterances, which results in the following revised speaker model.
-%
-%$$P_S(u \mid \phi, condition) \propto \int P(\theta) exp\left(\lambda  \left(\log P_L(\phi \mid u; \theta) - c(u, condition)\right)\right) d\theta $$
-%
-%\subsubsection{Parameter estimation}
-%
-%the model has 14 parameters, namely 6 prior distributions over thresholds $P(\theta_u)$, 7 cost terms $c_u$, and the rationality parameter $\alpha$, which we all estimate from the experimental data. For the prior distributions $P(\theta_u)$, we assume that these follow a beta distribution parametrized by $\alpha_u$ and $\beta_u$ (Qing (2014) made similar assumptions for modeling the use of \textit{some} and \textit{many}). There are two main reasons for choosing a beta distribution: First, its range is from 0 to 1, and given that $\theta$ defines a threshold parameter for a probability, this matches exactly the reasonable interval for the thresholds. Second, the beta distribution can take very different shapes and therefore we are not making the assumption that all of the prior distributions over thresholds have a similar shape.
-%
-%To facilitate computations, we discretize our speaker and listener model as well as the priors over thresholds and infer these distributions by enumerating all possibilities. To estimate the model parameters, we run MCMC with 8,000 burn-in samples and 12,000 samples.\footnote{Note that this does not seem to be enough samples yet as 3 different runs still lead to varying results and don't pass the criterion by Gelman and Rubin (1992). I'm currently running the model again with 100,000 samples, which will hopefully be enough for stable parameter estimates.} 
-%
-%We sample parameters from the following distributions.
-%
-%$$\alpha_u, \beta_u \sim Uniform(0,30)$$
-%$$c_u\sim Uniform(0,5)$$
-%$$\lambda \sim Uniform(0.1,3)$$
-%
-%We then estimate the parameters by computing the distributions over parameters given the experimental data across all 15 conditions $\mathscr{D}$.
-%
-%\begin{align*}
-%P(\alpha,\beta, c, \lambda \mid \mathscr{D}) &\propto P(\alpha, \beta, c, \lambda) P(\mathscr{D} \mid \alpha,\beta, c, \lambda) \\
-%&= P(\alpha, \beta, c, \lambda) \prod_{d \in \mathscr{D}} P_S(u_d \mid \phi_d, condition_d; \alpha, \beta, c, \lambda)
-%\end{align*}
-%
-%Note that for each probability $\phi$, participants provided a distribution over utterances and not actual samples of utterances given $\phi$. For each trial in which a participant provided a distribution over utterances, we therefore sampled 10 utterances from this distribution and combined all of these samples to form the data $\mathscr{D}$ from which we estimated the parameters of the model.
-%
-%For each parameter, we take the median of the 12,000 MCMC samples and use these parameter estimates for making model predictions.
-%
-%
-%\subsubsection{Model predictions}
-%
-%The following plots show the experimental results (left) and the model predictions (middle) for several (representative) conditions.\footnote{See \url{https://github.com/sebschu/adaptation/blob/master/models/1_threshold_modals/prediction_model.html} for results for all 15 conditions.}
-%
-%\begin{center}
-%\includegraphics[width=\textwidth]{plots/bare-might-predictions.png} \\
-%bare (red) - might (green) condition
-%
-%\vspace{2em}
-%
-%\includegraphics[width=\textwidth]{plots/bare-probably-predictions.png} \\
-%bare (red) - probably (green) condition
-%
-%\vspace{2em}
-%
-%
-%\includegraphics[width=\textwidth]{plots/might-probably-predictions.png}
-%
-%might (red) - probably (green) condition
-%
-%\vspace{2em}
-%
-%
-%\includegraphics[width=\textwidth]{plots/probably-think-predictions.png}
-%
-%probably (red) - think (green) condition
-%
-%\vspace{2em}
-%
-%
-%\includegraphics[width=\textwidth]{plots/might-could-predictions.png}
-%
-%might (red) - could (green) condition
-%
-%\vspace{2em}
-%
-%
-%\end{center}
-%
-%In general, the model predicts the average participant responses very well -- in particular in cases in which there are clear contrasts between the utterances (e.g., here in the bare-might, bare-probably, and might-probably conditions). When the two utterances can be used for similar probability ranges (e.g., in the probably-think and the might-could condition), the model deviates a bit more from the experimental data (presumably because there are no clear differences between these two utterances in this context). A second issue with the model seems to be that in some conditions, participants seem to be more rational than the model estimates would suggest. For example, in the might-probably condition, the empirical ratings for \textit{probably} are higher than the predicted ratings.
-%
-%We also validated the model through cross-validation. In the above figures, the right-most plot shows the model predictions if we estimate model parameters on all conditions except for the one that we are predicting. For example, the right plot for the bare-might condition shows the predictions for this condition if we estimate the parameters using the experimental data from the 14 other conditions. Overall, the predictions with the held-out training data are almost as good as the predictions of the model trained on all the data, which suggests that this is reasonable model for predicting participant's behavior.
-%
-%One of the advantages of explicitly modeling participants' behavior as a Bayesian model is that we can also inspect the individual parameters, such as the distributions over thresholds $P(\theta_u)$. The following six plots show the estimated $P(\theta_u)$ for the six utterances that we included in our experiments.
-%
-%\includegraphics[width=\textwidth]{plots/threshold-distrs.png}
-%
-%\vspace{2em}
-%
-%Qualitatively, these estimated distributions are very much in line with semantic theories of modals (e.g., Kratzer (1991)): The  distributions for the thresholds for the possibility  modals \textit{might} and \textit{could} assign most of the probability mass to values slightly above 0; for bare statements most of the probability mass is close to 1 and for \textit{probably}, most of the probability mass is slightly above 0.5. The other two expressions, \textit{think} and \textit{looks like}, have--at least in this context--similar meanings as \textit{probably}. Furthermore, these results are also in line with recent experimental results by Pogue and Tanenhaus (submitted), who explicitly asked participants to rate how much certainty a speaker using these expressions conveyed.
-%
-%
-%
-%
-%\subsection{Adaptation model}
-%
-%\subsubsection{Model and estimation}
-%
-%We model the adaptation process as participants  a) gaining certainty about the threshold distribution that a speaker uses and b) updating the cost parameters for the individual utterances. Our main interest is in how participants update their beliefs about the thresholds for a given speaker but considering that the speaker in the exposure trials only uses \textit{might}, \textit{probably} and bare utterances, the exposure phase also suggests to participants that the speaker has a preference for these utterances over other utterances, which we can explicitly model by allowing the adaptation model to change the cost terms for different utterances. For the exposure phase, we assume that the cost of an utterance is always $c_u$ because are not presented with alternative utterances.
-%
-%\vspace{1em}
-%
-%\textbf{Q:} Is this a reasonable argument for/the right way of changing the cost structure during the exposure phase?
-%
-%\vspace{1em}
-%
-%
-%We assume that participants are doing Bayesian belief updates when they observe utterances during the exposure trials (similarly as Qing (2014) for his model of quantifier adaptation).
-%
-%\begin{align*}
-%P(\theta, c \mid \mathscr{D}) &\propto P(\theta, c) P(\mathscr{D} \mid c, \theta)  \\
-%& = P(\theta, c) \prod_{d \in \mathscr{D}} P_S(u_d \mid \phi_d; c, \theta)
-%\end{align*}
-%
-%For the priors over thresholds $P(\theta_u)$, we take the priors that we estimated from the pre-test experimental data. For the costs, we sample from a normal distribution with $\mu=c_u$ (also estimated from the pre-test experimental data) and $\sigma=2$. The data  $\mathscr{D}$ are the 20 utterances that participants hear during the exposure phase. 
-%
-%\subsubsection{Model predictions}
-%
-%
-%Participants performed the same task as in the \textit{might-probably} condition of the pre-test experiment after the exposure phase. We use the same model as in the pre-test experiment to predict participants' ratings for the utterances \textit{might} and \textit{probably} except that we are using the updated cost parameters and priors over thresholds. We use the same cost function as in the pre-test experiment, i.e., we assume that the cost for the two given utterances \textit{might} and \textit{probably} is 0.
-%
-%The following plots compare the post-exposure experimental results to the predicted ratings of the model for the two adaptation conditions.
-%
-%
-%\begin{center}
-%\includegraphics[width=\textwidth]{plots/adaptation-results.png}
-%
-%Experimental and predicted ratings for might (red), probably (green) and other (blue) for participants in the two adaptation conditions.
-%
-%\vspace{2em}
-%\end{center}
-%
-%As these figures show, the model matches more or less the experimental results. In the probably-biased condition the model predicts that the curves cross at around 55\% of blue gumballs, which is what we observed in the data and similarly, the predicted and the actual point of intersection of the two curves in the might-biased condition are at around 65\%. However, the issue of too low ratings for \textit{probably} and the bare utterances that we already observed in the pre-test experiment, seems to be even stronger here. This effect could be lowered by increasing the rationality parameter $\lambda$ but it is not clear why people would be more rational in the adaptation experiment than they were in the pre-test experiment.
-%
-%Alternatively, we could consider using a different literal listener which does not assign a uniform probability to all event probabilities $\phi$ if they are above $\theta_u$. But again, it is unclear what these distributions would look like.
-%
-%As in the pre-test experiment, we can again look at the posterior distribution of $P(\theta)$ and the cost parameters for the two conditions.
-%
-%
-%\begin{center}
-%\includegraphics[width=0.9\textwidth]{plots/probably-biased-threshold-posterior.png}
-%
-%Posterior distributions over threshold parameters $\theta$ in the \textbf{probably-biased} condition.
-%\end{center}
-%
-%\begin{center}
-%\includegraphics[width=0.9\textwidth]{plots/might-biased-threshold-posterior.png}
-%
-%Posterior distributions over threshold parameters $\theta$ in the \textbf{might-biased} condition.
-%\vspace{2em}
-%\end{center}
-%
-%These plots suggest that the distributions over thresholds for the three utterances that do not appear in the exposure phase remain fairly broad and match to a large extent the prior distributions.
-%This suggests that participants are not updating their beliefs about the use of these expressions, which is expected given that they do not see any evidence for the use of these expressions. 
-%
-%\vspace{1em}
-%\textbf{Note:} Would be interesting to collect post-exposure ratings for e.g., the pair \textit{could} and \textit{looks like} and see if these things remain more or less unchanged.
-%\vspace{1em}
-%
-%The distributions over thresholds for bare utterances, \textit{might} and \textit{probably}, on the other hand, differ considerably across the two conditions and are overall much narrower. In the \textit{probably-biased} condition, 
-%the model infers that the threshold should be at or slightly below 60\%, and the threshold for \textit{might} should be somewhere between 5 and 25\%.
-%
-%In the \textit{might-biased} condition, the distribution of $\theta_{might}$ has a slightly longer tail but overall still assumes that the threshold is low.  The distribution of $\theta_{probably}$ in this condition, is shifted to the right with the most likely threshold being at 65\% and given that the speaker in this condition always uses \textit{probably} to refer to events which are 90\% likely to happen, the distribution for $\theta_{bare}$ is also shifted to the right and much narrower. 
-%
-%Overall, these thresholds seem very reasonable and what is noteworthy is that the model still assigns a high probability to utterances with \textit{might} to describe events whose probability of happening is low despite the fact that participants only observe \textit{might} being used to describe  events with a probability of happening of 60\%.
-
-
-%\section{Future directions/TODOs}
-%
-%{\bf Short-term things:}
-%
-%\begin{itemize}
-%\item The bootstrapping procedure to estimate the variance of all $\Theta_S$ parameters potentially leads to too high estimates for the variance. One should try to turn this into a hierarchical model which puts a prior on the overall variance.
-%\item We assume right now that the comprehension model should be an $L_1$ and the production model should be an $S_1$. One could also imagine that the production model should be an $S_2$. Investigate this hypothesis (in particular in light of the newly collected comprehension norming study.)
-%\item Try estimating the means and variance of the hierarchical model for the Beta distributions using the mean and $nu$ parameterization -- potentially more stable than $\alpha/\beta$ parameterization.
-%\item Run experiment with equal number of {\sc might} and {\sc probably} utterances to rule out only priming.
-%\item Figure out if there is a way to include an ``adaptation rate''  parameter, similar to Roettger and Franke (unpublished)
-%\item Try to investigate whether it's actually linguistic adaptation or rather inference of some higher-level goal (e.g., not wanting to upset the girl).
-%\end{itemize}
-%
-%{\bf Long-term things:}
-%\begin{itemize}
-%\item Run experiments with multiple speakers.
-%\item Run post-exposure phase with utterances that were not part in exposure (e.g., \emph{could}, \emph{looks like}). What changes about these? What does the model predict?
-%\item Run experiment where the speaker uses semantically very similar items (e.g., \emph{probably} and \emph{think}) differently. Do participants also learn these differences?
-%\item Run norming study  -- exposure -- prior elicitation -- production post-exposure -- comprehension post-exposure -- to verify model on individual participant level.
-%\item Implement hierarchical model which can explain adaptation to multiple speakers.
-%\item Consider adaptation to speakers with accents -- one potential way to model this would be to model these speakers as having more noise. This would predict that people rely more on their priors and adapt slower. (Also compare this to Gibson et al. (2017).)
-%\item Consider generalizations of adaptation: Does adapting to one female speaker skew expectations more to other female speaker than to other male speaker? And vice versa? What about accents? Is this at all a function of similarity in speech (e.g., as discussed in Kraljic (2015) or Johnson (2006)).
-%\item come up with paradigm where people only get indirect feedback (i.e, did something happen or not, maybe some betting game).
-%
-%\end{itemize}
 
 
 
