@@ -528,7 +528,6 @@ cost_plot = mle_params %>%
   mutate(Parameter = factor(gsub("cost_", "", Parameter), levels=modals, labels= modals_labels, ordered=TRUE)) %>%
   ggplot(aes(fill=condition, color=condition, y=log(value), x=Parameter)) +
     geom_bar(stat="identity", position = "dodge") +
-    geom_point(aes(fill=condition), position = position_dodge(width = 0.9), size=4, pch=21, color="#666666") + 
     xlab("") + 
     ylab("log cost") +
   theme(strip.text.x = element_text(size = 14), 
@@ -724,12 +723,19 @@ mle_params = mle_params %>% gather(key="Parameter", value="value", -condition)
 cost_plot = mle_params %>% 
   filter(grepl("cost_", Parameter)) %>%
   mutate(Parameter = factor(gsub("cost_", "", Parameter), levels=modals, labels= modals_labels, ordered=TRUE)) %>%
-  ggplot(aes(fill=condition, y=log(value), x=Parameter)) +
+  ggplot(aes(fill=condition, color=condition, y=log(value), x=Parameter)) +
   geom_bar(stat="identity", position = "dodge") +
   xlab("") + 
   ylab("log cost") +
-  theme(legend.position = "bottom") +
-  guides(col=guide_legend(title="Condition", nrow = 1)) 
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        legend.position = "bottom") +
+  guides(fill=guide_legend(title="Condition", nrow = 1, override.aes = list(col="#999999", size=0.1)), col= "none", pch="none") +
+  cond_colscale +
+  cond_colscale_fill
 
 ggsave(cost_plot, filename = "../plots/adaptation-posterior-costs-replication.pdf", width = 15, height = 12, units = "cm")
 

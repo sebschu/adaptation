@@ -14,6 +14,7 @@
 \usepackage{mathrsfs}  
 \usepackage{bbm}
  \usepackage{relsize}
+ \usepackage[section]{placeins}
 
 
 
@@ -37,7 +38,7 @@
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcommand{\possessivecite}[1]{\textciteauthor{#1}'s (\textciteyear{#1})}
 \renewcommand{\exp}{\text{exp }}
-
+%\renewcommand{\baselinestretch}{1}
 
 
 \definecolor{PinkyPurple}{RGB}{178,0,178}
@@ -867,7 +868,19 @@ We modeled the prior over cost parameters  as a log-normal distribution centered
 
 Each of these prior structures corresponds to a different hypothesis about which expectations listeners update during adaptation. For comparison, we also considered a baseline in which none of the parameters are updated during adaptation (the {\it fixed} prior structure). To adjudicate between these three hypotheses, we ran simulations of the adaptation process for both the (\textit{cautious speaker} and \textit{confident speaker}) conditions with different prior structures and compared the models in terms of their likelihood of generating the experimental data. During each simulation, we performed Bayesian inference to infer the posterior parameter distribution after observing the 20 data points that participants observed in the exposure phase (see Table~\ref{tbl:materials} for an overview of the 20 utterances in the two conditions). We performed inference using MCMC with a Metropolis-Hastings sampler. We used thinning of 10, discarded the first 2,000 burn-in samples and collected 10,000 samples from each of the two chains.
 
-The prior distributions over the different parameters that may be updated during the adaptation simulations are all parameterized by two constants which govern their mean and their variance. The first set of parameters (the mean of the log-normal and truncated normal distributions; the location parameter of the exponential distributions) was given by the estimates from fitting the model to the norming data. The second set of parameters (the variance of the log-normal and truncated normal distributions; the scale parameter of the exponential distributions) was treated as hyperparameters of the simulations. To keep the model as simple as possible, we only used three hyperparameters in total: a variance parameter for the cost for all expressions; a variance parameter for the mean of the threshold distributions for all utterances; and a scale parameter for the prior over population parameters for all utterances. We optimized these three parameters through a Bayesian hyperparameter search on the adaptation data, which provided us with a distribution over hyperparameter values. Considering that each simulation is computationally expensive, we could only test a few hundred hyperparameter combinations, which are listed in \todo{Table~XXX}.\jd{i think this table could just go in supp materials, no?} We found that the resulting distributions were highly peaked and therefore, we used only the maximum a posteriori estimates of the hyperparameters (also shown in \todo{Table~XXX}) for the model comparisons below.
+\begin{table}
+\center
+\begin{tabular}{l | c | c | c  }
+ & Range &  Step size & MAP value  \\ \midrule
+Variance for $\mu$ & [0.025,0.2] & 0.025 & 0.175  \\
+Scale for $\nu$  & [0.5,3.5]  & 0.5   & 2.5  \\
+Variance for cost & [0.1,1.5] & 0.2 & 1.3  \\
+\end{tabular}
+\caption{Explored hyperparameter ranges for variance parameters, and inferred MAP values, which were used in the adaptation simulations.  \label{tbl:hyperparams}}
+\end{table}
+
+
+The prior distributions over the different parameters that may be updated during the adaptation simulations are all parameterized by two constants which govern their mean and their variance. The first set of parameters (the mean of the log-normal and truncated normal distributions; the location parameter of the exponential distributions) was given by the estimates from fitting the model to the norming data. The second set of parameters (the variance of the log-normal and truncated normal distributions; the scale parameter of the exponential distributions) was treated as hyperparameters of the simulations. To keep the model as simple as possible, we only used three hyperparameters in total: a variance parameter for the cost for all expressions; a variance parameter for the mean of the threshold distributions for all utterances; and a scale parameter for the prior over population parameters for all utterances. We optimized these three parameters through a Bayesian hyperparameter search on the adaptation data, which provided us with a distribution over hyperparameter values. Considering that each simulation is computationally expensive, we could only test a few hundred hyperparameter combinations, which are listed in Table~\ref{tbl:hyperparams}. We found that the resulting distributions were highly peaked and therefore, we used only the maximum a posteriori estimates of the hyperparameters (also shown in Table~\ref{tbl:hyperparams}) for the model comparisons below.
 
 
 \subsection{Model comparisons}
@@ -1013,7 +1026,7 @@ are in part a result of updated threshold distributions for \textit{might} and \
 \center
   \includegraphics[width=0.5\textwidth]{plots/adaptation-posterior-costs.pdf}
   \caption{Post-adaptation $log$ cost values from simulations for Experiment~2a. Note that the cost of \textsc{might} and \textsc{probably} 
-  in the norming data model was 1 and therefore the $log$ cost for these utterances is 0. \jd{what do the dots mean in this plot?} \label{fig:post-exposure-costs}}
+  in the norming data model was 1 and therefore the $log$ cost for these utterances is 0. \label{fig:post-exposure-costs}}
 \end{figure}
 
 Figure~\ref{fig:post-exposure-costs} shows that the costs of the \textsc{might}, \textsc{probably} and
@@ -1312,14 +1325,23 @@ preferences.
 
 \printbibliography
 
+\pagebreak
 
-\section*{Supplementary material}
 
-\subsection*{Effect of color in norming study}
+\section*{Appendix}
+
+\subsection*{A Effect of color in norming study}
 
 As mentioned in a footnote, we ran the norming studies in three batches using three slightly different procedures across conditions. We originally ran condition 0 (\emph{bare-might}) as a pilot condition. In the results, we noted that participants did not differ in their ratings depending on whether the girl asked for a blue or an orange gumball ($R^2(27)=0.997$ between mean ratings for blue and orange trials). To lower the number of trials, we therefore asked each participant to provide ratings for only one of the two colors (randomized across participants) for the next batch of conditions (conditions 1-14). We found that in some conditions, this led to small differences in ratings between participants who always rated utterances with \emph{blue} and participants who always rated utterances with \textit{orange} ($R^2(27)$ between $0.864$ and $0.984$). We hypothesize that this is a result of participants paying less attention if they were asked to do exactly the same task over and over again (in condition 0, the color and the associated utterances could change across trials). In order to verify the stability of our results, we replicated one of the conditions, condition 5 (\emph{might-probably}), and had participants provide two ratings for each color and gumball proportion. We found that despite the lower correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} in the original run ($R^2(27)=0.929$), there was a very high correlation between the average ratings independent of the color of the original study and the average ratings of the replication ($R^2(27)=0.975$), which suggests that the average ratings largely do not depend on whether we ask participants to provide ratings for both colors or just one color. Nevertheless, we used the modified procedure in which we asked participants to provide 2 ratings for each color and gumball proportion for the last batch of conditions (conditions 15-20). In all conditions in which we asked people to provide ratings for utterances with both colors, the correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} was almost perfect ($R^2(27)>0.988$).
 
-\subsection*{Additional results from Eperiment~1.}
+
+\pagebreak
+\FloatBarrier
+
+
+\subsection*{B Additional results from Eperiment~1.}
+
+Figures~\ref{fig:norming-results-1} and Figures~\ref{fig:norming-results-2} show the results from all conditions in Experiment~1. 
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_s1.pdf}
@@ -1329,12 +1351,15 @@ As mentioned in a footnote, we ran the norming studies in three batches using th
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/pre\string_test\string_s2.pdf}
 \caption{Resultsfrom Experiment~1  -- Part 2. Error bars correspond to bootstrapped 95\%-confidence intervals. \label{fig:norming-results-2}}
+\vspace{4cm}
 
 \end{figure}
 
-\pagebreak
 
-\subsection*{Model implementation details}
+\pagebreak
+\FloatBarrier
+
+\subsection*{C Model implementation details}
 
 The model presented above poses some challenges for performing Bayesian data analysis with considerable amounts of data. 
 Concretely, the integral over threshold distributions in the expected pragmatic speaker model $ES_1$ (repeated here) makes it hard to compute 
@@ -1369,41 +1394,76 @@ $$\widetilde{S_1}(u_e \mid \phi, \theta_e, c) = \frac{exp \ \mathbb{U}(\phi, u_e
 \sum_{u_e' \ne u_e}{ \sum_{\theta_{e'}} P_d(\theta_{e'}) \  exp \ \mathbb{U}(\phi, u_{e'}, \theta_{e'}, c) } }, $$
 where $\mathbb{U}(\phi, u_e, \theta_e, c) = \log L_0(\phi \mid u_e, \theta_e) - c(u) $ is the speaker utility as defined in the main text.
 
+
+
 This approximation allows us to define the following approximation of $ES_1$, which is tractable since we only have to sum over
 all values of one threshold instead of all combinations of thresholds:
 $$\widetilde{ES_1}(u_e \mid \phi) \propto  \sum_{\theta_e} P_{d}(\theta_e) \widetilde{S_1}\left(u _e\mid \phi, \theta_e, c\right)$$
 
-This approximation leads to identical results as $ES_1$ if each of threshold distributions assigns all probability mass to one value, 
-i.e., if we have point estimates for thresholds. To assess how much $ES_1$ and its apprimation, $\widetilde{ES_1}$ deviate when 
+\begin{figure}[h!]
+\includegraphics[width=\textwidth]{plots/approx-simulations.pdf}
+\caption{Predictions of exact and approximate expected pragmatic speaker model for different combinations of thresholds. The leftmost panels (uniform) shows predictions of both models if both utterances have uniform threshold distributions, i.e., threshold distributions with very high variance. The other panels show model predictions under the assumption that the utterances have the threshold distributions that we inferred in Section~3. \label{fig:approx-simulations}}
+\end{figure}
+
+This approximation leads to identical results as $ES_1$ if each threshold distributions assigns all probability mass to one value, 
+i.e., if we have point estimates for thresholds. To assess how much $ES_1$ and its approximation, $\widetilde{ES_1}$ deviate when 
 the threshold distributions have non-zero variance, we performed several simulations, with different threshold distributions. For these
 simulations, we assume that there are only two possible utterances, which makes the computation of $ES_1$ tractable.
-
-
-
-\begin{figure}[bh!]
-\includegraphics[width=\textwidth]{plots/approx-simulations.pdf}
-\caption{Predictions of exact and approximate expected pragmatic speaker model for different combinations of thresholds. The leftmost panels (uniform) shows predictions of both models if both utterances have uniform threshold distributions. The other panels show model predictions under the assumption that the utterances have the threshold distributions that we inferred in Section~3. \label{fig:approx-simulations}}
-\end{figure}
 
 Figure~\ref{fig:approx-simulations} shows the results of these simulations. As these plots show, the approximate model $\widetilde{ES_1}$ is a very close approximation of the expected
 pragmatic speaker model $ES_1$, which suggests that this approximation should only minimally affect our modeling results. 
 
-\subsection*{Additional model predictions}
+\pagebreak
 
+\subsection*{D Additional model predictions}
+
+Figures~\ref{fig:norming-results-model-1} and Figures~\ref{fig:norming-results-model-2} show the model predictions and the results from all conditions in Experiment~1. 
 
 \begin{figure}[h!]
-\includegraphics[width=\textwidth]{plots/pre\string_test\string_model\string_s1.pdf}
-\caption{Model predictions and results from norming study -- Part 1. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-1}}
+\includegraphics[width=0.95\textwidth]{plots/pre\string_test\string_model\string_s1.pdf}
+\caption{Model predictions and results from Experiment~1 -- Part 1. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-1}}
 
 \end{figure}
 
 \begin{figure}[h!]
-\includegraphics[width=\textwidth]{plots/pre\string_test\string_model\string_s2.pdf}
-\caption{Model predictions and results from norming study -- Part 2. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-2}}
+\includegraphics[width=0.95\textwidth]{plots/pre\string_test\string_model\string_s2.pdf}
+\caption{Model predictions and results from Experiment~1  -- Part 2. Error bars correspond to 95\% high density intervals (model predictions) and bootstrapped 95\%-confidence intervals (observed results). \label{fig:norming-results-model-2}}
 
 \end{figure}
 
-\subsection*{Original interpretation experiment}
+\pagebreak
+\FloatBarrier
+
+
+\subsection*{E Model simulations for Experiment~2b}
+
+Figures~\ref{fig:post-exposure-model-replication}, \ref{fig:post-exposure-thresholds-replication}, and \ref{fig:post-exposure-costs-replication} show the posterior predictions
+of the model simulations for Experiment 2b, the post-adaptation threshold distributions, and the post-adaptation costs, respectively. 
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{plots/adaptation-posterior-predictions-replication.pdf}
+  \caption{Post-adaptation model predictions from simulations for Experiment~2b and experimental results. 
+  The solid lines shows the mean model predictions and the thin lines around the mean show the distribution of model predictions. \label{fig:post-exposure-model-replication}}
+\end{figure}
+
+\begin{figure}[h!]
+  \includegraphics[width=\textwidth]{plots/adaptation-posterior-thresholds-replication.pdf}
+  \caption{Post-adaptation threshold distributions from the simulations for Experiment~2b. \label{fig:post-exposure-thresholds-replication}}
+\end{figure}
+
+\begin{figure}[h!]
+\center
+  \includegraphics[width=0.5\textwidth]{plots/adaptation-posterior-costs-replication.pdf}
+  \caption{Post-adaptation $log$ cost values from simulations for Experiment~2b. Note that the cost of \textsc{might} and \textsc{probably} 
+  in the norming data model was 1 and therefore the $log$ cost for these utterances is 0.  \label{fig:post-exposure-costs-replication}}
+\end{figure}
+
+\pagebreak
+\FloatBarrier
+
+
+
+\subsection*{F Original interpretation experiment}
 
 \todo{Revise this section}
 
@@ -1436,13 +1496,7 @@ as a categorical probability distribution over gumball machines given an utteran
 \caption{Aggregated post-exposure ratings from Experiment~3.  \label{fig:adaptation-results-comp-orig}}
 \end{figure}
 
-\begin{figure}[h!]
-\includegraphics[width=.75\textwidth]{plots/adaptation-diff-comprehension.png}
-\caption{Expected values for {\sc probably} and {\sc might} from Experiment~3.  \label{fig:adaptation-exp-comp}}
-\end{figure}
-
-
-Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$, see also Figure~\ref{fig:adaptation-exp-comp}) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
 These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
 
