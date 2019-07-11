@@ -83,18 +83,28 @@ Correspondence concerning this article should be addressed to Sebastian Schuster
 Linguistics, Stanford University, 450 Serra Mall, Stanford, CA 94305. E-mail:
 sebschu@stanford.edu.}
 \abstract{
-
-why adaptation
-
-what do we find experimentally
-
-main modeling question
-
-what do we find
-
-what do we conlcue
-
+Pragmatic theories of interpreting utterances in context generally make
+the assumption that listeners reason about alternative utterances that a
+speaker could have said to describe different situations. Such reasoning
+necessitates precise expectations about a speaker's productions
+in different contexts, which is at odds with the considerable variability across speakers that 
+exists at all levels of linguistic representation. Listeners seem reconcile
+this tension by adapting to the statistics of an individual speaker. In this work,
+we investigate this kind of semantic/pragmatic adaptation in the domain of
+uncertainty expressions like \textit{might} and \textit{probably}. In a series 
+of web-based experiments, we find 1) that listeners vary in their expectations
+about a generic speaker's use of uncertainty expressions; 2) that listeners
+rapidly update their expectations about the use of uncertainty expressions after
+brief exposure to a speaker with a specific usage of uncertainty expressions; 
+and 3) that listeners interpretations of uncertainty expressions
+change after being exposed to a specific speaker. We further investigate,
+the representations that listeners update during interpretation. We present
+a novel computational model of the adaptation process based on Bayesian
+belief updating and through a series of model comparisons, we find that
+semantic adaptation is a product of listeners updating beliefs about a
+speaker's lexicon as well as a speaker's utterance preferences. 
 }
+
 
 % people to thank: dan lassiter, ALPS lab, chris potts, eve clark, herb clark, noah goodman, AMLaP, compprag, CMCL, semfest, CAMP audiences, XPrag, robert hawkins, MH tessler, ...
 
@@ -135,10 +145,11 @@ According to Gricean pragmatic theories, listeners assume that a speaker is coop
 Accounts of pragmatic reasoning share the implicit assumption that listeners have precise expectations about the speaker's language use -- specifically, which utterance alternatives were available to the speaker that they didn't use -- in different situations. Listeners can only draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems \parencite{Lewis1969}. However, language users also exhibit a great deal of variability in their phonetic, lexical, and syntactic choices \parencite[e.g.,][]{Liberman1967,Weiner1983,Harrington2000,Finegan2001,Allen2003}. For instance, the variability in use of quantifiers such as \textit{some} and \textit{many} and uncertainty expressions like \textit{might} and \textit{probably} is reflected in listeners' variable expectations of quantifier use \textcite{Yildirim2016} and in considerable inter-subject variability in the interpretation of uncertainty expressions \textcite{Wallsten1986}. This raises a puzzle: how can we reconcile the assumption of stable utterance alternatives required for capturing pragmatic inferences with what appears to be rampant variability in speakers' actual language use?
 
 Recent work suggests that listeners deal with variability in language use by adapting to it, i.e., by updating their expectations about a speaker's likely productions \parencite[e.g.,][]{Norris2003,Kraljic2005,Kleinschmidt2015,Kamide2012,Fine2016}. In the domain of semantics/pragmatics, this is a process known as \emph{semantic/pragmatic adaptation}. In a series of experiments, \textcite{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied in descriptions of quantities of candies of a particular color like \emph{Some of the candies are green}. After exposure to a speaker, they probed participants' expectations about the speakers' likely descriptions of different quantities of green candies and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners update \textit{some} type of expectations, the nature of the expectations that listeners update is unknown. 
-In particular, it is an open question whether this kind of semantic/pragmatic adaptation is a result of listeners learning speaker-specific utterance \emph{preferences} or whether listeners form speaker-specific \emph{semantic representations}. 
-Answering this question can provide important insights not only into the processes leading to semantic/pragmatic adaptation but also into properties of the lexicon. For instance, it is possible that listeners only learn different utterance preferences for different speakers but otherwise maintain static semantic representations of uncertainty expressions. On the other hand, listeners might form speaker-specific semantic representations instead of -- or in addition to -- learning speakers' preferences for certain lexical items over others. The latter case would necessitate incorporating \emph{dynamic} semantic representations into our models of language.  Such dynamicity has been found for content words \parencite[e.g.,][]{Clark1983} \jd{be explicit about what you mean -- i'm not sure i know? depending on waht you mean here this paragraph could end in different ways. also, it'll be important to make sure that the assumption of static semantic representations is a different assumption from the one of knowing what the speaker could have said but didn't, which is what the paper starts out with.}. 
+In particular, it is an open question whether this kind of semantic/pragmatic adaptation is a result of listeners learning speaker-specific utterance \emph{preferences} or whether listeners form speaker-specific \emph{semantic representations}. Answering this question about the nature of adaptation is therefore the focus of the work reported here.
 
-%Answering this question about the nature of adaptation is therefore the focus of the work reported here.
+%Answering this question can provide important insights not only into the processes leading to semantic/pragmatic adaptation but also into properties of the lexicon. For instance, it is possible that listeners only learn different utterance preferences for different speakers but otherwise maintain static semantic representations of uncertainty expressions. On the other hand, listeners might form speaker-specific semantic representations instead of -- or in addition to -- learning speakers' preferences for certain lexical items over others. The latter case would necessitate incorporating \emph{dynamic} semantic representations into our models of language.  Such dynamicity has been found for content words \parencite[e.g.,][]{Clark1983} \jd{be explicit about what you mean -- i'm not sure i know? depending on waht you mean here this paragraph could end in different ways. also, it'll be important to make sure that the assumption of static semantic representations is a different assumption from the one of knowing what the speaker could have said but didn't, which is what the paper starts out with.}. 
+
+%
 
 %TODO?: revisit this again once i've finished the GD about the implications for the lexicon.
 
@@ -201,7 +212,7 @@ In order to establish the nature of the representations that are updated during 
 	\item Quantify the variability in listeners' expectations about a generic speaker's production of uncertainty expressions (Experiment 1, \sectionref{sec:exp-norming}).
 	\item Propose a probabilistic computational pragmatics model of production expectations about uncertainty expressions that functions as proxy for listeners' baseline generative model of a generic speaker. Evaluate the model on the data from Experiment 1 (\sectionref{sec:model-baseline}). The model is formulated within the Rational Speech Act framework, a probabilistic formalization of Gricean pragmatic reasoning   \parencite{Frank2012,Goodman2016,Franke2016}.
 	\item Measure whether and to what extent listeners update their expectations when exposed to a speaker who is either more cautious or more confident in their use of uncertainty expressions than the baseline speaker model (Experiment 2, \sectionref{sec:exp-prod-adaptation}).
-	\item Extend the baseline model to support learning in interaction. Create three versions of this model which differ in terms of which model components are updated in response to exposure to simulated cautious and confident speakers: update on only production preferences, only the lexicon, or both. Use model comparison between these three adaptation models as a hypothesis-testing tool to infer which representations undergo adaptation, by evaluating which adaptation model best captures the observed post-exposure expectation data from Experiment 2 (\sectionref{sec:model-adapt}).
+	\item Extend the baseline model to support learning in interaction. Create three versions of this model which differ in terms of which model components are updated in response to exposure to simulated cautious and confident speakers: update of only production preferences, only the lexicon, or both. Use model comparison between these three adaptation models as a hypothesis-testing tool to infer which representations undergo adaptation, by evaluating which adaptation model best captures the observed post-exposure expectation data from Experiment 2 (\sectionref{sec:model-adapt}).
 	\item To further test the adaptation models, use them to derive predictions about post-exposure interpretation. Measure interpretation and evaluate the model (Experiment 3, \sectionref{sec:exp-model-interpretation}).
 \end{enumerate}
 
@@ -216,9 +227,9 @@ First, it served as a methodological check on whether the paradigm is suited for
 manipulating fine-grained event probabilities. 
 Second, it addressed the theoretical question of whether listeners vary in their expectations about
 a generic speaker's use of uncertainty expressions, by collecting participants' judgments about 
-expressions of uncertainty they expected speakers to use for varying probabilities of receiving gumballs of a particular color from a gumball machine. 
+uncertainty expressions they expected speakers to use for varying probabilities of receiving gumballs of a particular color from a gumball machine. 
 Third,  the results from this study informed the experimental design of the adaptation experiments 
-reported in later sections, by allowing us to both choose which pair of expressions of uncertainty to test adaptation on, 
+reported in later sections, by allowing us to both choose which pair of uncertainty expressions to test adaptation on, 
 and to determine the particular event probability for which participants had roughly equi-probable expectations 
 about which expression of uncertainty a generic speaker would use to report an event with that probability. 
 Lastly, we used the data collected in this study to 
@@ -250,7 +261,7 @@ the girl could see the gumball machine,\footnote{Participants had to go back to 
 participants saw a series of scenes  and were asked to rate how likely they thought it was that the 
 adult would produce two given responses by distributing 100 points across the two given utterances and the 
 blanket \textit{something else} option (\textsc{other}). Sliders automatically jumped back if participants tried to distribute more than 100 points. 
-In each scene, the child uttered \textit{``I want a blue one''} (target color: blue) or  \textit{``I want an orange one''} (target color: orange), randomized across participants\footnote{In condition 1 (\textit{bare-might}), as well as conditions 16-21 (all conditions with \textit{bare not}), the target color was randomized across trials. While randomization of the target color across trials increased the correlation between the ratings for the two colors,  the average ratings for each condition independent of the target color were not affected by this choice. See the supplementary material for a detailed discussion of the effect of this manipulation on the ratings.}. The gumballs in the machines were tossed around continuously to prevent participants from counting the gumballs
+In each scene, the child uttered \textit{``I want a blue one''} (target color: blue) or  \textit{``I want an orange one''} (target color: orange), randomized across participants.\footnote{In condition 1 (\textit{bare-might}), as well as conditions 16-21 (all conditions with \textit{bare not}), the target color was randomized across trials. While randomization of the target color across trials increased the correlation between the ratings for the two colors,  the average ratings for each condition independent of the target color were not affected by this choice. See Appendix A or a detailed discussion of the effect of this manipulation on the ratings.} The gumballs in the machines were tossed around continuously to prevent participants from counting the gumballs
 and to make sure that participants did not consider it more likely to get one of the gumballs at the bottom of the machine.
  In each of the 21 conditions, participants saw only  two of the following seven possible adult utterances with different uncertainty expressions:
 
@@ -277,7 +288,7 @@ for each of the following percentages: 0\%, 10\%, 25\%, 40\%, 50\%, 60\%, 75\%, 
 \end{figure}
 
 Figure~\ref{fig:norming-results-main} shows participants' ratings for different gumball proportions for 3 of the 21 conditions, namely all combinations of the conditions
-with the utterances \textsc{bare}, \textsc{probably}, and \textsc{might} (see the Supplementary Material for the results from the other 18 conditions). 
+with the utterances \textsc{bare}, \textsc{probably}, and \textsc{might} (see Appendix~B for the results from the other 18 conditions). 
 The results from these three conditions highlight several important properties of participants'
 behavior in this experiment that generalize to all conditions.
 First, the ratings for individual utterances are influenced by the utterance choices presented to participants.
@@ -516,8 +527,8 @@ Therefore, using Beta distributions for the threshold distributions has the desi
 
 \subsection{Parameter estimation}
 
-Given all the assumptions outlined above, the model has  $18$ parameters in total: A cost parameter $\gamma$, a rationality parameter $\lambda$, a noise strength parameter $\delta$, a constant corresponding to other utterances $O$, and for each utterance, Beta distribution parameters $\alpha_e$ and $\beta_e$. We estimated these parameters jointly from all 21 conditions of Experiment~1 using Bayesian data analysis \parencite[see, e.g.,][]{Kruschke2015}. To construct the dataset, we treated the ratings by each participant as a probability distribution from which we sampled 10 utterances. We used highly uninformative
-uniform priors over the interval $[0,15]$ for all parameters. We estimated the vector of parameters $\Theta$ using MCMC with a Metropolis Hastings sampler. To decrease autocorrelation of the chain, we collected a sample only at every 10th iteration (i.e., we use thinning of 10). We discarded the first 10,000 burn-in samples and then collected 50,000 samples.  We ran four MCMC chains and confirmed convergence by computing the $\hat{R}$-statistic \parencite{Gelman2003}. More details on the implementation of the model can be found in the Supplementary Material.
+Given all the assumptions outlined above, the model has  $18$ parameters in total: A cost parameter $\gamma$, a rationality parameter $\lambda$, a noise strength parameter $\delta$, a constant corresponding to other utterances $O$, and for each utterance, Beta distribution parameters $\alpha_e$ and $\beta_e$. We estimated these parameters jointly from all 21 conditions of Experiment~1 using Bayesian data analysis \parencite[BDA; see, e.g.,][]{Kruschke2015}. To construct the dataset, we treated the ratings by each participant as a probability distribution from which we sampled 10 utterances. We used highly uninformative
+uniform priors over the interval $[0,15]$ for all parameters. We estimated the vector of parameters $\Theta$ using MCMC with a Metropolis Hastings sampler. To decrease autocorrelation of the chain, we collected a sample only at every 10th iteration (i.e., we use thinning of 10). We discarded the first 10,000 burn-in samples and then collected 50,000 samples.  We ran four MCMC chains and confirmed convergence by computing the $\hat{R}$-statistic \parencite{Gelman2003}. More details on the implementation of the model can be found in Appendix C.
 
 \subsection{Model evaluation}
 
@@ -532,12 +543,12 @@ uniform priors over the interval $[0,15]$ for all parameters. We estimated the v
 
 The result of the parameter estimation procedure is a posterior distribution over parameters given the observed data $P(\Theta \mid D_{obs})$. We evaluated
 the model fit by performing a posterior predictive check \parencite[PPC;][]{Kruschke2015}. To this end, we took 10,000 samples of parameters $\Theta$ from the posterior distribution
-and for each sample, we computed the model predictions $ES_{1}^{'}(u \mid \phi; condition)$ parameterized by $\Theta$. We then compared the average model predictions to the
+and for each sample, we computed the model predictions $ES_1^{(\mathscr{C})'}(u \mid \phi)$ parameterized by $\Theta$. We then compared the average model predictions to the
 mean ratings that participants had provided in the pre-exposure experiments. We further computed the 95\% high density interval  \parencite[HDI;][]{Kruschke2015} which reflects the certainty of the model
 about its predictions.
 
 Figure~\ref{fig:norming-results-model-main} shows the model predictions and the experimental data for three conditions 
-(see Table~\ref{tbl:correlations} and the Supplementary Material for modeling results for all 21 conditions). As these plots show, the model
+(see Table~\ref{tbl:correlations} and Appendix~D for modeling results for all 21 conditions). As these plots show, the model
 is able to capture almost the entire variance in participants' average ratings. Further, the 95\% HDIs are very small which suggests
 that the model is certain about its predictions. Both of these observations are also true for the model's predictions for all the other
 conditions. For 19 of the 21 conditions, the $R^2$ value between the model predictions and the experimental data exceeds 0.9,
@@ -651,7 +662,7 @@ that speakers use \textit{think} when they strongly believe the embedded proposi
   \tableref{tbl:model-params} shows the MAP values and credible intervals for the remaining parameters. The model inferred that speakers
   are more likely to choose an optimal utterance than if they only considered the raw speaker utility (reflected in the $\lambda$ parameter being
   greater than 1); that utterances that are not included in the experiment incur a considerable cost  (reflected in the $\gamma$ parameter being greater than 1); that about 7.4\%
-  of the data should be treated as noise (reflected in the $\delta$ parameter); and that the probability of utterances not included in our set of utterances is low. 
+  of the data should be treated as noise (reflected in the $\delta$ parameter); and that the production probability of utterances not included in our set of utterances is low. 
 
  
  \subsection{Interim summary}
@@ -676,7 +687,7 @@ that speakers use \textit{think} when they strongly believe the embedded proposi
 \label{sec:exp-prod-adaptation}
 
 We now turn to our main research questions of whether and how listeners adapt to variable uses of uncertainty expressions.
-In our norming studies, we found that participants show uncertainty in their expectations about a generic speaker's 
+In Experiment~1, we found that participants show uncertainty in their expectations about a generic speaker's 
 use of \textit{might} and \textit{probably}. Based on these results, we investigate in two experiments whether participants
 form speaker-specific expectations about the use of \textit{might} and \textit{probably}.
 
@@ -689,7 +700,7 @@ uncertainty expressions for a short period of time. The procedure, materials and
 We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. 
 We required participants to have a US-based IP address and a minimal approval rating 
 of 95\%. Participants were paid \$2 which amounted to an hourly wage of approximately 
-\$12--\$15. None of the participants had previously participated in the norming study.
+\$12--\$15. None of the participants had previously participated in Experiment~1.
 
 \subsubsection{Materials and procedure}
 
@@ -724,13 +735,16 @@ speaker conditions in Experiments~2a and 2b. Critical trials bolded. \label{tbl:
 
 \end{table}
 
-The number of trials with each of these utterances as well as the gumball proportions varied across two conditions (see Table \ref{tbl:materials} for an overview). In the {\it confident speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{probably} (target color was randomized across trials), 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 25\% target color gumballs and the speaker producing {\sc might} condition of the norming study; see \figref{fig:norming-results-main}). In the {\it cautious speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{might}, 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 90\% target color gumballs and the speaker producing {\sc probably}. The filler trials contained utterance-event probability pairs that were rated very highly in the \textit{might-probably} condition of the norming study (see \figref{fig:norming-results-main}) and were intended to boost confidence in the speaker.
+The number of trials with each of these utterances as well as the gumball proportions varied across two conditions (see Table \ref{tbl:materials} for an overview). In the {\it confident speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{probably} (target color was randomized across trials), 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 25\% target color gumballs and the speaker producing {\sc might}. In the {\it cautious speaker} condition, participants saw 10 critical trials with 60\% target color gumballs and the speaker producing an utterance with \emph{might}, 5 filler trials with 100\% target color gumballs and the speaker producing {\sc bare}, and 5 filler trials with 90\% target color gumballs and the speaker producing {\sc probably}. The filler trials contained utterance-event probability pairs that were rated very highly in the \textit{might-probably} condition of Experiment~1 (see \figref{fig:norming-results-main}) and were intended to boost confidence in the speaker.
 
 Participants were instructed to watch what the speaker had to say to the child. The video started automatically after a 400ms delay and participants had the option to replay the video as often as they wanted. To advance to the next scene, participants had to press a button which was disabled until the video clip had finished.
 
-\paragraph{Test trials:} The test phase was almost identical to the  \textit{might-probably} condition of the norming study except that the cartoon figure of the man was replaced with a picture of the speaker that participants saw on the exposure trials. Participants were presented with scenes containing gumball machines with 9 different proportions of blue and orange gumballs  (identical as in the norming study) and they were asked to provide ratings for the utterances {\sc might} and {\sc probably} by distributing 100 points across these two utterances and the blanket {\it something else} option. Participants provided two ratings for each of the 18 color-gumball machine combinations resulting in a total of 36 trials. 
+\paragraph{Test trials:} The test phase was almost identical to the  \textit{might-probably} condition of Experiment~1 except that the cartoon figure of the man was replaced with a picture of the speaker that participants saw on the exposure trials. Participants were presented with scenes containing gumball machines with 9 different proportions of blue and orange gumballs  (identical as in Experiment~1) and they were asked to provide ratings for the utterances {\sc might} and {\sc probably} by distributing 100 points across these two utterances and the blanket {\it something else} option. Participants provided two ratings for each of the 18 color-gumball machine combinations resulting in a total of 36 trials. 
 
-Both speakers were from the East Coast and Native Speakers of North American English.\footnote{The first author compensated each of the speakers for their help with the recordings with two slices of marble Guglhupf.} They were instructed to produce the utterances in a normal voice without any special prosody.
+Both speakers were from the East Coast and Native Speakers of North American English.
+%\footnote{The first author compensated each of the speakers for their help with the recordings with two slices of marble Guglhupf.} 
+They were instructed to produce the utterances in a normal voice without any special prosody. The speakers were
+na\"ive to the purpose of the experiment.
 
 
 \paragraph{Attention checks}  In order to verify that participants were paying attention to the video and the scenes, we included 15 attention checks (6 during exposure and 9 during test trials), which were randomly positioned within the two experimental phases. Trials that contained an attention check either displayed or did not display (pseudo-randomized) a small grey X somewhere around the gumball machine. After completing a trial with an attention check, participants were asked whether they had seen a grey X in the previous scenes or not.
@@ -748,7 +762,7 @@ Following \cite{Yildirim2016}, we quantified this prediction by fitting a spline
 under the curve (AUC) for the splines corresponding to each expression and participant. The area under the curve is proportional to how highly and for how large 
 of event probabilities participants rate an utterance. If an utterance is rated highly for a larger range of event probabilities, the AUC will also be larger. 
 We therefore tested whether listeners updated their expectations according to these intuitions by computing the difference between the AUC of the spline for 
-{\sc might} and of the spline for {\sc probably} for each participant. We predicted that the mean AUC difference would be bigger in the 
+{\sc might} and of the spline for {\sc probably} for each participant. We predicted that the mean AUC difference would be larger in the 
 \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
 
 \subsubsection{Results and discussion}
@@ -764,7 +778,7 @@ We therefore tested whether listeners updated their expectations according to th
 \caption{Area under the curve (AUC) differences from Experiments~2a and 2b. Error bars correspond to bootstrapped 95\%-confidence intervals.  \label{fig:adaptation-auc-prod}}
 \end{figure}
 
-Figure~\ref{fig:adaptation-results-prod} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use and therefore made different predictions about how the speaker would use uncertainty expressions. In the \emph{cautious speaker} condition, participants gave high ratings for {\sc might} for a larger range of event probabilities than in the \emph{confident speaker} condition. On the other hand, participants gave high ratings for {\sc probably} for a larger range of gumball proportions in the \emph{confident speaker} condition than in the \emph{cautious speaker} condition. These differences result in a significantly bigger AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(59) = 4.98$, $p < 0.001$, see also left panel of Figure~\ref{fig:adaptation-auc-prod}).
+Figure~\ref{fig:adaptation-results-prod} shows the mean ratings for the three options in the two conditions. As these plots show, participants updated their expectations about the speaker's language use and therefore made different predictions about how the speaker would use uncertainty expressions. In the \emph{cautious speaker} condition, participants gave high ratings for {\sc might} for a larger range of event probabilities than in the \emph{confident speaker} condition. On the other hand, participants gave high ratings for {\sc probably} for a larger range of gumball proportions in the \emph{confident speaker} condition than in the \emph{cautious speaker} condition. These differences result in a significantly larger AUC difference in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition ($t(59) = 4.98$, $p < 0.001$, see also left panel of Figure~\ref{fig:adaptation-auc-prod}).
 
 As Figure~\ref{fig:adaptation-results-prod} shows, participants also differed in their ratings of the two utterances when they were presented with a scene with 60\% target color gumballs. In the \emph{cautious speaker} condition, participants rated {\sc might} higher than {\sc probably}; in the \emph{confident speaker} condition, the pattern was reversed and participants rated {\sc probably} higher than {\sc might}. These expectations mirror the speaker behavior during the exposure phase and provide additional evidence that participants tracked the speaker's usage of uncertainty expressions. 
 
@@ -781,7 +795,7 @@ uses \textit{might} and \textit{probably} with the same frequency.  The procedur
 We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. 
 We required participants to have a US-based IP address and a minimal approval rating 
 of 95\%. Participants were paid \$2.20 which amounted to an hourly wage of approximately 
-\$12--\$15. None of the participants had previously participated in the norming study.
+\$12--\$15. None of the participants had participated in any of the previous experiments.
 
 \subsubsection{Materials and procedure}
 
@@ -823,7 +837,7 @@ in the next section.
 
 The experimental results presented in the previous section suggest that listeners update
 \textit{some} expectations about language use when they interact with a speaker. 
-However, the nature of the updated representations is unclear. As mentioned in the Introduction, there are three likely candidates:
+However, the nature of the updated representations is unclear. As mentioned in the introduction, there are three likely candidates:
 first, it is possible that listeners update their expectations about the speaker's lexicon 
 (i.e., the mapping between event probabilities and uncertainty expressions);  second, listeners
  might  update their expectations about the speaker's preferences; 
@@ -861,12 +875,12 @@ we obtained from fitting the model to the norming data. The variances reflect wh
 
 \begin{itemize}
 \item \textbf{\textit{Costs}}: The first prior structure corresponds to an adaptation process according to which participants only learn speaker preferences during adaptation. 
-We modeled the prior over cost parameters  as a log-normal distribution centered at the mean value inferred from the norming data. Because we were interested in whether listeners update their beliefs about speaker preferences, we relaxed the assumption from the norming study that all utterances have the same cost and assumed that each expression has its own cost parameter indicating beliefs about the speaker's preferences. Use of the log-normal distribution was motivated by two reasons: First, cost must be greater than zero, and the support of log-normal distributions is limited to numbers greater than 0. Second, since the cost term is part of an exponent in the expected pragmatic speaker model, differences on a logarithmic scale correspond to linear differences in the model's utterance probabilities. For the priors over all other parameters, we used a delta distribution.
-\item \textbf{\textit{Threshold distributions}}:  This prior structure corresponds to an adaptation process according to which participants only learn speaker-specific threshold distributions during adaptation. We parameterized threshold Beta distributions $P(\theta_e)$ with their mean $\mu_e$ and population parameter $\nu_e$ \parencite{Kruschke2015}. Since the threshold and therefore also the mean of the threshold distribution have to lie within the interval [0,1], we used a truncated normal distribution $\mathscr{N}_{[0,1]}$, which we centered at the mean value from the norming data. For the population parameters $\nu_e$, which indicate how peaked a threshold distribution is, we assumed that distributions can only become more peaked when they are exposed to a speaker with very consistent language use and therefore modeled the prior as an exponential distribution shifted to the mean population parameter that we estimated from the norming data. We used a delta distribution for the priors over all other parameters.
+We modeled the prior over cost parameters  as a log-normal distribution centered at the mean value inferred from the norming data. Because we were interested in whether listeners update their beliefs about speaker preferences, we relaxed the assumption from the norming data model that all utterances have the same cost and assumed that each expression has its own cost parameter indicating beliefs about the speaker's preferences. Use of the log-normal distribution was motivated by two reasons: First, cost must be greater than zero, and the support of log-normal distributions is limited to numbers greater than 0. Second, since the cost term is part of an exponent in the expected pragmatic speaker model, differences on a logarithmic scale correspond to linear differences in the model's utterance probabilities. For the priors over all other parameters, we used a delta distribution.
+\item \textbf{\textit{Threshold distributions}}:  This prior structure corresponds to an adaptation process according to which participants only learn speaker-specific threshold distributions during adaptation. We parameterized threshold Beta distributions $P(\theta_e)$ with their mean $\mu_e$ and population parameter $\nu_e$ \parencite{Kruschke2015}. Since the threshold and therefore also the mean of the threshold distribution have to lie within the interval [0,1], we used a truncated normal distribution $\mathscr{N}_{[0,1]}$, which we centered at the mean value from the norming data. For the population parameters $\nu_e$, which indicate how peaked a threshold distribution is, we assumed that distributions can only become more peaked when listeners are exposed to a speaker with very consistent language use and therefore modeled the prior as an exponential distribution shifted to the mean population parameter that we estimated from the norming data. We used a delta distribution for the priors over all other parameters.
 \item  \textbf{\textit{Threshold distributions and costs}}:   This prior structure corresponds to an adaptation process according to which participants learn both speaker-specific threshold distributions and speaker preferences during adaptation.  We used the log-normal distributions as priors over the cost parameters and the truncated normal and exponential distributions as priors over the threshold distribution parameters, as described above. This means that both the threshold distributions and the cost parameters could be updated during the adaptation simulations.
 \end{itemize}
 
-Each of these prior structures corresponds to a different hypothesis about which expectations listeners update during adaptation. For comparison, we also considered a baseline in which none of the parameters are updated during adaptation (the {\it fixed} prior structure). To adjudicate between these three hypotheses, we ran simulations of the adaptation process for both the (\textit{cautious speaker} and \textit{confident speaker}) conditions with different prior structures and compared the models in terms of their likelihood of generating the experimental data. During each simulation, we performed Bayesian inference to infer the posterior parameter distribution after observing the 20 data points that participants observed in the exposure phase (see Table~\ref{tbl:materials} for an overview of the 20 utterances in the two conditions). We performed inference using MCMC with a Metropolis-Hastings sampler. We used thinning of 10, discarded the first 2,000 burn-in samples and collected 10,000 samples from each of the two chains.
+Each of these prior structures corresponds to a different hypothesis about which expectations listeners update during adaptation. For comparison, we also considered a baseline in which none of the parameters are updated during adaptation (the {\it fixed} prior structure). To adjudicate between these three hypotheses, we ran simulations of the adaptation process for both (\textit{cautious speaker} and \textit{confident speaker}) conditions with different prior structures and compared the models in terms of their likelihood of generating the experimental data. During each simulation, we performed Bayesian inference to infer the posterior parameter distribution after observing the 20 data points that participants observed in the exposure phase (see Table~\ref{tbl:materials} for an overview of the 20 utterances in the two conditions). We performed inference using MCMC with a Metropolis-Hastings sampler. We used thinning of 10, discarded the first 2,000 burn-in samples and collected 10,000 samples from each of the two chains.
 
 \begin{table}
 \center
@@ -890,7 +904,7 @@ We compared model fits according two metrics. First, we considered the $R^2$ val
 $$\mbox{posterior likelihood odds} = \frac{\mathlarger{\int_{0}^{1}} {P\left(\Theta_{S}^{(1)}\right) P\left(D_{obs} \mid \Theta_{S}^{(1)} \right) d   \Theta_{S}^{(1)}}}{\mathlarger{\int_0^1} P\left(\Theta_{S}^{(2)}\right) P\left(D_{obs} \mid \Theta_{S}^{(2)}\right)d   \Theta_{S}^{(2)} }$$
  
 \noindent The posterior likelihood odds indicate how much more likely it is that the data was generated by Model 1 than by Model 2. Since we are marginalizing over a distribution over parameter values, this comparison of models will naturally
-favor simpler models. For a more complex model with more parameters, the distribution over different parameter values will be more dispersed and can contain more parameter configurations that lead to a low likelihood of the data.
+favor simpler models. For a more complex model with more parameters, the distribution over different parameter values will be more dispersed and can contain more parameter configurations that lead to a lower likelihood of the data.
 
 \begin{table}
 \center
@@ -970,7 +984,7 @@ update expectations about both {threshold distributions} and {preferences}.
 
 Apart from quantitatively assessing the fit of the model, it is informative to visually inspect the predictions of the model to verify that the model makes correct qualitative predictions. 
 Figure~\ref{fig:post-exposure-model} shows the post-exposure predictions of the \textit{cost \& threshold distributions} model compared to the average participant ratings for the two conditions from Experiment~2a.\footnote{
-We only discuss the simulations for Experiment~2a in this section. See the supplementary information for the same plots for the simulations for Experiment~2b.} Qualitatively, 
+We only discuss the simulations for Experiment~2a in this section. See Appendix~E for the same plots for the simulations for Experiment~2b.} Qualitatively, 
 the model captures several important patterns in the post-adaptation behavior. The model correctly predicts that in the \textit{cautious speaker} condition, ratings for \textsc{might} are 
 higher than ratings for \textsc{probably} when there is an objective probability of 0.6. For the \textit{confident speaker} condition, the model correctly predicts the
 opposite pattern. The model also predicts that in the \textit{cautious speaker} condition, participants rate \textsc{might} highly for a larger range of event probabilities than
@@ -1037,7 +1051,7 @@ and the opposite relation between these costs holds in the \textit{confident spe
 are expected considering that the number of exposure trials across the two conditions differed (in the \textit{cautious speaker} condition in Experiment~2a there were more trials
 with \textsc{might}; in \textit{confident speaker} condition more trials with \textsc{probably}). More surprisingly, this pattern
 persisted in the simulations for Experiment~2b in which the exposures of these two utterances were balanced across conditions 
-(\todo{See SI for cost plot for balanced simulations}).
+(see Appendix~E for cost plot for balanced simulations).
 These persistent differences suggest that the post-adaptation expectations 
 are in part also a result of updated beliefs about preferences of \textsc{might} and \textsc{probably}. 
 
@@ -1056,11 +1070,11 @@ exposure to that speaker.
 We further presented a computational adaptation model which models the adaptation
 process as an instance of Bayesian belief updating. We used different implementations
 of that model to investigate which kind of expectations listeners update during adaptation.
-We found strong evidence that listeners update beliefs about the lexicon and 
+We found strong evidence that listeners update beliefs about the threshold distributions and 
 we found some evidence that
 listeners also update beliefs about speaker preferences.
 
-\section{Experiment 2: Effect of adaptation on interpretation}
+\section{Experiment 3: Effect of adaptation on interpretation}
 \label{sec:exp-model-interpretation}
 
 
@@ -1084,7 +1098,7 @@ and \textit{probably} is shifted towards higher values as compared to the distri
 \end{figure}
 
 In this experiment, we tested whether this prediction is correct and whether listeners' change in expectations transfers to a change in interpretations. 
-The procedure, materials and analyses were pre-registered at \url{https://osf.io/ghnc3}.
+The procedure, materials and analyses were pre-registered at \url{https://osf.io/ghnc3}.\footnote{This experiment is a modified version of a previous experiment, which qualitatively yielded the same results but also seemed to confuse many participants. See Appendix~F for a discussion of the original experiment.}
 
 \subsection{Participants}
 
@@ -1197,7 +1211,7 @@ about the lexicon \parencite[see also][]{Bergen2016} and that in interaction, sp
 and listeners update their beliefs about the lexicon akin the updating of threshold distributions 
 in our model, which provides further evidence that belief updating plays an important role in interactive language processing.
 
-In the space of mechanistic accounts, \textcite{Pickering2004} argued that much partner-specific linguistic behavior
+In the space of mechanistic accounts, \textcite{Pickering2004} argued that a lot of partner-specific linguistic behavior
  can be explained in terms of priming, i.e., the automatic activation of linguistic representations when 
 a speaker produces an utterance or a listener hears an utterance. Their account has the appeal
 of explaining why partner-specific language use often appears to happen automatically and effortlessly. But
@@ -1232,7 +1246,7 @@ pragmatic behavior that we observed in our experiments.
 Our results also have implications for semantic theories of uncertainty expressions.
 The finding that listeners rapidly update their beliefs about semantic thresholds of uncertainty expressions
 suggests that the semantics of these expressions is highly dynamic and context-sensitive. This is, to a large extent, predicted by recent 
-theoretical accounts of probability operators \parencite[a subset of uncertainty expressions, e.g.,][]{Yalcin2010,Lassiter2015,Lassiter2016}, which 
+theoretical accounts of probability operators \parencite[a subset of uncertainty expressions; e.g.,][]{Yalcin2010,Lassiter2015,Lassiter2016}, which 
 state that the meanings of probability operators are highly dynamic and largely determined by the context. However, our results
 suggest that the meaning of uncertainty expressions is even more dynamic than predicted by these accounts. First, these accounts
 generally limit this dynamicity to the meaning of probability operators and exclude other uncertainty expressions such as \textit{might},
@@ -1330,7 +1344,7 @@ preferences.
 
 \section*{Appendix}
 
-\subsection*{A Effect of color in norming study}
+\subsection*{A Effect of color in Experiment~1}
 
 As mentioned in a footnote, we ran the norming studies in three batches using three slightly different procedures across conditions. We originally ran condition 0 (\emph{bare-might}) as a pilot condition. In the results, we noted that participants did not differ in their ratings depending on whether the girl asked for a blue or an orange gumball ($R^2(27)=0.997$ between mean ratings for blue and orange trials). To lower the number of trials, we therefore asked each participant to provide ratings for only one of the two colors (randomized across participants) for the next batch of conditions (conditions 1-14). We found that in some conditions, this led to small differences in ratings between participants who always rated utterances with \emph{blue} and participants who always rated utterances with \textit{orange} ($R^2(27)$ between $0.864$ and $0.984$). We hypothesize that this is a result of participants paying less attention if they were asked to do exactly the same task over and over again (in condition 0, the color and the associated utterances could change across trials). In order to verify the stability of our results, we replicated one of the conditions, condition 5 (\emph{might-probably}), and had participants provide two ratings for each color and gumball proportion. We found that despite the lower correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} in the original run ($R^2(27)=0.929$), there was a very high correlation between the average ratings independent of the color of the original study and the average ratings of the replication ($R^2(27)=0.975$), which suggests that the average ratings largely do not depend on whether we ask participants to provide ratings for both colors or just one color. Nevertheless, we used the modified procedure in which we asked participants to provide 2 ratings for each color and gumball proportion for the last batch of conditions (conditions 15-20). In all conditions in which we asked people to provide ratings for utterances with both colors, the correlation between average ratings for utterances with \emph{blue} and utterances with \emph{orange} was almost perfect ($R^2(27)>0.988$).
 
@@ -1465,43 +1479,57 @@ of the model simulations for Experiment 2b, the post-adaptation threshold distri
 
 \subsection*{F Original interpretation experiment}
 
-\todo{Revise this section}
+As we mentioned in the main text, we originally ran a slightly different version of the comprehension experiment in which participants were using sliders to rate which gumball machine they though the speaker saw when he or she produced an utterance. The use of sliders seemed to confuse some participants and therefore we changed the procedure such that participants provided ratings by distributing coins. For the sake of completeness, we report the 
+procedure and the results of the original experiment here.
 
-\subsection{Participants}
+\subsubsection*{Participants}
 
 We recruited a total of 80 participants (40 per condition) on Amazon Mechanical Turk. We required participants to have a US-based IP address and a minimal approval rating of 95\%. Participants were paid \$2 which amounted to an hourly wage of approximately \$10--\$12. None of the participants had participated in any of the previous experiments. 
 
-\subsection{Materials and Procedure}
+\subsubsection*{Materials and Procedure}
 
-Participants completed a set of exposure trials followed by a set of test trials. The exposure trials were identical to the exposure trials in Experiment~1. The test trials probed participants' interpretations of the utterances {\sc might}, {\sc probably} and {\sc bare}. In each test trial, participants listened to a recording of the speaker from the exposure phase producing {\sc might}, {\sc probably} and {\sc bare} and then participants were asked to rate for 9 gumball machines with the same proportions of blue and orange gumballs as in the previous experiments how likely they thought it was that the speaker saw each of these gumball machines by adjusting a slider. All 9 gumball machines were presented at the same time but to avoid visual clutter, all gumball machines except the one whose slider participants were adjusting had an opacity of 0.1 and the animation was disabled. Participants provided 9 ratings per trial and completed in total 6 trials -- one for each expression-color pair. The exposure phase contained again 6 attention check as in the previous experiment. However, given the low attention check performance in the previous experiment, we modified one aspect about the attention checks: We always displayed the grey X on the first trial with an attention check so that participants would see the gray X before being presented with the attention check. We discarded answers to the first attention check and computed the attention check performance on the remaining 5 attention checks.
+The exposure phase was identical as in the other adaptation experiments: participants were either exposed to a 
+\textit{cautious} speaker or a \textit{confident} speaker. Six of the exposure trials included attention checks in which
+participants had to indicate whether they saw a grey X on the previous trial or not.
 
-\subsection{Exclusions}
+Similar to Experiment~3, the test trials probed participants'
+interpretations of the utterances {\sc might}, {\sc probably}, and {\sc bare}. On test trials, participants listened
+to a recording of the speaker they encountered during the exposure phase and then rated how likely they
+thought it was that the speaker saw different gumball machines. On each trial, like in Experiment~3, participants
+provided ratings for 9 gumball machines. However, unlike in Experiment~3, participants indicated their ratings
+by adjusting 9 sliders. Participants completed 6 test trials in total -- one for each expression-color pair.
 
-We excluded participants who failed more than 2 attention checks, which led to 2 exclusions in the \emph{cautious speaker} condition and 1 exclusion in the \emph{confident speaker} condition.
+\subsubsection*{Exclusions}
+
+We excluded participants who failed more than 2 out of 6 attention checks, which led to 2 exclusions in the \emph{cautious speaker} condition and 1 exclusion in the \emph{confident speaker} condition.
 
 
-\subsection{Analysis and Predictions}
+\subsubsection*{Analysis and Predictions}
 
-If participants reason about the speaker and update their expectations of a specific speaker, we also expect that participants interpretations 
-vary depending on which speaker they were exposed to. Concretely, we expect that listeners interpret a more confident speaker's utterance 
-to communicate a lower event probability than a more cautious speaker's utterance. We tested this prediction by treating participant's ratings 
-of gumball machines as a probability distribution over gumball proportions (and consequently event probabilities).  For each utterance, we 
-normalized participants ratings of the different gumball machines so that they summed up to 1, so that we could interpret the normalized scores 
-as a categorical probability distribution over gumball machines given an utterance. We computed the expected value of blue gumballs from these probability distributions and compared these expected values across the two conditions. We predicted that the expected values of {\sc might} and {\sc probably} were going to be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
+As for Experiment~3, we expected that listeners interpret a more confident speaker's utterance 
+to communicate a lower event probability than a more cautious speaker's utterance. We measured
+the interpretation of utterances by normalizing the ratings across the 9 gumball machines so that they sum to
+1 and then computing the expected value for the proportion of blue and orange gumballs. 
+We predicted that the expected values of target color gumball proportions after hearing {\sc might} and {\sc probably} 
+were going to be larger in the \emph{cautious speaker} condition than in the \emph{confident speaker} condition.
 
-\subsubsection{Results and Discussion}
+\subsubsection*{Results and Discussion}
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{plots/exp-2-ratings.pdf}
-\caption{Aggregated post-exposure ratings from Experiment~3.  \label{fig:adaptation-results-comp-orig}}
+\caption{Aggregated post-exposure ratings from the original interpretation experiment.  \label{fig:adaptation-results-comp-orig}}
 \end{figure}
 
 Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
-These results suggest that listeners not only update their expectations of what a speaker is likely to say in different situations but that also their interpretations of uncertainty expressions adapt to specific speakers.
-
-
-
+Qualitatively, the results are the same as in Experiment~3. However, since participants had the option to assign high 
+ratings (they could assign a maximum rating to each gumball if they wanted to) to 
+all gumball machines, we noticed that many participants assigned very high ratings to most gumball 
+machines and therefore did not indicate their interpretation of the utterance. Further, it seemed that some participants
+understood the instructions as rating the likelihood of getting a blue gumball and provided ratings proportional to the 
+target color gumball proportion independent of the utterance. For these reasons, we revised the original paradigm as described
+in the main text and asked participants to indicate their interpretation using a limited set of coins, which appeared to be less
+confusing to participants. 
 
 
 
