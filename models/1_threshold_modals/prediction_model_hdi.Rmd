@@ -1,0 +1,319 @@
+---
+title: "Threshold model inferred from data"
+author: "Sebastian Schuster"
+date: "5/9/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(rwebppl)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(data.table)
+library(gridExtra)
+source("./../../experiments/0_pre_test/analysis/helpers.R")
+
+theme_set(theme_bw())
+
+
+#library("wesanderson")
+all_modals = c("bare", "might",  "could", "think",  "probably",  "looks_like", "bare_not", "other")
+modals_labels = c("bare", "might",  "could", "think",  "probably",  "looks like", "bare not", "other")
+colscale = colscale = scale_color_manual(
+  limits = modals_labels,
+  values = c(
+  "#E6AB02",
+  "#7CB637",
+  "#4C3B4D",
+  "#E7298A",
+  "#4381C1",
+  "#08415C",
+  "#FB3640",
+  "#999999"
+  )
+  )
+
+
+
+```
+
+## Model
+
+Literal listener (tries to infer the probability $\phi$ of getting a blue gumball given an utterance $u$):
+
+$$L_0(\phi \mid u; \theta) \propto P(\phi)  \mathbb{1}[\phi > \theta_{u}]$$
+We assume that the prior $P(\phi)$ is uniform.
+
+
+Expected pragmatic speaker (marginalizes over all possible values of $\theta$)
+
+$$ES_1(u \mid \phi) \propto \left( \int P(\theta) S_1(u \mid \phi, \theta, c) d\theta \right) \times (1-\delta) + P_{\mbox{uniform}}(u) \times \delta$$
+
+(The term $0.05 * P_{uniform}(\phi; 0,1)$) corresponds to the noise term which assigns a small non-zero probability to all utterances idependent of the actual event probability)
+
+$S1$ is a standard pragmatic speaker model.
+
+Costs:
+
+$$
+c(u, condition) = 
+     \begin{cases}
+       0 &\quad\text{if } u  \text{ is one of the utterances in } condition\\
+       \gamma &\quad\text{otherwise} \\
+     \end{cases}
+$$
+
+Prior over thresholds $\theta$:
+
+$$P(\theta_u) = Beta(\alpha_u, \beta_u)$$
+
+## Experimental data and model predictions
+
+```{r load_data, echo=FALSE} 
+load_data_for_plotting = function(fname) {
+
+
+d = read.csv(fname)
+
+d$workerid = rep(1:20, each=(nrow(d) / 20))
+
+d$modal1 = gsub('"', '', d$modal1)
+d$modal2 = gsub('"', '', d$modal2)
+d$pair = gsub('"', '', d$pair)
+d$color = gsub('"', '', d$color)
+
+modal1 = d$modal1[1]
+modal2 = d$modal2[1]
+
+if (modal2 == "might") {
+  modal2 = modal1
+  modal1 = "might"
+}
+
+drops <- c("modal1","rating1")
+d2 = d[ , !(names(d) %in% drops)]
+setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+drops <- c("modal2","rating2")
+d3 = d[ , !(names(d) %in% drops)]
+setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+drops <- c("modal2", "rating2", "modal1", "rating1")
+d4 = d[ , !(names(d) %in% drops)]
+d4$rating = d4$rating_other
+d4$modal = "other"
+
+d = rbind(d2, d3, d4)
+
+d$modal = factor(d$modal, levels = all_modals, labels = modals_labels, ordered = TRUE)
+
+d$percentage_blue_f = factor(d$percentage_blue)
+
+
+d_blue = d %>% filter(., grepl("blue", sentence2))
+d_orange = d %>% filter(., grepl("orange", sentence2))
+
+d_orange_reverse = d_orange
+d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+d_comparison = rbind(d_blue, d_orange_reverse)
+d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+return(d_comparison)
+
+}
+  
+load_data = function(fname) {
+    d = read.csv(fname)
+  
+  d$modal1 = gsub('"', '', d$modal1)
+  d$modal2 = gsub('"', '', d$modal2)
+  d$pair = gsub('"', '', d$pair)
+  d$color = gsub('"', '', d$color)
+
+  
+  d_blue = d %>% filter(., grepl("blue", sentence2))
+  d_orange = d %>% filter(., grepl("orange", sentence2))
+  
+  d_orange_reverse = d_orange
+  d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+  
+  d_comparison = rbind(d_blue, d_orange_reverse)
+  d_comparison$blue= grepl("blue", d_comparison$sentence2)
+  
+  return(d_comparison)
+}
+
+make_plots = function(d) {
+  p1 = ggplot(d %>% group_by(modal,percentage_blue) %>% summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + geom_point(aes(col=modal, alpha=.5)) + geom_line() + ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + colscale 
+
+p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage") +  theme(legend.position="none")
+
+
+return(list("p1" = p1, "p2" = p2))
+}
+
+
+```
+
+
+```{r call, echo=FALSE}
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think")
+  model_params_all = read.csv(file = "./runs/threshold-model-expected/mle_params.csv")
+  plot_posterior = function(modal1, modal2, exp_data, hdi_data) {
+
+     cond_name = paste(modal1, modal2, sep="-")
+     if (modal2 == "might") {
+       modal2 = modal1
+       modal1 = "might"
+     }
+     pred_data = hdi_data %>% 
+       filter(cond == cond_name) %>%
+       group_by(percentage_blue, modal) %>%
+       summarise(rating_pred_m = mean(rating_pred), 
+                 ci_low_pred = quantile(rating_pred, 0.025), 
+                 ci_high_pred = quantile(rating_pred, 0.975))
+      
+     pred_data$modal = factor(pred_data$modal, levels = all_modals, labels = modals_labels, ordered = TRUE)
+
+     p1 = ggplot(pred_data, aes(x=percentage_blue, y=rating_pred_m, group=modal, col=modal)) + 
+        geom_point(aes(col=modal)) + 
+        geom_line() + 
+        ggtitle(cond_name) + 
+        xlab("percentage") +  
+        guides(col=guide_legend(title="Expression", nrow = 1)) + 
+        theme(legend.position="bottom", legend.text=element_text(size=14))  +
+        geom_errorbar(aes(ymin=ci_low_pred, ymax=ci_high_pred), width=.1) +
+        colscale 
+     
+      exp_data = exp_data %>% 
+        group_by(percentage_blue, modal) %>%
+        summarise(rating_m = mean(rating), ci_low = ci.low(rating), ci_high = ci.high(rating)) %>%
+        mutate(type ="exp")
+        
+      
+      merged_data = merge(pred_data, exp_data, by=c("percentage_blue", "modal"))
+
+      
+      model = lm(rating_pred_m ~ rating_m, data=merged_data)
+      cat(paste("R^2:", modal1, "-", modal2, summary(model)$r.squared), "\n")
+
+      p_corr = ggplot(merged_data, aes(x=rating_pred_m, y=rating_m, col=modal)) + 
+        geom_point() + 
+        geom_abline(slope=1) +
+        ggtitle(cond_name) + 
+        geom_errorbar(aes(ymin=rating_m - ci_low, ymax= rating_m+ci_high)) +
+        geom_errorbarh(aes(xmin=ci_low_pred, xmax=ci_high_pred)) +
+        theme(legend.position="none") +
+        colscale
+      
+      
+      pred_data2 = pred_data %>%
+        rename(rating_m = rating_pred_m, ci_high = ci_high_pred, ci_low = ci_low_pred) %>%
+        mutate(ci_low = rating_m - ci_low, ci_high = ci_high - rating_m, type="model")
+      
+      p_combined = ggplot(rbind(exp_data, pred_data2), aes(x=percentage_blue, y=rating_m, col=modal, linetype=type)) + 
+        geom_point() + 
+        geom_line() + 
+        ggtitle(cond_name) + 
+        geom_errorbar(aes(ymin=rating_m - ci_low, ymax= rating_m+ci_high, linetype="exp")) +
+        theme(legend.position="none") +
+        colscale 
+      
+      return(list(p1=p1, p2=p_corr, p_combined=p_combined))
+
+  }
+
+  
+  
+
+
+
+
+
+
+
+```
+
+
+```{r fig1, fig.width=10, fig.height=10.625, echo=FALSE}
+
+pairs = combn(modals, 2)
+bare_not_pairs = rbind(rep("bare_not", 6), modals)
+pairs = cbind(pairs, bare_not_pairs)
+
+hdi_data = read.csv("./runs/threshold-model-expected/hdi_samples.csv")
+
+get_grid_plot = function(cond) {
+  pair = pairs[,cond+1]
+  fname = paste("../../experiments/0_pre_test/data/0_pre_test-cond", cond,"-trials.csv", sep="")
+  p_data = load_data_for_plotting(fname)
+  post_plot = plot_posterior(as.character(pair[1]), as.character(pair[2]), p_data, hdi_data)
+  #data_plots = make_plots(p_data)
+  return(post_plot$p_combined + theme(legend.position="none", 
+                  axis.title.y=element_blank(), 
+                  axis.title.x=element_blank()))
+}
+
+plots = lapply(0:20, get_grid_plot)
+
+
+  fname = "../../experiments/0_pre_test/data/0_pre_test-cond5_2-trials.csv"
+  p_data = load_data_for_plotting(fname)
+  post_plot = plot_posterior("might", "probably", p_data, hdi_data)
+
+  btm_legend = extract_legend(post_plot$p1)
+  g1 = do.call("arrangeGrob", c(plots[1:12], ncol=3, left="utterance rating", bottom="event probability"))
+  grid.arrange(g1, btm_legend, heights=c(32, 2))
+
+```
+
+```{r fig.width=10, fig.height=8.125, echo=FALSE}
+
+g2 = do.call("arrangeGrob", c(plots[13:21], ncol=3, left="utterance rating", bottom="event probability"))
+grid.arrange(g2, btm_legend, heights=c(24, 2))
+
+```
+
+## Threshold distributions
+
+```{r fig2, fig.width=10, fig.height=8, echo=FALSE, results='asis'}
+
+ps = list()
+
+  modals = c("bare", "might", "probably", "could", "looks_like", "think", "bare_not")
+
+for (modal in modals) {
+  alpha_param_name = paste("alpha", modal, sep="_")
+  beta_param_name = paste("beta", modal, sep="_")
+  
+  alpha_param = model_params_all[1,alpha_param_name]
+  beta_param = model_params_all[1,beta_param_name]
+  
+  x = seq(0.001,0.999,.001)
+  y = dbeta(x, alpha_param, beta_param)
+  
+  beta_density = data.frame(x = x, y = y)
+  
+  ps[[modal]] = ggplot(beta_density, aes(x=x, y=y)) + geom_line() + ggtitle(modal) + xlab("percentage")
+}
+
+grid.arrange(ps$bare, ps$might, ps$probably, ps$could, ps$think, ps$looks_like, ps$bare_not, ncol=3)
+
+```
+
+## Costs
+
+```{r fig_cost, echo=FALSE, fig.width=10}
+
+d_costs = model_params_all %>% gather(key = "Parameter", value="value") %>% filter(grepl("cost_", Parameter))
+ggplot(d_costs, aes(x=Parameter, y=as.numeric(value))) + geom_bar(stat="identity") 
+
+```
+

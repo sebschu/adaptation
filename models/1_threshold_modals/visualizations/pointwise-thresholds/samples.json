@@ -1,0 +1,17 @@
+[{
+  "alpha_bare": 300,
+  "beta_bare": 0.7,
+  "cost_bare": 0,
+  "alpha_might": 90000,
+  "beta_might": 2000000,
+  "cost_might": 0,
+  "alpha_probably": 290000,
+  "beta_probably": 200000,
+  "cost_probably": 0,
+  "alpha_bare_not": 0.7,
+  "beta_bare_not": 300,
+  "cost_bare_not": 0,
+  "rat_alpha": 10,
+  "noise_strength": 0,
+  "utt_other_prob": 0
+  }]
