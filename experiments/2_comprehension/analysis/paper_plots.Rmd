@@ -74,10 +74,25 @@ exclude.probably = catch_trial_perf.all.probably %>%
 print(paste("Excluded", length(exclude.might), "participants in might-biased condition."))
 print(paste("Excluded", length(exclude.probably), "participants in probably-biased condition."))
 
+exclude.might2 = trials.might %>% 
+  filter(modal == "bare") %>%
+  filter(percentage_blue == 100) %>%
+  group_by(workerid) %>%
+  summarize(rating_norm_mu_bare=mean(rating_norm)) %>%
+  filter(rating_norm_mu_bare < 0.45) %>%
+  .$workerid
+
+exclude.probably2 = trials.probably %>% 
+  filter(modal == "bare") %>%
+  filter(percentage_blue == 100) %>%
+  group_by(workerid) %>%
+  summarize(rating_norm_mu_bare=mean(rating_norm)) %>%
+  filter(rating_norm_mu_bare < 0.45) %>%
+  .$workerid
 
 #final data
-d.might = trials.might %>% filter(., !(workerid %in% exclude.might))
-d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))
+d.might = trials.might %>% filter(., !(workerid %in% exclude.might)) %>% filter(!(workerid %in% exclude.might2))
+d.probably = trials.probably %>% filter(., !(workerid %in% exclude.probably))  %>% filter(!(workerid %in% exclude.probably2))
 
 d.all = rbind(d.might, d.probably)
 

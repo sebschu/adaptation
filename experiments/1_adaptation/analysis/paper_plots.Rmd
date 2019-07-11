@@ -24,7 +24,8 @@ theme_set(theme_bw())
 
 modals = c("might", "probably",   "other")
 modals_labels = c("might", "probably","other")
-colscale = scale_color_manual(limits=modals_labels, values=c("#d95f02", "#66a61e", "#666666"))
+colscale = scale_color_manual(values=c("#7CB637",  "#4381C1", "#666666")) 
+colscale_fill = scale_fill_manual(values=c("#7CB637", "#4381C1", "#666666")) 
 
 
 ```
@@ -114,7 +115,7 @@ ggplot(catch_trial_perf.all.might, aes(x=factor(workerid), y=catch_perf)) + geom
 ## Aggregated results
 
 
-```{r aggregate_plots, echo=FALSE, fig.width=8, fig.height=3.125}
+```{r aggregate_plots, echo=FALSE, fig.width=5.3, fig.height=4.5}
 
 plot_condition = function(d, plot_title) {
   drops <- c("modal1","rating1")
@@ -150,17 +151,17 @@ plot_condition = function(d, plot_title) {
   
   p1 =  ggplot(d_comparison %>% 
                  group_by(modal,percentage_blue, cond) %>% 
-                 summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), 
-               aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + 
+                 summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>%mutate(title="Title") %>% filter(modal != "other"), 
+               aes(x=percentage_blue, y=rating_m, group=interaction(modal,cond), col=modal, lty=cond)) + 
     geom_point(aes(col=modal)) + 
     geom_line() + 
-    xlab("% target color gumballs") +   
-    geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + 
+    xlab("event probability") +   
+    geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=5) + 
     ylab("mean rating") + 
-    facet_wrap(~cond) + 
     colscale + 
-    guides(col=guide_legend(title="Expression", ncol = 1)) + 
-    theme(legend.position="right", legend.text=element_text(size=10))
+    facet_wrap(~title) + 
+    guides(col=guide_legend(title="Expression")) + 
+    theme(legend.position="bottom", legend.text=element_text(size=10))
 
   p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
   geom_boxplot() +

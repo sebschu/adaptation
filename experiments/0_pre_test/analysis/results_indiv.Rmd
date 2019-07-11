@@ -1,0 +1,176 @@
+---
+title: "Pre Test analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r packages, include=FALSE}
+
+setwd("/Users/sebschu/Dropbox/Uni/RA/adaptation/adaptation/experiments/0_pre_test/analysis/")
+library("ggplot2")
+library("dplyr")
+library(tidyr)
+library("data.table")
+library(grid)
+library(gridExtra)
+source("helpers.R")
+
+theme_set(theme_bw())
+
+modals = c("bare", "might",  "could", "think",  "probably",  "looks_like", "bare_not", "other")
+modals_labels = c("bare", "might",  "could", "think",  "probably",  "looks like", "bare not", "other")
+colscale = scale_color_manual(
+  limits = modals_labels,
+  values = c(
+  "#E6AB02",
+  "#7CB637",
+  "#4C3B4D",
+  "#E7298A",
+  "#4381C1",
+  "#08415C",
+  "#FB3640",
+  "#999999"
+  )
+  )
+ # colscale = scale_colour_brewer(limits=modals_labels, drop=F, type="qual", palette="Dark2")
+colscale2 = scale_colour_brewer(limits=modals_labels, drop=T, type="qual", palette="Dark2")
+
+
+
+```
+
+```{r data}
+
+plot_condition = function(condition) {
+
+  fname = paste("../data/0_pre_test-cond", condition, "-trials.csv", sep="")
+  
+d = read.csv(fname)
+
+drops <- c("modal1","rating1")
+d2 = d[ , !(names(d) %in% drops)]
+setnames(d2, old=c("rating2","modal2"), new=c("rating", "modal"))
+
+drops <- c("modal2","rating2")
+d3 = d[ , !(names(d) %in% drops)]
+setnames(d3, old=c("rating1","modal1"), new=c("rating", "modal"))
+
+drops <- c("modal2", "rating2", "modal1", "rating1")
+d4 = d[ , !(names(d) %in% drops)]
+d4$rating = d4$rating_other
+d4$modal = "other"
+
+d = rbind(d2, d3, d4)
+
+d$modal = factor(d$modal)
+
+d$percentage_blue_f = factor(d$percentage_blue)
+
+
+d_blue = d %>% filter(., grepl("blue", sentence2))
+d_orange = d %>% filter(., grepl("orange", sentence2))
+
+#ggplot(d_orange, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +
+# geom_smooth(aes(col=modal))
+
+#ggplot(d_blue, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  geom_smooth(aes(col=modal))
+
+d_orange_reverse = d_orange
+d_orange_reverse$percentage_blue = 100-d_orange$percentage_blue
+
+d_comparison = rbind(d_blue, d_orange_reverse)
+d_comparison$blue= grepl("blue", d_comparison$sentence2)
+d_comparison$percentage_blue_f = factor(d_comparison$percentage_blue)
+
+d_comparison$modal = gsub('"', "", d_comparison$modal)
+d_comparison$pair = gsub('"', "", d_comparison$pair)
+
+
+d_comparison$modal = factor(d_comparison$modal, levels=modals, labels = modals_labels, ordered = T)
+
+#p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) + geom_point(aes(col=modal)) +  stat_smooth(aes(col=modal, fill=modal),  method = 'loess', geom="area", alpha=0.5) + ggtitle(d$pair[1]) + xlab("percentage") 
+
+#p1 = ggplot(d_comparison, aes(x=percentage_blue, y=rating)) +  stat_smooth(aes(col=modal, fill=modal),  method = 'loess', geom="area", alpha=0.5) + ggtitle(d$pair[1]) + xlab("percentage") 
+
+d_by_modal_col = d_comparison %>% group_by(modal,percentage_blue, blue, pair) %>% summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating))
+
+d_by_modal_col$modal = factor(d_by_modal_col$modal, levels=modals, labels = modals_labels, ordered = T)
+
+
+
+p1 = ggplot(d_by_modal_col, aes(x=percentage_blue, y=rating_m, group=interaction(modal, blue), col=modal, linetype=blue)) + geom_point(aes(col=modal)) + geom_line() + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=.1) + facet_wrap(~pair) + colscale
+
+p1a = ggplot(d_comparison %>% group_by(modal,percentage_blue, pair) %>% summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), aes(x=percentage_blue, y=rating_m, group=modal, col=modal)) + geom_point(aes(col=modal), size=1) + geom_line(size=1) + xlab("percentage") +   geom_errorbar(aes(ymin=rating_m-ci_low, ymax=rating_m+ci_high), width=5, size=1) + ylab("mean rating") + facet_wrap(~pair) + colscale   + guides(col=guide_legend(title="Expression", nrow = 1)) + theme(legend.position="bottom", legend.text=element_text(size=14))
+
+
+
+p2 = ggplot(d_comparison, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
+  geom_boxplot() +
+  ggtitle(d$pair[1]) + xlab("percentage") + colscale
+
+
+d_blue = d_comparison %>% 
+  group_by(modal,percentage_blue, blue) %>% 
+  summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>% 
+  filter(blue == T)
+
+d_orange = d_comparison %>% 
+  group_by(modal,percentage_blue, blue) %>% 
+  summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>% 
+  filter(blue == F)
+
+d_merged = merge(d_blue, d_orange, by=c("modal", "percentage_blue"))
+
+cat(paste("Correlation between blue and orange mean ratings: ", cor(d_merged$rating_m.x, d_merged$rating_m.y), "\n\n"))
+
+return(list("p1" = p1, "p1a" = p1a, "p2" = p2, d=d_comparison))
+
+}
+
+```
+
+
+
+```{r echo=FALSE, fig.width=10, fig.height=10.125}
+
+
+# participant_plot = ggplot(ps_old$d %>% 
+#                             group_by(modal,percentage_blue, pair, workerid) %>% 
+#                             summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)) %>% 
+#                             filter(workerid %in% c(15,8,12)), 
+#                           aes(x=percentage_blue/100, y=rating_m, group=modal, col=modal)) + 
+#   geom_point(aes(col=modal), size=1) + 
+#   geom_line(size=1) + 
+#   xlab("event probability") + 
+#   ylab("utterance rating") + 
+#   facet_wrap(~workerid, labeller=function(variable, value) {return(paste("Subject", value))}) + 
+#   scale_color_manual(limits=c("might", "probably", "other"), values=c("#7CB637", "#3885B4", "#999999"))+
+#   guides(col=guide_legend(title="Expression", nrow = 1)) + 
+#   theme(legend.position="bottom", legend.text=element_text(size=14))
+
+
+for (i in 0:20) {
+
+plot_data = plot_condition(i)  
+  
+participant_plot = ggplot(plot_data$d %>% 
+                            group_by(modal,percentage_blue, pair, workerid) %>% 
+                            summarise(rating_m = mean(rating), ci_low=ci.low(rating), ci_high=ci.high(rating)), 
+                          aes(x=percentage_blue/100, y=rating_m, group=modal, col=modal)) + 
+  geom_point(aes(col=modal), size=1) + 
+  geom_line(size=1) + 
+  xlab("event probability") + 
+  ylab("utterance rating") + 
+  facet_wrap(~workerid, labeller=function(variable, value) {return(paste("Subject", value))}, ncol=7) + 
+colscale +  guides(col=guide_legend(title="Expression", nrow = 1)) + 
+  theme(legend.position="bottom", legend.text=element_text(size=14))
+  
+
+plot(participant_plot)
+
+}
+
+```

@@ -18,12 +18,13 @@ library(gridExtra)
 library(DescTools)
 library(splines)
 library(stringr)
+library(effsize)
 source("helpers.R")
 
 theme_set(theme_bw())
 
-colscale = scale_color_manual(values=c("#7CB637", "#666666", "#4381C1")) 
-colscale_fill = scale_fill_manual(values=c("#7CB637", "#666666", "#4381C1")) 
+colscale = scale_color_manual(values=c("#7CB637",  "#4381C1", "#666666")) 
+colscale_fill = scale_fill_manual(values=c("#7CB637",  "#4381C1", "#666666")) 
 
 remove_quotes = function(d) {
   if (!is.null(d$modal)) {
@@ -159,7 +160,7 @@ d = d %>% filter(!(workerid %in% exclude))
 ## Aggregated results
 
 
-```{r aggregate_plots, echo=FALSE, fig.width=10, fig.height=8}
+```{r aggregate_plots, echo=FALSE, fig.width=10, fig.height=4.5}
 
 
 
@@ -167,25 +168,26 @@ plot_conditions = function(d, plot_title) {
   
   
   d_means = d %>%
-  group_by(workerid, percentage_blue, modal, first_speaker_type,test_order, speaker_type) %>% 
+  group_by(workerid, percentage_blue, modal, first_speaker_type) %>% 
   summarise(participant_mean = mean(rating)) %>%
-  group_by(percentage_blue, modal, first_speaker_type, test_order, speaker_type) %>%
+  group_by(percentage_blue, modal, first_speaker_type) %>%
   summarise(mu = mean(participant_mean),
          ci_high = ci.high(participant_mean), 
          ci_low = ci.low(participant_mean))
 
   
-  p1 = ggplot(d_means, aes(x=percentage_blue, y=mu, col=modal, lty=speaker_type)) + 
-  xlab("% blue gumballs") +
+  d_means$first_speaker_type = factor(d_means$first_speaker_type, labels = c("cautious", "confident"))
+  
+  p1 = d_means %>% filter(modal != "other") %>% ggplot(aes(x=percentage_blue, y=mu, col=modal)) + 
+  xlab("event probability") +
   ylab("mean ratings") +
-  geom_errorbar(aes(ymin=mu-ci_low, ymax=mu+ci_high), width=.1) +
+  geom_errorbar(aes(ymin=mu-ci_low, ymax=mu+ci_high), width=5) +
   geom_line() +
   geom_point(size=1) +
-  guides(col=guide_legend(title="Expr.")) +
+  guides(col=guide_legend(title="Expr."), lty=guide_legend(title="Speaker")) +
   colscale +
   theme(legend.position="bottom") + 
-  ggtitle(plot_title) +
-  facet_wrap(~first_speaker_type+test_order)
+  facet_wrap(~first_speaker_type) 
 
   p2 = ggplot(d, aes(x=percentage_blue_f, y=rating, fill=modal)) + 
   geom_boxplot() +
@@ -212,6 +214,8 @@ plot_conditions = function(d, plot_title) {
   ps1 = plot_conditions(d, "")
 
   plot(ps1$p1)
+    ggsave(filename = "exp2-results.pdf", plot = ps1$p1, device = "pdf", width=5, height=4)
+
 ```
 
 ## Individual responses
@@ -281,10 +285,10 @@ auc_for_participants = function(d, method) {
 }
 
 #AUCs for cautious speaker ratings 
-aucs.cautious = d %>% filter(speaker_type == "cautious") %>% auc_for_participants(., method=auc_method2)
+aucs.cautious = d %>% filter(first_speaker_type == "cautiousfirst") %>% auc_for_participants(., method=auc_method2)
 
 #AUCs for confident speaker ratings 
-aucs.confident = d %>% filter(speaker_type == "confident") %>% auc_for_participants(., method=auc_method2)
+aucs.confident = d %>% filter(first_speaker_type == "confidentfirst") %>% auc_for_participants(., method=auc_method2)
 
 
 
@@ -325,8 +329,11 @@ t-test and regression model with control variables:
 ```{r t_test_method1, echo=FALSE}
 
 print(t.test(aucs.cautious$auc_diff, aucs.confident$auc_diff, var.equal=TRUE))
+print(cohen.d(aucs.cautious$auc_diff, aucs.confident$auc_diff))
 
-model = lm(formula= auc_diff ~ cond + test_order + first_speaker_type*test_order + confident_speaker, data = rbind(aucs.cautious, aucs.confident))
+
+
+model = lm(formula= auc_diff ~ cond + test_order + confident_speaker, data = rbind(aucs.cautious, aucs.confident))
 
 print(summary(model))
 

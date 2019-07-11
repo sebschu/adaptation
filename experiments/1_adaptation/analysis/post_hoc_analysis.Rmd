@@ -18,6 +18,7 @@ library(data.table)
 library(gridExtra)
 library(DescTools)
 library(splines)
+library(effsize)
 source("helpers.R")
 ```
 
@@ -316,6 +317,8 @@ t-test:
 ```{r t_test_method2, echo=FALSE}
 
 print(t.test(aucs.might$auc_diff, aucs.probably$auc_diff, var.equal=TRUE))
+
+print(cohen.d(aucs.might$auc_diff, aucs.probably$auc_diff))
 
 ```
 
