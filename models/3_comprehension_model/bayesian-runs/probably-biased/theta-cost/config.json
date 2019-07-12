@@ -1,0 +1,152 @@
+{
+  "utterances": [
+    {
+      "form": "bare",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.81446370,
+      "nu_init": 1.56426646,
+      "cost_init": 3.03251764,
+      "prior": {
+        "mu_mu": 0.81446370,
+        "mu_sd": 0.1,
+        "cost_mu": 3.03251764,
+        "cost_sd": 0.5
+      }
+    },
+    {
+      "form": "might",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.23144643,
+      "nu_init": 4.01429868,
+      "cost_init": 1,
+      "prior": {
+        "mu_mu": 0.23144643,
+        "mu_sd": 0.1,
+        "cost_mu": 1,
+        "cost_sd": 0.5
+        }
+    },
+    {
+      "form": "probably",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.59029174,
+      "nu_init": 4.32276417,
+      "cost_init": 1,
+      "prior": {
+        "mu_mu": 0.59029174,
+        "mu_sd": 0.1,
+        "cost_mu": 1,
+        "cost_sd": 0.5
+      }
+    },
+    {
+      "form": "think",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.61684055,
+      "nu_init": 2.68289959,
+      "cost_init": 3.03251764,
+      "prior": {
+        "mu_mu": 0.61684055,
+        "mu_sd": 0.1,
+        "cost_mu": 3.03251764,
+        "cost_sd": 0.5
+      }
+    },
+    {
+      "form": "could",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.37119028,
+      "nu_init": 2.15360533,
+      "cost_init": 3.03251764,
+      "copy_cost": "think",
+      "prior": {
+        "mu_mu": 0.37119028,
+        "mu_sd": 0.1,
+        "cost_mu": 3.03251764,
+        "cost_sd": 0.5
+      }
+    },
+    {
+      "form": "looks_like",
+      "has_theta": true,
+      "has_cost": true,
+      "mu_init": 0.69623235,
+      "nu_init": 1.99960149,
+      "cost_init": 3.03251764,
+      "copy_cost": "think",
+      "prior": {
+        "mu_mu": 0.69623235,
+        "mu_sd": 0.1,
+        "cost_mu": 3.03251764,
+        "cost_sd": 0.5
+      }
+    },
+    {
+      "form": "bare_not",
+      "has_theta": true,
+      "has_cost": true,
+      "is_neg": true,
+      "mu_init": 0.25027258,
+      "nu_init": 1.62567899,
+      "cost_init": 3.03251764,
+      "copy_cost": "think",
+      "prior": {
+        "mu_mu": 0.25027258,
+        "mu_sd": 0.1,
+        "cost_mu": 3.03251764,
+        "cost_sd": 0.5
+      }
+      }
+  ],
+  "noise_strength_init": 0.07433144,
+  "theta_marginalization": "speaker",
+  "condition_encoding": "cost",
+  "rat_alpha_init": 2.211211,
+  "rat_alpha_estimate": true,
+  "rat_alpha_prior": {
+    "rat_alpha_mu": 2.211211,
+    "rat_alpha_sd": 0.00000001
+  },
+  "utt_other_prob_init": 3.640688e-05,
+  "utt_other_prob_estimate": true,
+  "utt_other_prob_prior": {
+    "utt_other_prob_mu": 3.640688e-05,
+    "utt_other_prob_sd": 1
+  },
+  "proposal_widths": {
+    "theta_mu": 0.05,
+    "theta_nu": 0.1,
+    "cost": 0.15,
+    "rat_alpha": 0.00000000001,
+    "utt_other_prob": 0.1
+  },
+  "exposure_trials": [
+    [
+      "might",
+      25,
+      5
+    ],
+    [
+      "probably",
+      60,
+      10
+    ],
+    [
+      "bare",
+      100,
+      5
+    ]
+  ],
+  "conditions": [
+    "might-probably"
+  ],
+  "data_path": "./data/speaker_adaptation_confident.json",
+  "burn_in": 20000,
+  "hdi_estimation_samples": 1000,
+  "iterations": 120001
+}

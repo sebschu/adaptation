@@ -25,6 +25,13 @@ models/2_adaptation_model/bayesian-runs/**/hdi_samples*
 models/2_adaptation_model/bayesian-runs-balanced/**/run*
 models/2_adaptation_model/bayesian-runs-balanced/**/likelihood*
 models/2_adaptation_model/bayesian-runs-balanced/**/hdi_samples*
+models/3_comprehension_model/bayesian-runs/**/run*
+models/3_comprehension_model/bayesian-runs/**/likelihood*
+models/3_comprehension_model/bayesian-runs/**/hdi_samples*
+models/3_comprehension_model/bayesian-runs-balanced/**/run*
+models/3_comprehension_model/bayesian-runs-balanced/**/likelihood*
+models/3_comprehension_model/bayesian-runs-balanced/**/hdi_samples*
+
 
 ### output of bayesian runs
 
