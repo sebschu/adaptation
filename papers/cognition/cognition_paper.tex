@@ -81,24 +81,26 @@
 \authornote{ACKNOWLEDGMENTS REMOVED FOR REVIEWING\\
 Correspondence concerning this article should be addressed to Sebastian Schuster, Department of
 Linguistics, Stanford University, 450 Serra Mall, Stanford, CA 94305. E-mail:
-sebschu@stanford.edu.}
-\abstract{
-Pragmatic theories of interpreting utterances in context generally make
+sebschu@stanford.edu.\\
+Declarations of interest: none \\
+All experimental materials, data, analyses, and model implementations are available at \url{http://github.com/sebschu/adaptation}.}
+\abstract{Pragmatic theories of interpreting utterances in context share
 the assumption that listeners reason about alternative utterances that a
 speaker could have said to describe different situations. Such reasoning
 necessitates precise expectations about a speaker's productions
 in different contexts, which is at odds with the considerable variability across speakers that 
-exists at all levels of linguistic representation. Listeners seem reconcile
-this tension by adapting to the statistics of an individual speaker. In this work,
-we investigate this kind of semantic/pragmatic adaptation in the domain of
+exists at all levels of linguistic representation. Listeners seem to reconcile
+this tension by adapting to the statistics of an individual speaker but what kind
+of representations listeners update in this process remains poorly understood.
+In this work, we investigate semantic/pragmatic adaptation in the domain of
 uncertainty expressions like \textit{might} and \textit{probably}. In a series 
 of web-based experiments, we find 1) that listeners vary in their expectations
 about a generic speaker's use of uncertainty expressions; 2) that listeners
 rapidly update their expectations about the use of uncertainty expressions after
 brief exposure to a speaker with a specific usage of uncertainty expressions; 
-and 3) that listeners interpretations of uncertainty expressions
-change after being exposed to a specific speaker. We further investigate,
-the representations that listeners update during interpretation. We present
+and 3) that listeners' interpretations of uncertainty expressions
+change after being exposed to a specific speaker. We then turn to 
+investigating which representations listeners update during adaptation. We present
 a novel computational model of the adaptation process based on Bayesian
 belief updating and through a series of model comparisons, we find that
 semantic adaptation is a product of listeners updating beliefs about a
@@ -171,7 +173,7 @@ a model that can quantitatively link behavioral data to these beliefs.
 Recent advances in probabilistic modeling of pragmatic language understanding within the Rational Speech Act (RSA) framework \parencite{Frank2012,Goodman2016,Franke2016} allow us to formally investigate the two likely candidates for representations that are updated during semantic/pragmatic adaptation mentioned above: \emph{utterance preferences} and \emph{semantic representations}. To elaborate -- analogous to syntactic adaptation -- 
 listeners might update their beliefs about speakers' preferences
 for producing a particular expression (e.g., a preference for \emph{might} over \emph{probably}). Alternatively -- analogous to phonetic adaptation -- listeners might update their beliefs about a speaker's lexicon, i.e. their mapping between 
-words and world states (e.g. the range of event probabilities that \emph{probably} is compatible with). Finally, listeners might track both preferences and mappings.
+words and world states (e.g., the range of event probabilities that \emph{probably} is compatible with). Finally, listeners might track both preferences and mappings.
 
 To illustrate how different beliefs about lexica and utterance preferences can lead to different interpretations, consider the interpretation 
 of the uncertainty expression \textit{probably} produced by three different hypothetical speakers. For the sake of this example, 
@@ -181,7 +183,7 @@ A listener's beliefs about the three speakers' lexica and preferences are schema
 \begin{figure}
 \center
 \includegraphics[width=\textwidth]{plots/implicatures.pdf}
-\caption{Lexica, utterance preferences and likely interpretation of \textit{probably} for three different hypothetical speakers. The region of the probability scale covered by each line in the Lexicon panel indicates the corresponding expression's literal semantics. Height of bars in the Cost panel indicates the speaker's cost (dispreference) for each expression. }
+\caption{Lexica, utterance preferences and likely interpretation of \textit{probably} for three different hypothetical speakers. The region of the probability scale covered by each line in the Lexicon panel indicates the corresponding expression's literal semantics. Height of bars in the Cost panel indicates the speaker's cost (dispreference) for each expression.}
 \label{fig:inference-example}
 \end{figure}
 
@@ -528,7 +530,7 @@ Therefore, using Beta distributions for the threshold distributions has the desi
 \subsection{Parameter estimation}
 
 Given all the assumptions outlined above, the model has  $18$ parameters in total: A cost parameter $\gamma$, a rationality parameter $\lambda$, a noise strength parameter $\delta$, a constant corresponding to other utterances $O$, and for each utterance, Beta distribution parameters $\alpha_e$ and $\beta_e$. We estimated these parameters jointly from all 21 conditions of Experiment~1 using Bayesian data analysis \parencite[BDA; see, e.g.,][]{Kruschke2015}. To construct the dataset, we treated the ratings by each participant as a probability distribution from which we sampled 10 utterances. We used highly uninformative
-uniform priors over the interval $[0,15]$ for all parameters. We estimated the vector of parameters $\Theta$ using MCMC with a Metropolis Hastings sampler. To decrease autocorrelation of the chain, we collected a sample only at every 10th iteration (i.e., we use thinning of 10). We discarded the first 10,000 burn-in samples and then collected 50,000 samples.  We ran four MCMC chains and confirmed convergence by computing the $\hat{R}$-statistic \parencite{Gelman2003}. More details on the implementation of the model can be found in Appendix C.
+uniform priors over the interval $[0,15]$ for the Beta distribution and cost parameters, uniform priors over the interval $[0,7]$ for the rationality parameter, and uniform priors over the interval $[0,0.5]$ for $O$ and the noise strength parameter. We estimated the vector of parameters $\Theta$ using MCMC with a Metropolis Hastings sampler. To decrease autocorrelation of the chain, we collected a sample only at every 10th iteration (i.e., we use thinning of 10). We discarded the first 10,000 burn-in samples and then collected 50,000 samples.  We ran four MCMC chains and confirmed convergence by computing the $\hat{R}$-statistic \parencite{Gelman2003}. More details on the implementation of the model can be found in Appendix C.
 
 \subsection{Model evaluation}
 
@@ -1427,6 +1429,8 @@ simulations, we assume that there are only two possible utterances, which makes 
 Figure~\ref{fig:approx-simulations} shows the results of these simulations. As these plots show, the approximate model $\widetilde{ES_1}$ is a very close approximation of the expected
 pragmatic speaker model $ES_1$, which suggests that this approximation should only minimally affect our modeling results. 
 
+The model is implemented in Python using the scikit-learn \parencite{Scikit2011} and numpy \parencite{vanderWalt2011} libraries.
+
 \pagebreak
 
 \subsection*{D Additional model predictions}
@@ -1520,16 +1524,16 @@ were going to be larger in the \emph{cautious speaker} condition than in the \em
 \caption{Aggregated post-exposure ratings from the original interpretation experiment.  \label{fig:adaptation-results-comp-orig}}
 \end{figure}
 
-Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+Figure~\ref{fig:adaptation-results-comp-orig} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumball machines with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(75)=3.05$, $p<0.01$) and {\sc probably} ($t(75)=3.08$, $p<0.01$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
-Qualitatively, the results are the same as in Experiment~3. However, since participants had the option to assign high 
-ratings (they could assign a maximum rating to each gumball if they wanted to) to 
-all gumball machines, we noticed that many participants assigned very high ratings to most gumball 
+This means that qualitatively, the results are the same as in Experiment~3. However, since participants had the option to assign high 
+ratings to 
+all gumball machines (they could assign a maximum rating to each gumball machine if they wanted to), we noticed that many participants assigned very high ratings to most gumball 
 machines and therefore did not indicate their interpretation of the utterance. Further, it seemed that some participants
-understood the instructions as rating the likelihood of getting a blue gumball and provided ratings proportional to the 
+understood the instructions as rating the likelihood of getting a target color gumball and provided ratings proportional to the 
 target color gumball proportion independent of the utterance. For these reasons, we revised the original paradigm as described
 in the main text and asked participants to indicate their interpretation using a limited set of coins, which appeared to be less
-confusing to participants. 
+confusing for participants. 
 
 
 
