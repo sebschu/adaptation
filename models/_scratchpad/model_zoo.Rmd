@@ -93,7 +93,7 @@ To make things a little simpler, I'll limit the set of utterances in the followi
 
 
 ```{r model1_webppl, fig.width=10}
-  model_params_all = read.csv(file = "../1_threshold_modals/param-estimation-output-python/params_all_1_cost_other_cost.csv")
+  model_params_all = read.csv(file = "../1_threshold_modals/runs/threshold-model-expected/mle_params.csv")
   plot_posterior = function(modal1, modal2, webppl_model, save_predictions_path = NULL) {
 
       data_from_R = list(modal1=modal1, modal2=modal2, params=model_params_all[1,])

@@ -11,6 +11,9 @@ runs_nu
 *.bbl
 *.blg
 *.bcf
+*_files
+*_cache
+_stan_models
 papers/cognition/*.log
 papers/cognition/*.run.xml
 *.synctex.gz
