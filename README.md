@@ -1,4 +1,4 @@
-# Semantic pragmatic adaptation
+# Semantic/pragmatic adaptation
 
 Repository of experiments and computational models of semantic/pragmatic adaptation.
 
