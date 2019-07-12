@@ -1,10 +1,11 @@
-# adaptation
-Collection of notes/research ideas on linguistic adaptation.
+# Semantic pragmatic adaptation
 
+Repository of experiments and computational models of semantic/pragmatic adaptation.
 
-# Paper notes
+This repository is structured as follows:
 
- * [Fine and Jaeger (2013)](paper-notes/Fine_Jaeger_2013.md)
+* [Experiments](./experiments): This folder contains the experiment code, data analysis scripts and data from a series of web-based experiments.
 
+* [Models](./models): This folder contains the implementation and configuration files of several probabilistic computational models related to semantic adaptation.
 
-# Project ideas
+See the README files in the two folders for more details on the individual experiments and models.
