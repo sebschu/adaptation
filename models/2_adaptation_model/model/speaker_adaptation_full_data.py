@@ -60,6 +60,9 @@ class AdaptationModel(ThresholdModel):
       costs = uniform(0,7).rvs(len(self.expressions)) 
       rat_alpha = self.config["rat_alpha_init"]
       utt_other_prob = self.config["utt_other_prob_init"]
+      utt_other_prob = self.config["utt_other_prob_init"]
+      noise_strength = self.config["noise_strength_init"]
+      
       
       for i, utt in enumerate(self.config["utterances"]):
         if not utt["has_theta"]:
@@ -77,7 +80,7 @@ class AdaptationModel(ThresholdModel):
           if utt["cost_init"] != "random":
             costs[i] = utt["cost_init"]
             
-      return np.concatenate([theta_mus, theta_nus, costs, [rat_alpha], [utt_other_prob]])
+      return np.concatenate([theta_mus, theta_nus, costs, [rat_alpha], [utt_other_prob], [noise_strength]])
   
   def compute_trans_probs(self, src_theta_mu, src_theta_nus, src_costs, src_rat_alpha, 
                           tgt_theta_mu, tgt_theta_nus, tgt_costs, tgt_rat_alpha):
@@ -147,10 +150,12 @@ class AdaptationModel(ThresholdModel):
       old_costs = params[len(self.expressions)*2:len(self.expressions)*3]
       old_rat_alpha = params[len(self.expressions)*3]
       old_utt_other_prob = params[len(self.expressions)*3 + 1]
+      old_noise_strength = params[len(self.expressions)*3 + 2]
       utt_other_prob = old_utt_other_prob
+      noise_strength = old_noise_strength
       prior = self.compute_prior(old_theta_mus, old_theta_nus, old_theta_alphas, old_theta_betas, old_costs, old_rat_alpha) 
-      old_likelihood = self.compute_likelihood(old_costs, old_rat_alpha, old_theta_alphas, old_theta_betas, old_utt_other_prob) + prior
-      sample = self.make_sample(old_costs, old_theta_alphas, old_theta_betas, old_rat_alpha, old_utt_other_prob)
+      old_likelihood = self.compute_likelihood(old_costs, old_rat_alpha, old_theta_alphas, old_theta_betas, old_utt_other_prob, old_noise_strength) + prior
+      sample = self.make_sample(old_costs, old_theta_alphas, old_theta_betas, old_rat_alpha, old_utt_other_prob, old_noise_strength)
             
       iterations = self.config["iterations"]
       burn_in = self.config["burn_in"] if "burn_in" in self.config else 0
@@ -194,7 +199,7 @@ class AdaptationModel(ThresholdModel):
                 
         
         prior = self.compute_prior(theta_mus, theta_nus, theta_alphas, theta_betas, costs, rat_alpha)
-        new_likelihood = self.compute_likelihood(costs, rat_alpha, theta_alphas, theta_betas, utt_other_prob) + prior
+        new_likelihood = self.compute_likelihood(costs, rat_alpha, theta_alphas, theta_betas, utt_other_prob, noise_strength) + prior
         accept = new_likelihood > old_likelihood
         if not accept:
           bwd_prob = self.compute_trans_probs(theta_mus, theta_nus, costs, rat_alpha, 
@@ -208,7 +213,7 @@ class AdaptationModel(ThresholdModel):
         
         if accept:
           old_likelihood = new_likelihood
-          sample = self.make_sample(costs, theta_alphas, theta_betas, rat_alpha, utt_other_prob)
+          sample = self.make_sample(costs, theta_alphas, theta_betas, rat_alpha, utt_other_prob, noise_strength)
           acceptance += 1
           old_costs = costs
           old_theta_alphas = theta_alphas
