@@ -313,6 +313,8 @@ compute_correlation_for_model = function(model_type, exp_data, model_path_suffix
   return(cor_row)
 }
 
+
+
 #c1 = compute_correlation_for_model("theta-cost-rat", d)
 c1 = compute_correlation_for_model("theta-cost", d)
 c2 = compute_correlation_for_model("cost", d)
@@ -323,6 +325,10 @@ c4 = compute_correlation_for_model("prior", d)
 #c6 = compute_correlation_for_model("cost-rat", d)
 
 rbind(c1,c2,c3,c4)
+
+
+
+
 
 
 ##########
@@ -709,6 +715,87 @@ posterior_plot = hdi_data.all %>%
 ggsave(posterior_plot, filename = "../plots/adaptation-posterior-predictions-replication.pdf", width = 30, height = 12, units = "cm")
 
 
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/cautious/mle_params.csv")
+
+beta_density = data.table()
+
+for (modal in beta_modals) {
+  if (modal == "other") {
+    next
+  }
+  alpha_param_name = paste("alpha", modal, sep="_")
+  beta_param_name = paste("beta", modal, sep="_")
+  
+  alpha_param = mle_params[1,alpha_param_name]
+  beta_param = mle_params[1,beta_param_name]
+  
+  x = seq(0.001,0.999,.001)
+  y = dbeta(x, alpha_param, beta_param)
+  #y = y / (max(y))
+  
+  beta_density = rbind(beta_density, data.frame(x = x, y = y, modal = gsub("_", " ", modal), condition="cautious speaker"))
+}
+
+
+mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/confident/mle_params.csv")
+
+
+for (modal in beta_modals) {
+  if (modal == "other") {
+    next
+  }
+  alpha_param_name = paste("alpha", modal, sep="_")
+  beta_param_name = paste("beta", modal, sep="_")
+  
+  alpha_param = mle_params[1,alpha_param_name]
+  beta_param = mle_params[1,beta_param_name]
+  
+  x = seq(0.001,0.999,.001)
+  y = dbeta(x, alpha_param, beta_param)
+  #y = y / (max(y))
+  
+  beta_density = rbind(beta_density, data.frame(x = x, y = y, modal = gsub("_", " ", modal), condition="confident speaker"))
+}
+
+beta_density$modal = factor(beta_density$modal, levels = modals_labels, ordered=T)
+
+mle_params = read.csv("../../../models/1_threshold_modals/runs/threshold-model-expected/mle_params.csv")
+
+for (modal in beta_modals) {
+  if (modal == "other") {
+    next
+  }
+  alpha_param_name = paste("alpha", modal, sep="_")
+  beta_param_name = paste("beta", modal, sep="_")
+  
+  alpha_param = mle_params[1,alpha_param_name]
+  beta_param = mle_params[1,beta_param_name]
+  
+  x = seq(0.001,0.999,.001)
+  y = dbeta(x, alpha_param, beta_param)
+  #y = y / (max(y))
+  
+  beta_density = rbind(beta_density, data.frame(x = x, y = y, modal = gsub("_", " ", modal), condition="prior"))
+}
+
+threshold_distrs = ggplot(beta_density, aes(x=x, y=y, col=condition)) + 
+  geom_line() + 
+  facet_wrap(~modal, ncol = 4, scales = "free_y") + 
+  xlab("threshold") +
+  ylab("density") +
+  theme(strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12),
+        legend.position = "bottom") +
+  guides(col=guide_legend(title="Condition", nrow = 1)) +
+  cond_colscale
+
+ggsave(threshold_distrs, filename = "../plots/adaptation-posterior-thresholds-replication.pdf", width = 30, height = 12, units = "cm")
+
+
+
 mle_params = read.csv("../../../models/2_adaptation_model/bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/cautious/mle_params.csv") 
 mle_params = rbind(mle_params, read.csv("../../../models/2_adaptation_model//bayesian-runs-balanced/mu-0.175_nu-2.5_cost-1.3/confident/mle_params.csv"))
 mle_params = rbind(mle_params, read.csv("../../../models/1_threshold_modals/runs/threshold-model-expected/mle_params.csv") )
@@ -799,7 +886,7 @@ comp.plot_condition = comp.plot_data %>%
   geom_vline(xintercept = 60, lty=2, col="grey", size=1) +
   theme(legend.position="bottom", 
         legend.box = "vertical",
-        trip.text.x = element_text(size = 14), 
+        strip.text.x = element_text(size = 14), 
         legend.text=element_text(size=14), 
         legend.title = element_text(size=14),
         axis.title = element_text(size=14),
