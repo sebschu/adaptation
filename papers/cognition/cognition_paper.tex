@@ -368,7 +368,7 @@ $$L_0\left(\phi \mid u_e, \theta_e\right) \propto P(\phi) \times
 0 & \mbox{otherwise} 
 \end{cases} \qquad \mbox{(for negated embedded propositions)}$$
 
-$P(\phi)$ is a prior distribution over event probabilities, which is independent of the utterance by the speaker agent.
+According to this formalization, a literal listener agent randomly draws an event probability $\phi$ from all values above (or, in the case of negated propositions, below) the threshold $\theta_e$ associated with the uncertainty expression $e$. $P(\phi)$ is a prior distribution over event probabilities, which is independent of the utterance by the speaker agent.
 
 A \textit{pragmatic speaker} agent $S_1$ who wants to communicate an event probability $\phi$ then chooses its utterance $u_e$ with uncertainty expression $e$ from a set of utterances $U$ according to a soft-max choice rule \parencite{Luce1959,Sutton1998} such that it chooses $u$ with a probability proportional to its speaker utility. 
 $$S_1\left(u_e \mid \phi, \theta, c\right) \propto exp \left( \lambda \left( \log L_0\left(\phi \mid u_e, \theta_e\right)  - c(u_e)\right)\right)$$
@@ -918,7 +918,7 @@ favor simpler models. For a more complex model with more parameters, the distrib
 Model & $R^2$ &   odds  \\ \midrule
 fixed & 0.746 & $10^{-1200}$    \\
 cost & 0.770 &  $10^{-448}$    \\
-threshold distributions & 0.874 &  $10^{-284}$   \\
+threshold distributions & 0.862 &  $10^{-284}$   \\
 cost \& threshold distributions & 0.815 & 1 \\
 \end{tabular}
 \caption{Model evaluation results on data from Experiment~2a. $R$\textsuperscript{$2$} are computed between  the mean post-exposure ratings and the mean model predictions. \textit{odds} are the posterior likelihood odds of the models compared to the \textit{cost and threshold distributions} model. \label{tbl:model-comparison}}
@@ -967,16 +967,18 @@ ratings. The results also clearly indicate that listeners update expectations ab
 the metric, the models according to which listeners update threshold distributions were best at predicting post-adaptation
 behavior in all simulations. 
 
-However, the conflict between the $R^2$ metric and the log odds ratio leaves unclear whether adaptation is a result of \emph{only} updating expectations about threshold distributions, or whether update on preferences is also necessary. 
-In part, this inconsistency can most likely be explained by the properties of the $R^2$ metric. For one, unlike the posterior odds, 
-it does not take uncertainty of the model predictions into account but rather compares the mean participant behavior to the mean 
-model predictions. Considering that the model does exhibit considerable uncertainty in its post-exposure rating predictions, it is not
-particularly surprising that the two metrics suggest different conclusions.\footnote{See \textcite{Gelman2019} for a proposal of a Bayesian $R^2$ value.}
-Second, since the ratings and the model predictions are probability distributions, 
-the empirical and predicted ratings for one utterance for a specific event probability are not independent 
-of the ratings for other utterances and therefore not all assumptions for using $R^2$ are met. Considering these
-factors, the posterior odds are to be trusted more than the $R^2$ values. This suggests that there is strong evidence that listeners 
-update expectations about both {threshold distributions} and {preferences}. 
+However, the conflict between the $R^2$ metric and the log odds ratio leaves it prima facie unclear whether adaptation is a result of 
+\emph{only} updating expectations about threshold distributions, or whether updating of preferences is also necessary. 
+This inconsistency can most likely be explained by the properties of the $R^2$ metric: $R^2$ is based on the assumption that all predictions
+are independent and that the residual error follows a normal distribution. These assumptions generally hold for regression models but they are violated
+for our model predictions since the model predicts a probability distribution over utterances for each event likelihood and therefore predicted utterance
+ratings are not independent and the residual errors do not follow a normal distribution. Further, unlike the posterior odds,
+$R^2$ does not take uncertainty of the model predictions into account but instead compares the mean participant behavior to the mean 
+model predictions, and therefore is not a well-suited measure for comparing models exhibiting uncertainty.\footnote{If the assumptions of independence and normally distributed 
+residual errors were met, we could address the issue of uncertain model predictions by using a recently proposed Bayesian $R^2$ metric \parencite{Gelman2019}, 
+which takes uncertainty of model predictions into account and returns a distribution over $R^2$ values. 
+However, the computation of this metric crucially relies on estimates of the variance of the residual error $\sigma^2$, and it neither makes sense nor is possible in our current framework to estimate this quantity and hence we also cannot compute a meaningful Bayesian $R^2$ distribution.} Considering these factors, the posterior odds are to be trusted more than the $R^2$ values, which in return 
+suggests that there is strong evidence that listeners  update expectations about both {threshold distributions} and {preferences}. 
 
 
 
@@ -1092,7 +1094,7 @@ about their prior beliefs about the world state and their expectations about a s
 $$ L_1(\phi \mid u_e) \propto P(\phi) ES_1(u_e \mid \phi).$$
 
 According to such a model of interpretation, the shifts in expectations that we observed in the previous experiment should also lead to a shift in interpretations. 
-If we assume a uniform prior over event probabilities,\footnote{To reiterate, this assumption was motivated by the study reported in Footnote 8, which suggested that participants on average assign equal probability to each gumball machine a priori.} then the model predicts that listeners who were exposed to a \textit{cautious} speaker should infer 
+If we assume a uniform prior over event probabilities,\footnote{To reiterate, this assumption was motivated by the study reported in Footnote 8, which suggested that participants on average assign equal probability to each gumball machine a priori. In this special case, we expect interpretations to be an exact mirror image of production expectations but in many other scenarios, listeners will have skewed prior beliefs about the event likelihood (e.g., consider beliefs about the likelihood of rain on a specific summer day in California, which will be highly skewed towards low values) and in such scenarios, listeners integrate prior beliefs and  production expectations to arrive at interpretations.} then the model predicts that listeners who were exposed to a \textit{cautious} speaker should infer 
 higher event probabilities when hearing {\sc might} or {\sc probably} than listeners who were exposed to a \textit{confident} speaker. Figure~\ref{fig:post-exposure-comp}
 shows the distribution over event probabilities after hearing three different utterances as predicted by $L_1$ parameterized by the inferred parameters from our
 adaptation simulations in the previous section. As these plots show, in the \textit{cautious speaker} condition, the distribution over event probabilities after hearing \textit{might} 
@@ -1121,7 +1123,7 @@ We excluded participants who failed more than 2 attention checks, which led to 1
 
 \subsection{Analysis and Predictions}
 
-If participants update their expectations of a specific speaker's use of uncertainty expressions,  we expect that listeners interpret a more confident speaker's utterance 
+If participants update their expectations of a specific speaker's use of uncertainty expressions,  we expect that participants interpret a more confident speaker's utterance 
 to communicate a lower event probability than a more cautious speaker's utterance. We tested this prediction by treating participant's distributions of coins 
 of gumball machines as a probability distribution over gumball proportions (and consequently event probabilities).  For each utterance, we 
 normalized participants' coin distributions such that they summed up to 1, so that we could interpret the normalized scores 
@@ -1136,9 +1138,15 @@ from these probability distributions and compared these expected values across t
 \caption{Aggregated post-exposure ratings from Experiment~3. Error bars correspond to bootstrapped 95\%-confidence intervals.  \label{fig:adaptation-results-comp}}
 \end{figure}
 
-Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumballs with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(76)=5.84$, $p<0.001$) and {\sc probably} ($t(76)=3.92$, $p<0.001$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
+Figure~\ref{fig:adaptation-results-comp} shows the aggregated and normalized ratings for the two conditions.  As predicted, participants provided higher ratings for gumball machines with higher target color percentages after hearing {\sc might} and {\sc probably} in the \emph{cautious speaker} condition than in the \emph{cautious speaker} condition. This also led to a significantly higher expected value for {\sc might} ($t(76)=5.84$, $p<0.001$) and {\sc probably} ($t(76)=3.92$, $p<0.001$) in the \emph{cautious speaker} condition as compared to the \emph{confident speaker} condition.
 
-These results suggest that listeners not only update their expectations about a speaker's use of uncertainty expressions, but also use those updated expectations in interpretation.
+These results suggest that listeners not only update their expectations about a speaker's use of uncertainty expressions, but also use those updated expectations in interpretation. 
+Here, we make the implicit linking assumption that the distribution of coins reflects participants' interpretations, i.e., their beliefs about the event likelihood after hearing an utterance.
+The choice for this paradigm, which is very similar to betting paradigms that have been used to study interpretations of utterances in reference games \parencite{Frank2012,Goodman2013} as well as for probing subjective probabilities \parencite[e.g.,][]{Hampton1973}, was motivated by the assumption that listeners will have uncertainty about the exact interpretation after hearing \textsc{might} or \textsc{probably}. Allowing
+participants to assign multiple coins to gumball machines with different proportions provided them with the ability to convey uncertainty. The results from this experiment suggests that
+participants behaved as we intended: they assigned almost all coins to the gumball machine with 100\% target color gumballs after hearing \textsc{bare}, 
+an utterance about whose interpretation participants likely have very little uncertainty, whereas participants assigned coins to multiple machines after hearing \textsc{might} or \textsc{probably}. 
+
 
 \subsection{Model comparison}
 
@@ -1180,7 +1188,7 @@ The only main deviation between the model predictions and the experimental data 
 
 \section{General Discussion}
 
-While adaptation in language is a widely attested phenomenon, the exact nature of the representations that are updated during semantic/pragmatic adaptation has remained largely a mystery. In this paper we attempted to rectify this situation by doing three things: first, to investigate whether semantic/pragmatic adaptation occurs at all in a novel domain, that of uncertainty expressions;  second, to investigate the nature of the representations that are updated during adaptation via the comparison of computational models of adaptation formulated within a Bayesian pragmatic modeling framework; and third, to test a novel prediction resulting from the application of this model to interpretation.  
+%While adaptation in language is a widely attested phenomenon, the exact nature of the representations that are updated during semantic/pragmatic adaptation has remained largely a mystery. In this paper we attempted to rectify this situation by doing three things: first, to investigate whether semantic/pragmatic adaptation occurs at all in a novel domain, that of uncertainty expressions;  second, to investigate the nature of the representations that are updated during adaptation via the comparison of computational models of adaptation formulated within a Bayesian pragmatic modeling framework; and third, to test a novel prediction resulting from the application of this model to interpretation.  
 
 In two production expectation experiments (Experiments~2a and 2b), we found that listeners adapt to speakers who vary in their use of uncertainty expressions. This result confirms that 
 the findings by \textcite{Yildirim2016} also extend to the class of uncertainty expressions. In Experiment~3, we further found a novel effect of adaptation on utterance interpretation.
@@ -1220,15 +1228,32 @@ in our model, which provides further evidence that belief updating plays an impo
 In the space of mechanistic accounts, \textcite{Pickering2004} argued that a lot of partner-specific linguistic behavior
  can be explained in terms of priming, i.e., the automatic activation of linguistic representations when 
 a speaker produces an utterance or a listener hears an utterance. Their account has the appeal
-of explaining why partner-specific language use often appears to happen automatically and effortlessly. But
-without additional stipulations, their account is not compatible with the results from our 
-experiments. In particular, such a priming account predicts that only the number of exposures should have
+of explaining why partner-specific language use often appears to happen automatically and effortlessly. 
+
+
+
+But
+without additional stipulations, their account does not predict the results from our experiment. In particular,
+a priming account only predicts that 
+
+in theory compatible -- but unclear how this is actually implemented
+
+-- don't say anything about frequency in their paper
+
+
+ is not compatible with the results from our 
+experiments. In particular, a priming account only predicts that 
+
+
+In particular, such a priming account predicts that only the number of exposures should have
 an effect on language: with repeated exposure, the activation of the 
 representations of lexical items like \textit{might} and \textit{probably} should increase, 
 and therefore participants should be more likely to expect the speaker to produce these utterances.
 However, in Experiment~2b, we found evidence against such an account: in this experiment,
 participants in both conditions were exposed to the same number of each utterance, so according to
-a priming account, we should not find a difference between speaker bias conditions. Yet we did. In a more recent proposal, \textcite{Pickering2013} agued that
+a priming account, we should not find a difference between speaker bias conditions. Yet we did. 
+
+In a more recent proposal, \textcite{Pickering2013} agued that
 at least sometimes listeners perform \textit{prediction-by-association} when processing
 an utterance, that is, listeners make predictions about what the speaker would say based on
 the context and their experience with the speaker.  This appears to
