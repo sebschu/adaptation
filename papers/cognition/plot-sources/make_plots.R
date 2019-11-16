@@ -6,7 +6,7 @@ library(tidyverse)
 library(ggplot2)
 library(grid)
 library(gridExtra)
-
+library(splines)
 
 source("../../../shared-analysis/data_helpers.R")
 
@@ -171,7 +171,7 @@ ggsave(threshold_distrs, filename = "../plots/threshold-distributions-prior.pdf"
 
 
 #############
-# Experiment 1 plots
+# Original adaptation plots
 #############
 d.cautious = read.csv("../../../experiments/1_adaptation/data/1_adaptation-might-trials.csv")
 d.confident = read.csv("../../../experiments/1_adaptation/data/1_adaptation-probably-trials.csv")
@@ -592,7 +592,7 @@ ggsave(posterior_plot, filename = "../plots/adaptation-posterior-predictions.pdf
 
 
 #############
-# Experiment 1 replication
+# Experiment 2 
 #############
 d.cautious = read.csv("../../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-might-trials.csv")
 d.confident = read.csv("../../../experiments/5_adaptation_balanced/data/5_adaptation_balanced-probably-trials.csv")
@@ -617,6 +617,18 @@ d.rep = spread_data(d.rep)
 
 d.rep$pair = d.rep$condition
 
+fname = paste("../../../experiments/0_pre_test/data/0_pre_test-cond", 5 , "-trials.csv", sep="")
+d.prior = read.csv(fname)
+d.prior = remove_quotes(d.prior)
+d.prior = spread_data(d.prior)
+
+d.prior$pair = "Experiment 1"
+d.prior = d.prior %>% mutate(condition = "prior", speaker_cond="c", catch_trial_answer_correct = -1, post_exposure = 0, catch_trial = 0)
+
+d.rep = rbind(d.rep, d.prior)
+
+d.rep$pair = factor(d.rep$pair, levels = c("Experiment 1", "cautious speaker", "confident speaker"), ordered = T)
+
 plot_data = get_data_for_plotting(d.rep)
 plot = plot_condition(plot_data) + 
   geom_vline(xintercept = .60, lty=2, col="grey", size=1) +
@@ -624,9 +636,7 @@ plot = plot_condition(plot_data) +
         legend.text=element_text(size=14), 
         legend.title = element_text(size=14),
         axis.title = element_text(size=14),
-        axis.text = element_text(size=12),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        legend.background =  element_rect(fill = "transparent")) +
+        axis.text = element_text(size=12)) +
   colscale(unique(plot_data$modal))
 
 ggsave(plot, filename = "../plots/exp-1-replication-ratings.pdf", width = 30, height = 12, units = "cm")
@@ -651,12 +661,10 @@ auc_plot.2 =  aucs.all %>%
   geom_errorbar(aes(ymin=auc_diff_m-ci_low, ymax=auc_diff_m+ci_high), width=.1) +
   geom_point() +
   xlab("") +
-  ylab("") +
-  ggtitle("Experiment 2b") +
+  ylab("AUC difference (might ratings - probably ratings)") +
   theme(text = element_text(size=12),
         axis.ticks.x=element_blank(), 
         axis.text.x=element_blank(),
-        axis.title.y=element_blank(),
         panel.grid.minor=element_blank(), 
         plot.background=element_blank(),
         legend.position = "bottom") +
@@ -670,6 +678,7 @@ auc_plots = grid.arrange(g, auc_legend, heights=c(12,2))
 
 ggsave(auc_plots, filename = "../plots/exp-1-aucs.pdf",  width=20, height=12, units = "cm")
 
+ggsave(auc_plot.2, filename = "../plots/exp-1-auc.pdf",  width=12, height=12, units = "cm")
 
 
 #c1 = compute_correlation_for_model("theta-cost-rat", d.rep, model_path_suffix = "-balanced")
