@@ -822,9 +822,9 @@ that beliefs about preferences and beliefs about the lexicon can interact in com
 The production expectation model in \sectionref{sec:model-baseline} provides us with the opportunity to formally evaluate these three hypotheses.
 Through a series of simulations of the adaptation process, we can compare models in which different types of parameters are
  updated during adaptation. Following work in modeling adaptation in other linguistic domains \parencite[e.g.,][]{Kleinschmidt2012,Kleinschmidt2015,Qing2014,Hawkins2017,Roettger2019}, 
-we assume that in interaction, listeners form beliefs about a set of speaker-specific parameters $\Theta_S$.\footnote{Since the manipulation in our experiments was between subjects, our results do not provide direct evidence that listeners are indeed adapting to speakers (as compared, for example, to the general experimental situation). For now, we assume that listeners are adapting to specific speakers and we return to this issue in the general discussion.
+we assume that in interaction, listeners form beliefs about a set of speaker-specific parameters $\Theta_S$.\footnote{Since the manipulation in our experiments was between subjects, our results do not provide direct evidence that listeners are indeed adapting to speakers (as compared, for example, to the general experimental situation). For now, we assume that listeners are adapting to specific speakers and we return to this issue in the general discussion.\jd{but there's the schuster and degen cogsci paper evidence, no? if cited in the general discussion, ignore comment}
 
-Further, it could be that the speaker-specific parameters are correlated and  listeners could form beliefs about bundles of correlated parameters instead of forming beliefs about individual parameters. For simplicity, we assume here that individual parameters are independent but it would be interesting to investigate whether, for example, listeners who expect a speaker to use lower thresholds for \textit{probably} also expect the same speaker to have lower thresholds for \textit{might} (see also Section~\ref{subsec:adaptation-model-evaluation}).}
+Further, the speaker-specific parameters might be correlated and  listeners might form beliefs about bundles of correlated parameters instead of forming beliefs about individual parameters. For simplicity, we assume here that individual parameters are independent but it would be interesting to investigate whether, for example, listeners who expect a speaker to use lower thresholds for \textit{probably} also expect the same speaker to have lower thresholds for \textit{might} (see also Section~\ref{subsec:adaptation-model-evaluation}).}
 We further assume that the formation of these beliefs is an instance of Bayesian belief updating:
 listeners start off with prior beliefs about $\Theta_S$ based on their general knowledge about 
 language and subsequently update their beliefs about $\Theta_S$ with every utterance they hear. 
@@ -875,7 +875,7 @@ The prior distributions over the different parameters that may be updated during
 
 \subsection{Model comparisons}
 
-We compared model fits according to the likelihood of the model generating the post-exposure data. To compute this metric, we constructed a dataset $D_{obs}$ of utterance-event probability pairs by treating each post-exposure rating as a probability distribution and sampling 10 utterances from it. We then computed the posterior likelihood odds between Model 1 with posterior distribution over parameters $P(\Theta_{S}^{(1)})$ and Model 2 with posterior distribution $P(\Theta_{S}^{(2)})$.
+We compared model fits via the likelihood of the model generating the post-exposure data. To compute this metric, we constructed a dataset $D_{obs}$ of utterance-event probability pairs by treating each post-exposure rating as a probability distribution and sampling 10 utterances from it. We then computed the posterior likelihood odds between Model 1 with posterior distribution over parameters $P(\Theta_{S}^{(1)})$ and Model 2 with posterior distribution $P(\Theta_{S}^{(2)})$.
 
 $$\mbox{posterior likelihood odds} = \frac{\mathlarger{\int_{0}^{1}} {P\left(\Theta_{S}^{(1)}\right) P\left(D_{obs} \mid \Theta_{S}^{(1)} \right) d   \Theta_{S}^{(1)}}}{\mathlarger{\int_0^1} P\left(\Theta_{S}^{(2)}\right) P\left(D_{obs} \mid \Theta_{S}^{(2)}\right)d   \Theta_{S}^{(2)} }$$
  
@@ -1056,15 +1056,12 @@ that the post-adaptation expectations are in part also a result of updated belie
 
 \subsection{Interim summary}
 
-In the previous two sections, we presented the results from an experiment that provide strong evidence for
+In the previous two sections, we presented the results from an experiment that provides strong evidence for
 listeners updating expectations about a speaker's use of uncertainty expressions after brief
-exposure to that speaker. 
-
-We further presented a computational adaptation model which models the adaptation
-process as an instance of Bayesian belief updating. We used different implementations
-of that model to investigate which kind of expectations listeners update during adaptation.
-We found strong evidence that listeners update beliefs about the threshold distributions and 
-beliefs about speaker preferences.
+exposure to that speaker. We further presented a computational adaptation model which models the adaptation
+process as an instance of Bayesian belief updating. Using different implementations
+of that model to investigate which kind of expectations listeners update during adaptation, we found strong evidence that listeners update beliefs both about  threshold distributions and 
+ about speaker preferences.
 
 \section{Experiment 3: Effect of adaptation on interpretation}
 \label{sec:exp-model-interpretation}
