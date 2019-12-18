@@ -182,10 +182,10 @@ A listener's beliefs about the three speakers' lexica and preferences are schema
 \label{fig:inference-example}
 \end{figure}
 
-First, consider speaker {\bf A}, for whom \textit{might} is semantically felicitous if the described event probability (e.g., of snowing) exceeds 10\%, 
+First, consider speaker {\bf A}, for whom \textit{might} is true if the described event probability (e.g., of snowing) exceeds 10\%, 
 \textit{probably} if the event probability exceeds 60\% and \textit{almost certainly}  if the event probability exceeds 90\%.  If a listener has accurate beliefs about {\bf A}'s mapping between expressions and event probabilities and observes {\bf A}  produce the sentence \emph{It will probably snow}, they will be likely to infer a probability of snowing between 60 and 90\%. As illustrated above, the reasoning follows the schema of a standard scalar implicature \parencite{Grice1975, Horn1984}: if  {\bf A} had intended to communicate a probability above 90\%, they could have said \emph{It will almost certainly snow}, which would have been more informative and equally relevant. Assuming the speaker knows the actual event probability and is cooperative, it is therefore likely that the intended probability is not above 90\%.\footnote{Under a standard Gricean view, the negation of the stronger alternative is inferred categorically. However, we adopt probabilistic language here in keeping with recent results that scalar inferences are more aptly viewed as probabilistic inference under uncertainty \parencite{Goodman2013}.} 
 
-Now, consider speaker {\bf B}, for whom \textit{might} is semantically felicitous if the event probability exceeds 30\%, 
+Now, consider speaker {\bf B}, for whom \textit{might} is true if the event probability exceeds 30\%, 
 \textit{probably} if the event probability exceeds 75\% and \textit{almost certainly}  if the event probability exceeds 95\%. If a listener has
 accurate beliefs about {\bf B}'s mappings, they will be likely to infer, via the same reasoning as above, a chance of snow between 75\% and 95\% when they hear {\bf B} produce the same sentence, \textit{It will probably snow}.
 
@@ -342,9 +342,9 @@ framework (RSA; \cite{Goodman2016})  are uniquely suited to satisfy the above de
 RSA models are a probabilistic formalization of Gricean pragmatics which model comprehension as Bayesian probabilistic inference. 
 They consist of \textit{listener} and \textit{speaker} agents which recursively reason about each other to derive interpretations and choose utterances. 
 For our purposes of modeling production expectations, we focus on a model of listener beliefs about a speaker's production model.
-  According to an RSA model, a {speaker} that wants to
+  According to  RSA, a {speaker} that wants to
  convey some information to a {listener}
-chooses her utterance based on the utterance's utility compared to the utility of alternative utterances. 
+chooses an utterance based on the utterance's utility compared to the utility of alternative utterances. 
 The {speaker}'s utterance utility is determined by trading off the informativity of the utterance to a \textit{literal listener} on the one hand and the cost of the utterance on the other.
 
 In defining the informativity of an utterance, we follow previous RSA models of uncertainty expressions (\cite{Herbstritt2019}) 
@@ -352,7 +352,7 @@ and assume that uncertainty expressions have a threshold semantics \parencite{Sw
 such that an utterance $u_e$ with $e$ is true if the probability $\phi$ 
 of the proposition embedded under $e$ exceeds $\theta_e$. 
 For example, if we assume the threshold for \textit{might}, $\theta_{might}$, is 0.1, then the statement 
-``It might rain this afternoon'' is semantically felicitous to a {speaker} who believes that the probability of rain in the afternoon exceeds $0.1$.
+``It might rain this afternoon'' is semantically available to a {speaker} who believes that the probability of rain in the afternoon exceeds $0.1$.
 Formally, we base the computation of informativity on a probability distribution from utterances to event probabilities $\phi$, 
 which is usually referred to as the \textit{literal listener} $L_0$ in the RSA framework. 
 
@@ -372,7 +372,7 @@ According to this formalization, the {literal listener}  randomly draws an event
 A \textit{pragmatic speaker} $S_1$ that intends to communicate an event probability $\phi$ then chooses an utterance $u_e$ with uncertainty expression $e$ from a set of utterances $U$ according to a soft-max choice rule \parencite{Luce1959,Sutton1998} such that $u$ is chosen with a probability proportional to the utility for the speaker:
 $$S_1\left(u_e \mid \phi, \theta, c\right) \propto exp \left( \lambda \left( \log L_0\left(\phi \mid u_e, \theta_e\right)  - c(u_e)\right)\right)$$
 $\lambda$ is a rationality parameter which governs how likely the {speaker} is to choose the utterance that maximizes utility. As $\lambda$ approaches infinity, the {speaker} is more likely to always choose the optimal utterance. As it approaches 0, the {speaker} produces true utterances at random.\footnote{
-The absolute value of this parameter is influenced by the literal listener distributions and the cost function and therefore it is complex to determine a reasonable range for this parameter a priori, except that the value should be greater than 0. However, \textcite{Herbstritt2019} inferred $\lambda$ from data for a similar model as ours and found it to be likely in the interval $[4.5;5;2]$, which suggests that we should also expect a similarly large value for $\lambda$ in our setup.} 
+The absolute value of this parameter is influenced by the literal listener distributions and the cost function. It is therefore complex to determine a reasonable range for $\lambda$ a priori, except that the value should be greater than 0 for the agent to not behave irrationally.} %However, \textcite{Herbstritt2019} inferred $\lambda$ from data for a similar model and found it to be likely in the interval $[4.5;5;2]$, which suggests that we should also expect a similarly large value for $\lambda$ in our setup.} 
 
 
 \begin{figure}[th!]
@@ -522,13 +522,13 @@ Beta distributions can take on very different shapes. This property is important
 the simplifying assumption that all utterances in our experiments have a threshold semantics.
 Such a semantics is commonly assumed for uncertainty expressions such as \textit{probably} \parencite[e.g.,][]{Yalcin2010,Lassiter2016}, 
 but it is unconventional for bare assertions such as \textit{``You'll get a blue one''}, which are generally assumed to be  
-semantically felicitous only if the event is certain to happen, i.e., it has an event probability of 1. However, since Beta distributions can have a shape 
+true only if the event is certain to happen, i.e., it has an event probability of 1. However, since Beta distributions can have a shape 
 like the distribution for \textsc{bare} in the upper right panel in Figure~\ref{fig:model-visualization}, the model has the capability to infer
 a semantics for the bare form that is almost equivalent to a traditional semantics of bare assertions. In this parameterization of the
 Beta distribution, most probability mass is assigned to values of $\theta$ close to 1, which is mathematically almost equivalent to
 a traditional semantics.\footnote{Alternatively, one can also see the threshold distribution for the bare form as a distribution over a verification parameter $\eta$ that governs 
 how certain a speaker has to be to utter a bare assertion \parencite[see, e.g.,][]{Moss2018}. Mathematically, our assumption of bare forms having a threshold
-semantics is equivalent to assuming that bare assertions are only semantically felicitous when a speaker's credence of the proposition exceeds the verification threshold $\eta$.}
+semantics is equivalent to assuming that bare assertions are only true when a speaker's credence of the proposition exceeds the verification threshold $\eta$.}
 Therefore, using Beta distributions for the threshold distributions has the desirable effect of allowing us a unified treatment of all expressions included in the model. 
 
 \subsection{Parameter estimation}
