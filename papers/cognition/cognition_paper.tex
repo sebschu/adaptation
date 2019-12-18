@@ -340,21 +340,21 @@ and (c) be able to capture within-participant uncertainty about probability of u
 Computational game-theoretic models such as the Rational Speech Act 
 framework (RSA; \cite{Goodman2016})  are uniquely suited to satisfy the above desiderata.
 RSA models are a probabilistic formalization of Gricean pragmatics which model comprehension as Bayesian probabilistic inference. 
-They consist of listener and speaker models which recursively reason about each other to derive interpretations and choose utterances. 
-For our purposes of modeling production expectations, we focus on an a variant of the speaker model, which crucially bases its predictions on a set of alternative utterances. 
-  According to an RSA model, a speaker model that wants to
- convey some information to a listener model
-chooses its utterance based on the utterance's utility compared to the utility of alternative utterances. 
-The speaker's utterance utility is determined by trading off the informativity of the utterance to a literal listener model on the one hand and the cost of the utterance on the other.
+They consist of \textit{listener} and \textit{speaker} agents which recursively reason about each other to derive interpretations and choose utterances. 
+For our purposes of modeling production expectations, we focus on a model of listener beliefs about a speaker's production model.
+  According to an RSA model, a {speaker} that wants to
+ convey some information to a {listener}
+chooses her utterance based on the utterance's utility compared to the utility of alternative utterances. 
+The {speaker}'s utterance utility is determined by trading off the informativity of the utterance to a \textit{literal listener} on the one hand and the cost of the utterance on the other.
 
 In defining the informativity of an utterance, we follow previous RSA models of uncertainty expressions (\cite{Herbstritt2019}) 
 and assume that uncertainty expressions have a threshold semantics \parencite{Swanson2006,Yalcin2010,Lassiter2016}. That is, for each uncertainty expression $e$ there exists some threshold $\theta_e \in [0,1]$ 
 such that an utterance $u_e$ with $e$ is true if the probability $\phi$ 
 of the proposition embedded under $e$ exceeds $\theta_e$. 
 For example, if we assume the threshold for \textit{might}, $\theta_{might}$, is 0.1, then the statement 
-``It might rain this afternoon'' is semantically felicitous to a speaker model that believes that the probability of rain in the afternoon exceeds $0.1$.
+``It might rain this afternoon'' is semantically felicitous to a {speaker} who believes that the probability of rain in the afternoon exceeds $0.1$.
 Formally, we base the computation of informativity on a probability distribution from utterances to event probabilities $\phi$, 
-which is usually referred to as the \textit{literal listener} model $L_0$ in the RSA framework. 
+which is usually referred to as the \textit{literal listener} $L_0$ in the RSA framework. 
 
 $$L_0\left(\phi \mid u_e, \theta_e\right) \propto P(\phi) \times 
 \begin{cases}
@@ -367,11 +367,12 @@ $$L_0\left(\phi \mid u_e, \theta_e^{'}\right) \propto P(\phi) \times
 0 & \mbox{otherwise} 
 \end{cases} \qquad \mbox{(for negated embedded propositions)}$$
 
-According to this formalization, the literal listener model randomly draws an event probability $\phi$ from all values above  the threshold $\theta_e$ associated with the uncertainty expression $e$ (or, in the case of negated propositions, from all values below the threshold $\theta_e^{'}$). $P(\phi)$ is a prior distribution over event probabilities, which is independent of the observed utterance.
+According to this formalization, the {literal listener}  randomly draws an event probability $\phi$ from all values above  the threshold $\theta_e$ associated with the uncertainty expression $e$ (or, in the case of negated propositions, from all values below the threshold $\theta_e^{'}$). $P(\phi)$ is a prior distribution over event probabilities, which is independent of the observed utterance.
 
-A \textit{pragmatic speaker} model $S_1$ that wants to communicate an event probability $\phi$ then chooses an utterance $u_e$ with uncertainty expression $e$ from a set of utterances $U$ according to a soft-max choice rule \parencite{Luce1959,Sutton1998} such that $u$ is chosen with a probability proportional to its utility for the speaker:
+A \textit{pragmatic speaker} $S_1$ that intends to communicate an event probability $\phi$ then chooses an utterance $u_e$ with uncertainty expression $e$ from a set of utterances $U$ according to a soft-max choice rule \parencite{Luce1959,Sutton1998} such that $u$ is chosen with a probability proportional to the utility for the speaker:
 $$S_1\left(u_e \mid \phi, \theta, c\right) \propto exp \left( \lambda \left( \log L_0\left(\phi \mid u_e, \theta_e\right)  - c(u_e)\right)\right)$$
-$\lambda$ is a rationality parameter which governs how likely a speaker model is to choose the utterance that maximizes utility. As $\lambda$ approaches infinity, a speaker model is more likely to always choose the optimal utterance. As it approaches 0, the speaker produces true utterances at random. In practice, when inferred from data, values for this parameter often fall within the interval $[0.5; 5]$ \parencite[see, e.g.,][]{Herbstritt2019,Tessler2019}. \jd{but interpreting the absolute value of the parameter is meaningless} \seb{Yes, but that's what a reviewer wanted. TO DISCUSS.}
+$\lambda$ is a rationality parameter which governs how likely the {speaker} is to choose the utterance that maximizes utility. As $\lambda$ approaches infinity, the {speaker} is more likely to always choose the optimal utterance. As it approaches 0, the {speaker} produces true utterances at random.\footnote{
+The absolute value of this parameter is influenced by the literal listener distributions and the cost function and therefore it is complex to determine a reasonable range for this parameter a priori, except that the value should be greater than 0. However, \textcite{Herbstritt2019} inferred $\lambda$ from data for a similar model as ours and found it to be likely in the interval $[4.5;5;2]$, which suggests that we should also expect a similarly large value for $\lambda$ in our setup.} 
 
 
 \begin{figure}[th!]
@@ -385,25 +386,24 @@ $\lambda$ is a rationality parameter which governs how likely a speaker model is
 
 
 $S_1$ crucially depends on a vector of thresholds $\theta$ which contains a threshold for each uncertainty expression in the utterances in $U$, 
-as well as  a cost function $c(u)$. The values that a listener model expects a speaker model to assign 
+as well as a cost function $c(u)$. The values that participants expect a \textit{pragmatic speaker} to assign 
 to these variables are unknown a priori; we infer these values from the data collected in the above reported experiment. 
 In Experiment~1, we found that both at the population level and at the individual level, 
 participants' ratings of the different expressions gradually increased and decreased with changing event probabilities 
 (as, for example, shown in Figure~\ref{fig:norming-results-indiv}). This is expected if participants
 have probabilistic beliefs about thresholds $\theta$ (as illustrated in the right panels of Figure~\ref{fig:model-visualization}) but not if they reason based on point estimates of $\theta$ (as illustrated in the left panels of Figure~\ref{fig:model-visualization}).
-Considering these observations,  we assume that the listener model holds beliefs about a speaker model's thresholds  in the form of a distribution $P\left(\theta_e\right)$.\footnote{We leave it open 
-whether a speaker model samples from a distribution over thresholds when producing utterances (as suggested by \textcite{Qing2015}) 
-or always uses the same values for thresholds. In the former case, a listener model could have higher-order beliefs  $P(\eta)$ 
-about different speaker models' threshold distributions instead of having direct beliefs about the thresholds that different 
-speaker models use. For our purposes, this distinction does not matter since we assume that the listener model marginalizes over higher-order beliefs $P(\eta)$ such that  $P\left(\theta_e\right) = \int P\left(\eta\right) P\left(\theta_e \mid \eta\right) d\eta$ and we therefore take the simplest approach and directly model $P\left(\theta_e\right)$. } Analogously, we assume that a listener model also has beliefs $P(c)$ about the speaker model's cost function.
+Considering these observations,  we assume that listeners hold beliefs about a speaker's thresholds in the form of a distribution $P\left(\theta_e\right)$.\footnote{We leave it open 
+whether a {speaker} samples from a distribution over thresholds when producing utterances (as suggested by \textcite{Qing2015}) 
+or always uses the same values for thresholds. In the former case, listeners could have higher-order beliefs  $P(\eta)$ 
+about different {speakers}' threshold distributions instead of having direct beliefs about the thresholds that different 
+{speakers} use. For our purposes, this distinction does not matter since we assume that listeners marginalize over higher-order beliefs $P(\eta)$ such that  $P\left(\theta_e\right) = \int P\left(\eta\right) P\left(\theta_e \mid \eta\right) d\eta$ and we therefore take the simplest approach and directly model $P\left(\theta_e\right)$. } Analogously, we assume that  listeners also have beliefs $P(c)$ about the speaker model's cost function.
 Using these two distributions, we can define the \textit{expected pragmatic speaker} model $ES_1\left(u_e \mid \phi \right)$ as follows:
 
 $$ES_1\left(u_e \mid \phi \right) = \int P(c) \int_0^1 P(\theta) S_1\left(u _e\mid \phi, \theta, c\right) d\theta \  d c$$
 
-This model predicts which utterance a listener model with uncertainty about a speaker's thresholds and cost function would expect that speaker model to use to describe different event probabilities.
-Intuitively, this model can be seen as a weighted average of different speaker models, where individual speaker models differ in terms of thresholds and cost functions.  The weights of this average are determined by the 
-listener model's belief distributions over thresholds and costs. For example, if a listener model believes that it is likely that a speaker uses a threshold $\theta_{probably}$ of 0.5, it will assign higher weight to speaker models
-using this threshold than other thresholds. 
+This model predicts which utterance listeners with uncertainty about a speaker's thresholds and cost function would expect that {speaker} to use to describe different event probabilities. 
+Intuitively, this model can be seen as a weighted average of different \textit{pragmatic speaker} models, where individual models differ in terms of thresholds and cost functions.  The weights of this average are determined by listeners' belief distributions over thresholds and costs. For example, if listeners believe that it is likely that a speaker uses a threshold $\theta_{probably}$ of 0.5, they will assign higher weight to speaker models
+using this threshold than models using other thresholds. 
 
 %$P(\theta)$ serves two purposes here: On the one hand, it captures the variability in expectations across participants and on the other hand, it captures individual participants' uncertainty. 
 %In theory one could separate these two distributions by having one distribution modeling the variability across participants and then having a separate distribution for each listener capturing
@@ -1202,7 +1202,7 @@ and adaptation to variable use of the quantifiers \textit{some} and \textit{many
 All of these models are based on the same Bayesian belief updating procedure according to which listeners integrate
 their prior linguistic expectations and observed linguistic behavior to form updated expectations that facilitate comprehension.
 This updating procedure is in line with recent proposals of a ``Bayesian brain'' \parencite[e.g.,][]{Clark2013,Friston2010} which argue that
-many cognitive processes can be seen as an instance of integrating prior beliefs with observed signals from the environment.
+many cognitive and perceptual processes can be seen as an instance of integrating prior beliefs with observed signals from the environment.
 
 %TODO: is there something we can say about a shared cognitive process?
 %Considering that these models that are all based on the same belief updating procedures can explain adaptation behavior 
@@ -1293,7 +1293,7 @@ uncertainty in both production expectations and interpretations. However, consid
 to what extent the results in the present research translate to less scripted and more interactive settings is an important area for future research. 
 One possibility would be to conduct an eye-tracking experiment using the visual world paradigm \cite{TanenhausXXXX}. Based on the
 results presented here, we would, for example, expect that if a speaker always described events with a probability greater than 0.6 using an utterance
-such as ``It will probably rain today'', over the course of the experiment, participants would increase fixations on the visual representation of an event 
+such as ``It will probably rain today'', over the course of the experiment, participants' fixations on the visual representation of an event 
 with 0.6 probability after hearing \textit{probably} when presented with a representation of another event with an even higher probability. 
 
 \jd{a note on the eye-tracking study?} \seb{TO DISCUSS: I'm not sure how much this adds without going into more detail but I also don't think we should go into too much detail about a potential study here.}
