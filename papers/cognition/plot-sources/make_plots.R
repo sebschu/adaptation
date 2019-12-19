@@ -991,3 +991,52 @@ ggsave(posterior_plot_combined, file="../plots/adaptation-posterior-comp-data.pn
 ggsave(posterior_plot_combined, file="../plots/adaptation-posterior-comp-data.pdf", width = 30, height = 12, units = "cm")
 
 
+####
+# Original comprehension experiment
+####
+
+d.cautious = read.csv("../../../experiments/2_comprehension/data/2_comprehension-might-trials.csv")
+d.confident = read.csv("../../../experiments/2_comprehension/data/2_comprehension-probably-trials.csv")
+# re-number participants in confident speaker condition
+d.confident$workerid = d.confident$workerid + max(d.cautious$workerid) + 1
+d.cautious$condition = "cautious speaker"
+d.confident$condition = "confident speaker"
+
+d.comp = rbind(d.cautious, d.confident)
+d.comp = remove_quotes(d.comp)
+d.comp$catch_trial_answer_correct = -1
+
+d.exp_trials.cautious = read.csv("../../../experiments/2_comprehension/data/2_comprehension-might-exp_trials.csv")
+d.exp_trials.confident = read.csv("../../../experiments/2_comprehension/data/2_comprehension-probably-exp_trials.csv")
+
+d.exp_trials.confident$workerid = d.exp_trials.confident$workerid + max(d.exp_trials.cautious$workerid) + 1
+
+exp_trials = rbind(d.exp_trials.cautious, d.exp_trials.confident)
+
+d.comp = exclude_participants(trials = (d.comp %>% mutate(catch_trial = 0)), exp_trials = exp_trials, cutoff = 3)
+d.comp[d.comp$color=="orange", ]$percentage_blue = 100 - d.comp[d.comp$color=="orange", ]$percentage_blue
+
+d.comp = d.comp %>% group_by(workerid, modal, color) %>% mutate(rating_norm = rating / sum(rating)) %>% ungroup()
+
+comp.plot_data = d.comp %>% group_by(percentage_blue, modal, condition) %>% 
+  summarize(rating_norm_mu = mean(rating_norm), 
+            rating_norm_ci_low=ci.low(rating_norm), 
+            rating_norm_ci_high=ci.high(rating_norm)) 
+
+comp.plot = comp.plot_data %>% 
+  ggplot(aes(x=percentage_blue, y=rating_norm_mu, col=condition)) + 
+  geom_line(size=1) + 
+  facet_wrap(~modal) +
+  xlab("event probabilty") +
+  ylab("mean normalized rating") +
+  guides(col=guide_legend(title="", nrow = 1)) + 
+  theme(legend.position="bottom", 
+        strip.text.x = element_text(size = 14), 
+        legend.text=element_text(size=14), 
+        legend.title = element_text(size=14),
+        axis.title = element_text(size=14),
+        axis.text = element_text(size=12)) + 
+  geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
+
+ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, units = "cm")
+
