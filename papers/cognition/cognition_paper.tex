@@ -44,6 +44,10 @@
 \definecolor{PinkyPurple}{RGB}{178,0,178}
 \newcommand{\jd}[1]{\textcolor{PinkyPurple}{\textbf{[jd: #1]}}}
 
+\definecolor{CornflowerBlue}{RGB}{100, 149, 237}
+\newcommand{\add}[1]{{\color{CornflowerBlue} #1}}
+
+
 \newcommand{\eref}[1]{(\ref{#1})}
 \newcommand{\tableref}[1]{Table~\ref{#1}}
 \newcommand{\figref}[1]{Figure~\ref{#1}}
@@ -133,7 +137,8 @@ One of the key assumptions about pragmatic reasoning is that listeners reason ab
 \end{exe}
 According to Gricean pragmatic theories, listeners assume that a speaker is cooperative and arrive at the inference in (\ref{ex:cookie-inf}) through a counterfactual reasoning process: they reason that if Alex had wanted to communicate that Bill ate all of the cookies, Alex would have uttered the more informative statement \textit{Bill ate all of the cookies}. Assuming that Alex knew the truth regarding the more informative sentence, it must be that the more informative statement is not true, which leads the listener to conclude (\ref{ex:cookie-inf}). Analogous reasoning leads to the inferences in (\ref{ex:movie-inf})  and (\ref{ex:snow-inf}).
 
-Accounts of pragmatic reasoning share the implicit assumption that listeners have precise expectations about the speaker's language use -- specifically, which utterance alternatives were available to the speaker that they didn't use -- in different situations. Listeners can only draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems \parencite{Lewis1969}. However, language users also exhibit a great deal of variability in their phonetic, lexical, and syntactic choices \parencite[e.g.,][]{Liberman1967,Weiner1983,Harrington2000,Finegan2001,Allen2003}. For instance, while language users generally agree on the ordering of quantifiers such as \textit{some} and \textit{many} and uncertainty expressions such as \textit{might} and \textit{probably} \parencite{Hammerton1976,JaffeKatz1989}, listeners nevertheless have variable expectations of quantifier use \parencite{Yildirim2016} and there exists considerable inter-subject variability in the interpretation of uncertainty expressions \parencite{Wallsten1986}. This raises a puzzle: how can we reconcile the assumption of stable utterance alternatives required for capturing pragmatic inferences with what appears to be considerable variability in speakers' actual language use?
+Accounts of pragmatic reasoning share the implicit assumption that listeners have precise expectations about the speaker's language use -- specifically, which utterance alternatives were available to the speaker that they didn't use -- in different situations. Listeners can only draw correct pragmatic inferences if they know what a speaker would have said to communicate alternative world states. Arguably, this assumption is valid in many contexts -- after all, languages are highly conventional systems \parencite{Lewis1969}. However, language users also exhibit a great deal of variability in their phonetic, lexical, and syntactic choices \parencite[e.g.,][]{Liberman1967,Weiner1983,Harrington2000,Finegan2001,Allen2003}. For instance, while language users generally agree on the ordering of quantifiers such as \textit{some} and \textit{many} and uncertainty expressions such as \textit{might} and \textit{probably} \parencite{Hammerton1976,JaffeKatz1989}, listeners nevertheless have variable expectations of quantifier use \parencite{Yildirim2016} and there exists considerable inter-subject variability in the interpretation of uncertainty expressions \parencite{Wallsten1986}. This raises a puzzle: how can we reconcile the assumption of stable utterance alternatives required for capturing pragmatic inferences with what 
+ considerable variability in speakers' actual language use?
 
 Recent work suggests that listeners deal with variability in language use by adapting to it, i.e., by updating their expectations about a speaker's likely productions \parencite[e.g.,][]{Norris2003,Kraljic2005,Kleinschmidt2015,Kamide2012,Fine2016}. In the domain of semantics/pragmatics, this is a process known as \emph{semantic/pragmatic adaptation}. In a series of experiments, \textcite{Yildirim2016} exposed participants to different speakers whose use of the quantifiers \textit{some} and \textit{many} varied in descriptions of quantities of candies of a particular color like \emph{Some of the candies are green}. After exposure to a speaker, they probed participants' expectations about the speakers' likely descriptions of different quantities of green candies and found that participants indeed formed speaker-specific expectations. However, while the results consistently suggest that listeners update \textit{some} type of expectations, the nature of the expectations that listeners update is unknown. 
 In particular, it is an open question whether this kind of semantic/pragmatic adaptation is a result of listeners learning speaker-specific utterance \emph{preferences} or whether listeners form speaker-specific \emph{semantic representations}. Answering this question about the nature of adaptation is  the focus of the work reported here.
@@ -288,7 +293,7 @@ First, the ratings for individual utterances are influenced by the utterance cho
 If we compare the ratings for \textsc{might} in the \textit{bare-might} and the \textit{might-probably} condition, we see that \textsc{might} received high ratings for a larger
 range of event probabilities when it is paired with \textsc{bare} than when it is paired with \textsc{probably}. We observe similar effects for the other two utterances.
 This suggests that participants are cued towards using the utterances provided in the experiment and that their ratings depend on the presented alternatives -- an effect that
-has also been observed for quantifiers \parencite{Degen2016}.
+has also been observed for \add{frequency expressions \parencite{Chase1969}} and quantifiers \parencite{Degen2016}.
 
 Second, the results suggest that participants are sensitive to the different event probabilities and that this paradigm is well suited to study 
 the mapping between event probabilities and uncertainty expressions. For example, in the \textit{might-probably} condition, participants
@@ -428,7 +433,7 @@ knowledge of English uncertainty expressions also influences their ratings. Idea
 utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for 
 which we collected ratings, we are limited to the utterances in $U$. 
 
-The exact set of utterances appears to be not that important for fitting the data as long as the set includes the \textsc{bare}
+The exact set of utterances is not that important for fitting the data as long as the set includes the \textsc{bare}
 and \textsc{bare not} utterances as well as at least one utterance with a weaker 
 (e.g., \textit{might}) and one with a stronger (e.g., \textit{probably})
 uncertainty expression.
@@ -611,13 +616,13 @@ ratings and model predictions for the model estimated from all conditions and th
 \end{table}
 
 
-As this table shows, the $R^2$ values remain high even if we exclude the data on which the model is evaluated from the model's training data, 
+As this table shows, the $R^2$ values remain high\footnote{\add{We only observed slightly bigger drops in correlations for the \textit{bare not-bare} and the \textit{bare not-could} conditions. In these conditions, we paired expressions that are a poor description for a large range of event likelihoods: \textsc{bare not} and \textsc{bare} are only expected to be good descriptions if the event probability is very low or very high, respectively, and the \textit{bare not-could} condition  includes expressions of which neither are well suited to describe high event probabilities. As a result, participants in these conditions seemed to be more uncertain what to do which was reflected in several participants commenting in a post-experiment survey that they would have answered differently had there been better response options. Participants' ratings were therefore presumably more idiosyncratic, which made it harder for the model to predict ratings without having access to the data from these conditions.}} even if we exclude the data on which the model is evaluated from the model's training data, 
 which suggests that our proposed model indeed explains
 participants' expectations of a generic speaker's uncertainty expressions. 
 
 \begin{figure}[th!]
 \includegraphics[width=\textwidth]{plots/threshold-distributions-prior.pdf}
-\caption{Inferred threshold distributions. For the negative bare utterance (\textsc{bare not}), the distribution is over an upper threshold, i.e., a bare statement embedded under negation is true if the probability of the event is lower than the threshold. For all other utterances, the distribution is over a lower threshold.
+\caption{Inferred threshold distributions. For the negative bare utterance (\textsc{bare not}), the distribution is over an upper threshold, i.e., a bare statement embedded under negation is true if the probability of the event is lower than the threshold. For all other utterances, the distribution is over a lower threshold. 
 \label{fig:threshold-distributions}}
 \end{figure}
 
@@ -1032,7 +1037,12 @@ all decreased while the costs of the other four utterances increased compared to
 data. Further, the post-exposure cost of \textit{might} is lower than the cost of \textit{probably} in the \textit{cautious speaker} condition
 and the opposite relation between these costs holds in the \textit{confident speaker} condition, which suggests that
 that the post-adaptation expectations are in part also a result of updated beliefs about preferences of \textsc{might} and \textsc{probably}. 
-
+\add{This finding also highlights the complex interplay between threshold distributions and preferences: The number of exposure trials 
+with \textsc{might} and \textsc{probably} was identical in both conditions, so participants could not have inferred a preference
+based on exposure frequencies. Instead, participants seemed to indirectly infer that the \textit{cautious speaker} prefers to use \textsc{might} from the speaker's uses of \textsc{might} to describe a
+larger range of event probabilities and that the \textit{confident speaker} prefers to use \textsc{probably} from the speaker's uses of \textsc{probably} for a
+larger range of event probabilities. However, frequency nevertheless has an effect on inferred preferences. As shown in Appendix~F, the difference in inferred preferences 
+was larger when participants in the \textit{cautious speaker} condition were exposed to more trials with \textsc{might} than in the \textit{confident speaker} condition and participants in the \textit{confident speaker} condition were exposed to more trials with \textsc{probably} than in the \textit{cautious speaker} condition.}
 
 
 % These cost differences
