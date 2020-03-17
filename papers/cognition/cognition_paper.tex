@@ -433,10 +433,12 @@ knowledge of English uncertainty expressions also influences their ratings. Idea
 utterances in this set of alternatives but since we can only estimate parameters for uncertainty expressions for 
 which we collected ratings, we are limited to the utterances in $U$. 
 
-The exact set of utterances is not that important for fitting the data as long as the set includes the \textsc{bare}
+The exact set of utterances \add{has only a small impact on the model's predictions} as long as the set includes the \textsc{bare}
 and \textsc{bare not} utterances as well as at least one utterance with a weaker 
 (e.g., \textit{might}) and one with a stronger (e.g., \textit{probably})
-uncertainty expression.
+uncertainty expression. \add{If this requirement is met, the model makes the same qualitative predictions, 
+and closely matches the quantitative predictions of a model that includes all 7 utterances choices.}
+
 
 \item \textbf{\textit{something else} option}: Participants in condition $\mathscr{C} = \{u_a, u_b\}$ 
 could only choose between the three utterances $U' = \{u_a, u_b,$ \textit{something else}$\}$.
@@ -526,7 +528,7 @@ like the distribution for \textsc{bare} in the upper right panel in Figure~\ref{
 a semantics for the bare form that is almost equivalent to a traditional semantics of bare assertions. In this parameterization of the
 Beta distribution, most probability mass is assigned to values of $\theta$ close to 1, which is mathematically almost equivalent to
 a traditional semantics.\footnote{Alternatively, one can also see the threshold distribution for the bare form as a distribution over a verification parameter $\eta$ that governs 
-how certain a speaker has to be to utter a bare assertion \parencite[see, e.g.,][]{Moss2018}. Mathematically, our assumption of bare forms having a threshold
+how certain a speaker has to be to utter a bare assertion \parencite[see, e.g.,][]{Lewis1976,Potts2007,Davis2007,Moss2018}. Mathematically, our assumption of bare forms having a threshold
 semantics is equivalent to assuming that bare assertions are only true when a speaker's credence of the proposition exceeds the verification threshold $\eta$.}
 Therefore, using Beta distributions for the threshold distributions has the desirable effect of allowing us a unified treatment of all expressions included in the model. 
 

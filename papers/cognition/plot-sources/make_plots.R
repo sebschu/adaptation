@@ -1038,5 +1038,5 @@ comp.plot = comp.plot_data %>%
         axis.text = element_text(size=12)) + 
   geom_errorbar(aes(ymin=rating_norm_mu - rating_norm_ci_low, ymax=rating_norm_mu + rating_norm_ci_high), width=5, size=1)
 
-ggsave(comp.plot, file="../plots/exp-2-ratings.pdf", width = 30, height = 12, units = "cm")
+ggsave(comp.plot, file="../plots/exp-2-ratings-orig.pdf", width = 30, height = 12, units = "cm")
 
